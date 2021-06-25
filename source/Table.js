@@ -1,3 +1,7 @@
+import Canvas from "./Canvas.js";
+
+
+
 /**
  * The Schema Table
  */
@@ -71,7 +75,9 @@ export default class Table {
         this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         this.tableHeader = document.createElement("header");
-        this.tableHeader.innerHTML = this.data.table;
+        this.tableHeader.innerHTML      = this.name;
+        this.tableHeader.dataset.action = "drag";
+        this.tableHeader.dataset.table  = this.name;
 
         this.tableList  = document.createElement("ol");
         this.tableElems = [];
@@ -150,6 +156,53 @@ export default class Table {
             this.showAll = false;
         }
         this.setBounds();
+    }
+
+
+
+    /**
+     * Picks the Table
+     * @param {MouseEvent} event
+     * @param {Canvas}     canvas
+     * @returns {Void}
+     */
+    pick(event, canvas) {
+        const bounds  = this.tableHeader.getBoundingClientRect();
+        const pos     = { top : event.pageY, left : event.pageX };
+        this.startPos = { top : pos.top - bounds.top, left : pos.left - bounds.left };
+        this.move(event, canvas);
+        this.tableElem.classList.add("schema-dragging");
+    }
+
+    /**
+     * Drags the Table
+     * @param {MouseEvent} event
+     * @param {Canvas}     canvas
+     * @returns {Void}
+     */
+    drag(event, canvas) {
+        this.move(event, canvas);
+    }
+
+    /**
+     * Drops the Table
+     * @returns {Void}
+     */
+    drop() {
+        this.tableElem.classList.remove("schema-dragging");
+    }
+
+    /**
+     * Moves the Table
+     * @param {MouseEvent} event
+     * @param {Canvas}     canvas
+     * @returns {Void}
+     */
+    move(event, canvas) {
+        this.translate({
+            top  : event.pageY - this.startPos.top  - canvas.bounds.top  + canvas.scroll.top,
+            left : event.pageX - this.startPos.left - canvas.bounds.left + canvas.scroll.left,
+        });
     }
 
 

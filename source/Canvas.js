@@ -26,6 +26,17 @@ export default class Canvas {
         this.container.scrollTo(left, top);
     }
 
+    /**
+     * Returns the Table scroll
+     * @return {{top: Number, left: Number}}
+     */
+    get scroll() {
+        return {
+            top  : this.container.scrollTop,
+            left : this.container.scrollLeft,
+        };
+    }
+
 
 
     /**

@@ -183,3 +183,10 @@ main {
     color: #76828b;
     cursor: pointer;
 }
+
+.schema-dragging {
+    z-index: 3;
+}
+.schema-dragging header {
+    cursor: grabbing;
+}

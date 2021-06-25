@@ -1,5 +1,6 @@
 import Canvas from "./Canvas.js";
 import Schema from "./Schema.js";
+import Table  from "./Table.js";
 import Utils  from "./Utils.js";
 
 // Variables
@@ -46,6 +47,32 @@ function initDomListeners() {
                 break;
             }
         }
+    });
+
+    /** @type {Table} */
+    let dragTable = null;
+    document.body.addEventListener("mousedown", (e) => {
+        const target = Utils.getTarget(e);
+        if (e.button === 0 && !dragTable && target.dataset.action === "drag") {
+            dragTable = schema.getTable(target);
+            if (dragTable) {
+                dragTable.pick(e, canvas);
+            }
+        }
+        e.preventDefault();
+    });
+    document.addEventListener("mousemove", (e) => {
+        if (dragTable) {
+            dragTable.drag(e, canvas);
+        }
+        e.preventDefault();
+    });
+    document.addEventListener("mouseup", (e) => {
+        if (dragTable) {
+            dragTable.drop();
+            dragTable = null;
+        }
+        e.preventDefault();
     });
 }
 
