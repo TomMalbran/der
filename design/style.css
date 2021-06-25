@@ -100,6 +100,20 @@ h1 {
     height: calc(100vh - var(--header-height));
     overflow: auto;
 }
+.schema-list ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.schema-list ol li {
+    box-sizing: border-box;
+    min-height: 38px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
 
 
 
