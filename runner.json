@@ -1,0 +1,9 @@
+{
+    "name": "DER",
+    "scripts": {
+        "start" : {
+            "type" : "server",
+            "port" : "3021"
+        }
+    }
+}
