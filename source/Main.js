@@ -1,4 +1,6 @@
+import Canvas from "./Canvas.js";
 import Schema from "./Schema.js";
+import Utils  from "./Utils.js";
 
 // Variables
 let canvas = null;
@@ -11,14 +13,35 @@ let schema = null;
  * @returns {Void}
  */
 function main() {
+    canvas = new Canvas();
+
     const data = localStorage.getItem("schema");
     if (data) {
         schema = new Schema(JSON.parse(data));
     }
 
-    const open = document.querySelector(".open");
-    open.addEventListener("click", () => importSchema());
+    initDomListeners();
+}
 
+/**
+ * Initializes the Event Handlers
+ * @returns {Void}
+ */
+function initDomListeners() {
+    document.addEventListener("click", (e) => {
+        const target = Utils.getTarget(e);
+        const table  = schema.getTable(target);
+        switch (target.dataset.action) {
+        case "open":
+            importSchema();
+            break;
+        case "add":
+            if (table) {
+                canvas.addTable(table);
+            }
+            break;
+        }
+    });
 }
 
 /**

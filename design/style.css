@@ -136,3 +136,42 @@ main {
         linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
 }
+
+
+
+/**
+ * Table Styles
+ */
+.schema-table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: 2px 2px 9px rgb(209 209 209);
+    overflow: hidden;
+    z-index: 2;
+}
+.schema-table header {
+    background-color: var(--main-color);
+    padding: 8px 16px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    cursor: grab;
+}
+.schema-table ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+.schema-table ol li {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+.schema-table ol li:last-child {
+    border-bottom: none;
+}
