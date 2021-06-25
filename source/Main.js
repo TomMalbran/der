@@ -40,6 +40,11 @@ function initDomListeners() {
                 canvas.addTable(table);
             }
             break;
+        case "hidden":
+            if (table) {
+                table.toggleFields();
+                break;
+            }
         }
     });
 }

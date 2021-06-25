@@ -175,3 +175,11 @@ main {
 .schema-table ol li:last-child {
     border-bottom: none;
 }
+
+.schema-hide {
+    display: none;
+}
+.schema-hidden {
+    color: #76828b;
+    cursor: pointer;
+}

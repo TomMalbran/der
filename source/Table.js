@@ -13,6 +13,8 @@ export default class Table {
 
         this.top         = 10;
         this.left        = 10;
+        this.maxFields   = 15;
+        this.showAll     = false;
 
         this.createListElem();
     }
@@ -95,6 +97,18 @@ export default class Table {
             this.addFieldElem("isDeleted");
         }
 
+        if (this.totalFields > this.maxFields) {
+            this.hiddenFields = this.totalFields - this.maxFields;
+
+            this.tableHidden = document.createElement("li");
+            this.tableHidden.className      = "schema-hidden";
+            this.tableHidden.innerHTML      = `+${this.hiddenFields} hidden fields`;
+            this.tableHidden.dataset.action = "hidden";
+            this.tableHidden.dataset.table  = this.name;
+
+            this.tableList.appendChild(this.tableHidden);
+        }
+
         this.tableElem.appendChild(this.tableHeader);
         this.tableElem.appendChild(this.tableList);
     }
@@ -108,8 +122,34 @@ export default class Table {
         const li = document.createElement("li");
         li.innerHTML = field;
 
+        if (this.tableElems.length >= this.maxFields) {
+            li.className = "schema-hide";
+        }
         this.tableList.appendChild(li);
         this.tableElems.push(li);
+    }
+
+    /**
+     * Toggle the Visible Fields
+     * @returns {Void}
+     */
+    toggleFields() {
+        if (!this.showAll) {
+            for (const elem of this.tableElems) {
+                elem.className = "";
+            }
+            this.tableHidden.innerHTML = "Hide fields";
+            this.showAll = true;
+        } else {
+            for (const [ index, elem ] of this.tableElems.entries()) {
+                if (index >= this.maxFields) {
+                    elem.className = "schema-hide";
+                }
+            }
+            this.tableHidden.innerHTML = `+${this.hiddenFields} hidden fields`;
+            this.showAll = false;
+        }
+        this.setBounds();
     }
 
 
