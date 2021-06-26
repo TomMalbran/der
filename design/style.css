@@ -161,8 +161,9 @@ main {
     z-index: 2;
 }
 .schema-table header {
+    position: relative;
     background-color: var(--main-color);
-    padding: 8px 16px;
+    padding: 8px 24px;
     text-align: center;
     color: white;
     font-weight: bold;
@@ -197,4 +198,44 @@ main {
 }
 .schema-dragging header {
     cursor: grabbing;
+}
+
+
+.close {
+    --close-color: white;
+    --close-size: 12px;
+    --close-width: 12px;
+    --close-height: 1px;
+
+    position: absolute;
+    top: calc(33px / 2 - var(--close-size) / 2);
+    right: 6px;
+    width: var(--close-size);
+    height: var(--close-size);
+}
+.close:before,
+.close:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: calc(var(--close-size) / 2);
+    left: 0;
+    width: var(--close-width);
+    height: var(--close-height);
+    background-color: var(--close-color);
+    transition: all 0.2s;
+}
+.close:before {
+    transform: rotate(45deg);
+}
+.close:after {
+    transform: rotate(-45deg);
+}
+.close:hover:before,
+.close:active:before {
+    transform: rotate(35deg);
+}
+.close:hover:after,
+.close:active:after {
+    transform: rotate(-35deg);
 }

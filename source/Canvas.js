@@ -1,5 +1,6 @@
 import Table from "./Table.js";
 import Link  from "./Link.js";
+import Utils from "./Utils.js";
 
 
 
@@ -56,43 +57,35 @@ export default class Canvas {
         this.tables[table.name] = table;
         this.tableCount += 1;
 
-        this.addLinks(table);
-    }
-
-    /**
-     * Adds links to/from the given Table
-     * @param {Table} thisTable
-     * @returns {Void}
-     */
-    addLinks(thisTable) {
-        if (thisTable.joins) {
-            for (const [ thisKey, thisField ] of Object.entries(thisTable.joins)) {
+        // Adds links to/from the given Table
+        if (table.joins) {
+            for (const [ thisKey, thisField ] of Object.entries(table.joins)) {
                 if (!thisField.onTable && this.tables[thisField.table]) {
-                    this.createLink(thisTable, thisKey, thisField);
+                    this.createLink(table, thisKey, thisField);
                 }
             }
         }
         for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
-            if (tableName !== thisTable.name && otherTable.joins) {
+            if (tableName !== table.name && otherTable.joins) {
                 for (const [ otherKey, otherField ] of Object.entries(otherTable.joins)) {
-                    if (!otherField.onTable && otherField.table === thisTable.name) {
+                    if (!otherField.onTable && otherField.table === table.name) {
                         this.createLink(otherTable, otherKey, otherField);
                     }
                 }
             }
         }
 
-        if (thisTable.foreigns) {
-            for (const [ thisKey, thisField ] of Object.entries(thisTable.foreigns)) {
+        if (table.foreigns) {
+            for (const [ thisKey, thisField ] of Object.entries(table.foreigns)) {
                 if (this.tables[thisField.table]) {
-                    this.createLink(thisTable, thisKey, thisField);
+                    this.createLink(table, thisKey, thisField);
                 }
             }
         }
         for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
-            if (tableName !== thisTable.name && otherTable.foreigns) {
+            if (tableName !== table.name && otherTable.foreigns) {
                 for (const [ otherKey, otherField ] of Object.entries(otherTable.foreigns)) {
-                    if (otherField.table === thisTable.name) {
+                    if (otherField.table === table.name) {
                         this.createLink(otherTable, otherKey, otherField);
                     }
                 }
@@ -124,6 +117,27 @@ export default class Canvas {
     connect() {
         for (const link of this.links) {
             link.connect();
+        }
+    }
+
+
+
+    /**
+     * Removes a Table from the Canvas
+     * @param {Table} table
+     * @returns {Void}
+     */
+    removeTable(table) {
+        table.removeFromCanvas();
+        Utils.removeElement(table.tableElem);
+
+        // Remove the links to/from the table
+        for (let i = this.links.length - 1; i >= 0; i--) {
+            const link = this.links[i];
+            if (link.thisTable.name === table.name || link.otherTable.name === table.name) {
+                Utils.removeElement(link.element);
+                this.links.splice(i, 1);
+            }
         }
     }
 }

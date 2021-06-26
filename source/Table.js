@@ -109,7 +109,7 @@ export default class Table {
 
 
     /**
-     * Adds a Table Element to the Content
+     * Adds a Table Element to the Canvas
      * @returns {Void}
      */
     addToCanvas() {
@@ -118,6 +118,14 @@ export default class Table {
         if (!this.tableElem) {
             this.createTableElem();
         }
+    }
+
+    /**
+     * Removes a Table Element from the Canvas
+     * @returns {Void}
+     */
+    removeFromCanvas() {
+        this.listButton.style.display = "block";
     }
 
     /**
@@ -133,6 +141,13 @@ export default class Table {
         this.tableHeader.innerHTML      = this.name;
         this.tableHeader.dataset.action = "drag";
         this.tableHeader.dataset.table  = this.name;
+
+        const remove = document.createElement("a");
+        remove.href           = "#";
+        remove.className      = "close";
+        remove.dataset.action = "remove";
+        remove.dataset.table  = this.name;
+        this.tableHeader.appendChild(remove);
 
         this.tableList  = document.createElement("ol");
         this.tableElems = [];

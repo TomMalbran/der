@@ -12,10 +12,23 @@ function getTarget(event) {
     return element;
 }
 
+/**
+ * Removes the Element from the DOM
+ * @param {HTMLElement} element
+ * @returns {Void}
+ */
+function removeElement(element) {
+    const parent = element.parentNode;
+    if (parent) {
+        parent.removeChild(element);
+    }
+}
+
 
 
 
 // The public API
 export default {
     getTarget,
+    removeElement,
 }

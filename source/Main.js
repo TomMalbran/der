@@ -41,6 +41,11 @@ function initDomListeners() {
                 canvas.addTable(table);
             }
             break;
+        case "remove":
+            if (table) {
+                canvas.removeTable(table);
+            }
+            break;
         case "hidden":
             if (table) {
                 table.toggleFields();
