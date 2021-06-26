@@ -32,7 +32,31 @@ export default class Table {
         return this.data.table;
     }
 
+    /**
+     * Returns the Table Joins
+     * @returns {Object}
+     */
+    get joins() {
+        return this.data.joins;
+    }
 
+    /**
+     * Returns the Table Foreigns
+     * @returns {Object}
+     */
+    get foreigns() {
+        return this.data.foreigns;
+    }
+
+    /**
+     * Returns the Field Position
+     * @param {String} field
+     * @returns {Number}
+     */
+    getFieldIndex(field) {
+        const index = this.fields.findIndex((key) => key === field);
+        return (index > this.maxFields && !this.showAll) ? this.maxFields : index;
+    }
 
 
 

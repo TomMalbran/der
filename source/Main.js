@@ -44,6 +44,7 @@ function initDomListeners() {
         case "hidden":
             if (table) {
                 table.toggleFields();
+                canvas.connect();
                 break;
             }
         }
@@ -64,12 +65,14 @@ function initDomListeners() {
     document.addEventListener("mousemove", (e) => {
         if (dragTable) {
             dragTable.drag(e, canvas);
+            canvas.connect();
         }
         e.preventDefault();
     });
     document.addEventListener("mouseup", (e) => {
         if (dragTable) {
             dragTable.drop();
+            canvas.connect();
             dragTable = null;
         }
         e.preventDefault();

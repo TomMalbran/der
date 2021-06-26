@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Link  from "./Link.js";
 
 
 
@@ -54,5 +55,75 @@ export default class Canvas {
         });
         this.tables[table.name] = table;
         this.tableCount += 1;
+
+        this.addLinks(table);
+    }
+
+    /**
+     * Adds links to/from the given Table
+     * @param {Table} thisTable
+     * @returns {Void}
+     */
+    addLinks(thisTable) {
+        if (thisTable.joins) {
+            for (const [ thisKey, thisField ] of Object.entries(thisTable.joins)) {
+                if (!thisField.onTable && this.tables[thisField.table]) {
+                    this.createLink(thisTable, thisKey, thisField);
+                }
+            }
+        }
+        for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
+            if (tableName !== thisTable.name && otherTable.joins) {
+                for (const [ otherKey, otherField ] of Object.entries(otherTable.joins)) {
+                    if (!otherField.onTable && otherField.table === thisTable.name) {
+                        this.createLink(otherTable, otherKey, otherField);
+                    }
+                }
+            }
+        }
+
+        if (thisTable.foreigns) {
+            for (const [ thisKey, thisField ] of Object.entries(thisTable.foreigns)) {
+                if (this.tables[thisField.table]) {
+                    this.createLink(thisTable, thisKey, thisField);
+                }
+            }
+        }
+        for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
+            if (tableName !== thisTable.name && otherTable.foreigns) {
+                for (const [ otherKey, otherField ] of Object.entries(otherTable.foreigns)) {
+                    if (otherField.table === thisTable.name) {
+                        this.createLink(otherTable, otherKey, otherField);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a Link
+     * @param {Table}  table
+     * @param {String} key
+     * @param {Object} field
+     * @returns {Void}
+     */
+    createLink(table, key, field) {
+        const otherTable = this.tables[field.table];
+        const thisKey    = field.rightKey || key;
+        const otherKey   = field.leftKey  || key;
+        const link       = new Link(table, thisKey, otherTable, otherKey);
+
+        this.links.push(link);
+        this.canvas.appendChild(link.element);
+    }
+
+    /**
+     * Re-connects the Links
+     * @returns {Void}
+     */
+    connect() {
+        for (const link of this.links) {
+            link.connect();
+        }
     }
 }
