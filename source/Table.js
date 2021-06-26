@@ -12,14 +12,15 @@ export default class Table {
      * @param {Object} data
      */
     constructor(data) {
-        this.data        = data;
-        this.totalFields = Object.keys(data.fields).length;
+        this.data      = data;
+        this.fields    = [];
 
-        this.top         = 10;
-        this.left        = 10;
-        this.maxFields   = 15;
-        this.showAll     = false;
+        this.top       = 10;
+        this.left      = 10;
+        this.maxFields = 15;
+        this.showAll   = false;
 
+        this.setFields();
         this.createListElem();
     }
 
@@ -32,6 +33,36 @@ export default class Table {
     }
 
 
+
+
+
+    /**
+     * Sets the Fields
+     * @returns {Void}
+     */
+    setFields() {
+        for (const field of Object.keys(this.data.fields)) {
+            this.fields.push(field);
+        }
+        if (this.data.hasPositions) {
+            this.fields.push("position");
+        }
+        if (this.data.canCreate && this.data.hasTimestamps) {
+            this.fields.push("createdTime");
+        }
+        if (this.data.canCreate && this.data.hasUsers) {
+            this.fields.push("createdUser");
+        }
+        if (this.data.canEdit && this.data.hasTimestamps) {
+            this.fields.push("modifiedTime");
+        }
+        if (this.data.canEdit && this.data.hasUsers) {
+            this.fields.push("modifiedUser");
+        }
+        if (this.data.canDelete) {
+            this.fields.push("isDeleted");
+        }
+    }
 
     /**
      * Creates the List element
@@ -81,30 +112,12 @@ export default class Table {
 
         this.tableList  = document.createElement("ol");
         this.tableElems = [];
-        for (const field of Object.keys(this.data.fields)) {
+        for (const field of this.fields) {
             this.addFieldElem(field);
         }
-        if (this.data.hasPositions) {
-            this.addFieldElem("position");
-        }
-        if (this.data.canCreate && this.data.hasTimestamps) {
-            this.addFieldElem("createdTime");
-        }
-        if (this.data.canCreate && this.data.hasUsers) {
-            this.addFieldElem("createdUser");
-        }
-        if (this.data.canEdit && this.data.hasTimestamps) {
-            this.addFieldElem("modifiedTime");
-        }
-        if (this.data.canEdit && this.data.hasUsers) {
-            this.addFieldElem("modifiedUser");
-        }
-        if (this.data.canDelete) {
-            this.addFieldElem("isDeleted");
-        }
 
-        if (this.totalFields > this.maxFields) {
-            this.hiddenFields = this.totalFields - this.maxFields;
+        if (this.fields.length > this.maxFields) {
+            this.hiddenFields = this.fields.length - this.maxFields;
 
             this.tableHidden = document.createElement("li");
             this.tableHidden.className      = "schema-hidden";
