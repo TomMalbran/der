@@ -33,19 +33,26 @@ export default class Table {
     }
 
     /**
-     * Returns the Table Joins
-     * @returns {Object}
+     * Returns true if the Table has Joins or Foreigns
+     * @returns {Boolean}
      */
-    get joins() {
-        return this.data.joins;
+     get hasLinks() {
+        return this.data.joins || this.data.foreigns;
     }
 
     /**
-     * Returns the Table Foreigns
+     * Returns the Table Joins and Foreigns
      * @returns {Object}
      */
-    get foreigns() {
-        return this.data.foreigns;
+    get links() {
+        let result = [];
+        if (this.data.joins) {
+            result = this.data.joins;
+        }
+        if (this.data.foreigns) {
+            result = { ...result, ...this.data.foreigns };
+        }
+        return result;
     }
 
     /**

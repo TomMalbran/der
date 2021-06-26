@@ -58,36 +58,16 @@ export default class Canvas {
         this.tableCount += 1;
 
         // Adds links to/from the given Table
-        if (table.joins) {
-            for (const [ thisKey, thisField ] of Object.entries(table.joins)) {
-                if (!thisField.onTable && this.tables[thisField.table]) {
-                    this.createLink(table, thisKey, thisField);
-                }
+        for (const otherTable of Object.values(this.tables)) {
+            if (!otherTable.hasLinks) {
+                continue;
             }
-        }
-        for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
-            if (tableName !== table.name && otherTable.joins) {
-                for (const [ otherKey, otherField ] of Object.entries(otherTable.joins)) {
-                    if (!otherField.onTable && otherField.table === table.name) {
-                        this.createLink(otherTable, otherKey, otherField);
-                    }
+            for (const [ key, field ] of Object.entries(otherTable.links)) {
+                if (field.onTable) {
+                    continue;
                 }
-            }
-        }
-
-        if (table.foreigns) {
-            for (const [ thisKey, thisField ] of Object.entries(table.foreigns)) {
-                if (this.tables[thisField.table]) {
-                    this.createLink(table, thisKey, thisField);
-                }
-            }
-        }
-        for (const [ tableName, otherTable ] of Object.entries(this.tables)) {
-            if (tableName !== table.name && otherTable.foreigns) {
-                for (const [ otherKey, otherField ] of Object.entries(otherTable.foreigns)) {
-                    if (otherField.table === table.name) {
-                        this.createLink(otherTable, otherKey, otherField);
-                    }
+                if ((otherTable.name === table.name && this.tables[field.table]) || field.table === table.name) {
+                    this.createLink(otherTable, key, field);
                 }
             }
         }
