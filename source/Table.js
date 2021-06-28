@@ -106,7 +106,8 @@ export default class Table {
 
         this.listText.innerHTML        = this.data.table;
         this.listButton.innerHTML      = "Add";
-        this.listButton.dataset.action = "add";
+        this.listButton.className      = "btn";
+        this.listButton.dataset.action = "add-table";
         this.listButton.dataset.table  = this.data.table;
 
         this.listElem.appendChild(this.listText);
@@ -152,7 +153,7 @@ export default class Table {
         const remove = document.createElement("a");
         remove.href           = "#";
         remove.className      = "close";
-        remove.dataset.action = "remove";
+        remove.dataset.action = "remove-table";
         remove.dataset.table  = this.name;
         this.tableHeader.appendChild(remove);
 
@@ -168,7 +169,7 @@ export default class Table {
             this.tableHidden = document.createElement("li");
             this.tableHidden.className      = "schema-hidden";
             this.tableHidden.innerHTML      = `+${this.hiddenFields} hidden fields`;
-            this.tableHidden.dataset.action = "hidden";
+            this.tableHidden.dataset.action = "toggle-fields";
             this.tableHidden.dataset.table  = this.name;
 
             this.tableList.appendChild(this.tableHidden);

@@ -10,7 +10,7 @@
         <aside>
             <header>
                 <h1>DER</h1>
-                <button class="open" data-action="open">Open</button>
+                <button class="btn btn-fill open" data-action="open-select">Select</button>
             </header>
             <section class="schema-list">
                 <ol></ol>
@@ -19,5 +19,27 @@
         <main>
             <section class="canvas"></section>
         </main>
+
+        <div class="select-dialog backdrop">
+            <dialog open>
+                <h2>Select a Schema</h2>
+                <p>Use the button bellow to add a new Schema.</p>
+                <button class="btn" data-action="open-schema">Add Schema</button>
+                <a href="#" class="close" data-action="close-select"></a>
+            </dialog>
+        </div>
+        <div class="schema-dialog backdrop">
+            <dialog open>
+                <h2>Add a Schema</h2>
+                <p>Name the Schema a select the json file.</p>
+                <p><input type="text" name="name" placeholder="Name" /></p>
+                <p class="input-file">
+                    <span></span>
+                    <button class="btn" data-action="schema-file">Upload File</button>
+                </p>
+                <button class="btn btn-fill" data-action="import-schema">Add Schema</button>
+                <a href="#" class="close" data-action="close-schema"></a>
+            </dialog>
+        </div>
     </body>
 </html>

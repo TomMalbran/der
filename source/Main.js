@@ -1,11 +1,13 @@
-import Canvas from "./Canvas.js";
-import Schema from "./Schema.js";
-import Table  from "./Table.js";
-import Utils  from "./Utils.js";
+import Selection from "./Selection.js";
+import Canvas    from "./Canvas.js";
+import Schema    from "./Schema.js";
+import Table     from "./Table.js";
+import Utils     from "./Utils.js";
 
 // Variables
-let canvas = null;
-let schema = null;
+let selection = null;
+let canvas    = null;
+let schema    = null;
 
 
 
@@ -14,7 +16,8 @@ let schema = null;
  * @returns {Void}
  */
 function main() {
-    canvas = new Canvas();
+    selection = new Selection();
+    canvas    = new Canvas();
 
     const data = localStorage.getItem("schema");
     if (data) {
@@ -31,27 +34,52 @@ function main() {
 function initDomListeners() {
     document.addEventListener("click", (e) => {
         const target = Utils.getTarget(e);
-        const table  = schema.getTable(target);
         switch (target.dataset.action) {
-        case "open":
-            importSchema();
+        case "open-select":
+            selection.open();
             break;
-        case "add":
-            if (table) {
-                canvas.addTable(table);
-            }
+        case "close-select":
+            selection.close();
             break;
-        case "remove":
-            if (table) {
-                canvas.removeTable(table);
-            }
+        case "open-schema":
+            selection.openSchema();
             break;
-        case "hidden":
+        case "close-schema":
+            selection.closeSchema();
+            break;
+        case "schema-file":
+            selection.selectFile(target);
+            break;
+        case "import-schema":
+            selection.importSchema((text) => {
+                localStorage.setItem("schema", text);
+                schema = new Schema(JSON.parse(text));
+            });
+            break;
+        default:
+        }
+
+        if (schema) {
+            const table = schema.getTable(target);
             if (table) {
-                table.toggleFields();
-                canvas.connect();
-                break;
+                switch (target.dataset.action) {
+                case "add-table":
+                    canvas.addTable(table);
+                    break;
+                case "remove-table":
+                    canvas.removeTable(table);
+                    break;
+                case "toggle-fields":
+                    table.toggleFields();
+                    canvas.connect();
+                    break;
+                default:
+                }
             }
+        }
+
+        if (target.dataset.action) {
+            e.preventDefault();
         }
     });
 
@@ -64,46 +92,26 @@ function initDomListeners() {
             if (dragTable) {
                 dragTable.pick(e, canvas);
             }
+            e.preventDefault();
         }
-        e.preventDefault();
     });
     document.addEventListener("mousemove", (e) => {
         if (dragTable) {
             dragTable.drag(e, canvas);
             canvas.connect();
+            e.preventDefault();
         }
-        e.preventDefault();
     });
     document.addEventListener("mouseup", (e) => {
         if (dragTable) {
             dragTable.drop();
             canvas.connect();
             dragTable = null;
+            e.preventDefault();
         }
-        e.preventDefault();
     });
 }
 
-/**
- * Imports a Schema
- * @returns {Void}
- */
-function importSchema() {
-    const input    = document.createElement("input");
-    input.type     = "file";
-    input.accept   = ".json";
-    input.onchange = () => {
-        const file   = input.files[0];
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = () => {
-            const text = String(reader.result);
-            localStorage.setItem("schema", text);
-            schema = new Schema(JSON.parse(text));
-        };
-    };
-    input.click();
-}
 
 
 
