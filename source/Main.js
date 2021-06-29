@@ -1,4 +1,5 @@
 import Selection from "./Selection.js";
+import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
 import Schema    from "./Schema.js";
 import Table     from "./Table.js";
@@ -6,6 +7,7 @@ import Utils     from "./Utils.js";
 
 // Variables
 let selection = null;
+let storage   = null;
 let canvas    = null;
 let schema    = null;
 
@@ -17,11 +19,13 @@ let schema    = null;
  */
 function main() {
     selection = new Selection();
+    storage   = new Storage();
     canvas    = new Canvas();
 
-    const data = localStorage.getItem("schema");
-    if (data) {
-        schema = new Schema(JSON.parse(data));
+    if (!storage.hasSchema) {
+        selection.open(storage.getSchemas());
+    } else {
+        schema = new Schema(storage.getCurrentSchema());
     }
 
     initDomListeners();
@@ -36,7 +40,7 @@ function initDomListeners() {
         const target = Utils.getTarget(e);
         switch (target.dataset.action) {
         case "open-select":
-            selection.open();
+            selection.open(storage.getSchemas());
             break;
         case "close-select":
             selection.close();
@@ -48,12 +52,13 @@ function initDomListeners() {
             selection.closeSchema();
             break;
         case "schema-file":
-            selection.selectFile(target);
+            selection.selectFile();
             break;
         case "import-schema":
-            selection.importSchema((text) => {
-                localStorage.setItem("schema", text);
-                schema = new Schema(JSON.parse(text));
+            selection.importSchema((name, data) => {
+                storage.saveSchema(name, data);
+                selection.open(storage.getSchemas());
+                schema = new Schema(data);
             });
             break;
         default:

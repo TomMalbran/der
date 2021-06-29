@@ -9,17 +9,44 @@ export default class Selection {
     constructor() {
         /** @type {HTMLElement} */
         this.selectDialog = document.querySelector(".select-dialog");
+        /** @type {HTMLElement} */
+        this.selectEmpty  = document.querySelector(".select-empty");
+        /** @type {HTMLElement} */
+        this.selectList   = document.querySelector(".select-list");
 
         /** @type {HTMLElement} */
         this.schemaDialog = document.querySelector(".schema-dialog");
+        /** @type {HTMLInputElement} */
+        this.nameField    = document.querySelector(".schema-name");
+        /** @type {HTMLInputElement} */
+        this.fileField    = document.querySelector(".schema-file");
+
+        /** @type {HTMLElement} */
+        this.nameError    = document.querySelector(".schema-name-error");
+        /** @type {HTMLElement} */
+        this.fileError    = document.querySelector(".schema-file-error");
+        /** @type {HTMLElement} */
+        this.jsonError    = document.querySelector(".schema-json-error");
     }
 
     /**
      * Opens the Select Dialog
+     * @param {Object[]} schemas
      * @returns {Void}
      */
-    open() {
+    open(schemas) {
         this.selectDialog.style.display = "block";
+        this.selectEmpty.style.display  = schemas.length ? "none" : "block";
+
+        this.selectList.innerHTML = "";
+        for (const schema of schemas) {
+            const li = document.createElement("li");
+            li.innerHTML = schema.name;
+            if (schema.isSelected) {
+                li.className = "selected";
+            }
+            this.selectList.appendChild(li);
+        }
     }
 
     /**
@@ -52,14 +79,13 @@ export default class Selection {
      * Selects a File in the Add Dialog
      * @returns {Void}
      */
-    selectFile(element) {
+    selectFile() {
         const input    = document.createElement("input");
         input.type     = "file";
         input.accept   = ".json";
         input.onchange = () => {
-            this.file  = input.files[0];
-            const span = element.parentNode.querySelector("span");
-            span.innerHTML = this.file.name;
+            this.file = input.files[0];
+            this.fileField.innerHTML = this.file.name;
         };
         input.click();
     }
@@ -70,11 +96,43 @@ export default class Selection {
      * @returns {Void}
      */
     importSchema(onDone) {
+        let   hasError = false;
+        const name     = this.nameField.value;
+
+        this.fileError.style.display = "none";
+        this.nameError.style.display = "none";
+        this.jsonError.style.display = "none";
+
+        if (!name) {
+            hasError = true;
+            this.nameError.style.display = "block";
+        }
+        if (!this.file) {
+            hasError = true;
+            this.fileError.style.display = "block";
+        }
+        if (hasError) {
+            return;
+        }
+
         const reader = new FileReader();
         reader.readAsText(this.file);
         reader.onload = () => {
-            onDone(String(reader.result));
+            const text = String(reader.result);
+            try {
+                const json = JSON.parse(text);
+                onDone(name, json);
+            } catch {
+                hasError = true;
+                this.jsonError.style.display = "block";
+            }
+
+            if (!hasError) {
+                this.file                = null;
+                this.nameField.value     = "";
+                this.fileField.innerHTML = "";
+                this.closeSchema();
+            }
         };
-        this.closeSchema();
     }
 }
