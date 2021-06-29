@@ -297,6 +297,9 @@ dialog {
 }
 dialog h2 {
     margin-top: 0;
+    color: var(--main-color);
+    font-family: var(--title-font);
+    font-size: 28px;
 }
 dialog .close {
     --close-color: var(--main-color);
@@ -330,10 +333,12 @@ dialog .close {
 }
 
 .select-list li::before {
-    content: counter(counter) "-";
-    font-weight: bold;
+    content: counter(counter) ".";
     margin-right: 8px;
     color: var(--main-color);
+    font-family: var(--title-font);
+    font-weight: bold;
+    font-size: 18px;
 }
 .select-list .selected {
     background-color: rgb(238, 238, 238);
