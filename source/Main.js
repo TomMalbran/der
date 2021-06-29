@@ -11,6 +11,9 @@ let storage   = null;
 let canvas    = null;
 let schema    = null;
 
+/** @type {Table} */
+let dragTable = null;
+
 
 
 /**
@@ -27,8 +30,6 @@ function main() {
     } else {
         schema = new Schema(storage.getCurrentSchema());
     }
-
-    initDomListeners();
 }
 
 /**
@@ -47,94 +48,102 @@ function selectSchema(schemaID) {
     }
 }
 
+
+
 /**
- * Initializes the Event Handlers
- * @returns {Void}
+ * The Click Event Handler
  */
-function initDomListeners() {
-    document.addEventListener("click", (e) => {
-        const target = Utils.getTarget(e);
-        switch (target.dataset.action) {
-        case "open-select":
+document.addEventListener("click", (e) => {
+    const target = Utils.getTarget(e);
+    switch (target.dataset.action) {
+    case "open-select":
+        selection.open(storage.getSchemas());
+        break;
+    case "close-select":
+        selection.close();
+        break;
+    case "select-schema":
+        selectSchema(Number(target.dataset.schemaID));
+        break;
+
+    case "open-schema":
+        selection.openSchema();
+        break;
+    case "close-schema":
+        selection.closeSchema();
+        break;
+    case "schema-file":
+        selection.selectFile();
+        break;
+    case "import-schema":
+        selection.importSchema((name, data) => {
+            storage.saveSchema(name, data);
             selection.open(storage.getSchemas());
-            break;
-        case "close-select":
-            selection.close();
-            break;
-        case "select-schema":
-            selectSchema(Number(target.dataset.schemaID));
-            break;
+        });
+        break;
+    default:
+    }
 
-        case "open-schema":
-            selection.openSchema();
-            break;
-        case "close-schema":
-            selection.closeSchema();
-            break;
-        case "schema-file":
-            selection.selectFile();
-            break;
-        case "import-schema":
-            selection.importSchema((name, data) => {
-                storage.saveSchema(name, data);
-                selection.open(storage.getSchemas());
-            });
-            break;
-        default:
-        }
-
-        if (schema) {
-            const table = schema.getTable(target);
-            if (table) {
-                switch (target.dataset.action) {
-                case "add-table":
-                    canvas.addTable(table);
-                    break;
-                case "remove-table":
-                    canvas.removeTable(table);
-                    break;
-                case "toggle-fields":
-                    table.toggleFields();
-                    canvas.connect();
-                    break;
-                default:
-                }
+    if (schema) {
+        const table = schema.getTable(target);
+        if (table) {
+            switch (target.dataset.action) {
+            case "add-table":
+                canvas.addTable(table);
+                break;
+            case "remove-table":
+                canvas.removeTable(table);
+                break;
+            case "toggle-fields":
+                table.toggleFields();
+                canvas.connect();
+                break;
+            default:
             }
         }
+    }
 
-        if (target.dataset.action) {
-            e.preventDefault();
-        }
-    });
+    if (target.dataset.action) {
+        e.preventDefault();
+    }
+});
 
-    /** @type {Table} */
-    let dragTable = null;
-    document.body.addEventListener("mousedown", (e) => {
-        const target = Utils.getTarget(e);
-        if (e.button === 0 && !dragTable && target.dataset.action === "drag") {
-            dragTable = schema.getTable(target);
-            if (dragTable) {
-                dragTable.pick(e, canvas);
-            }
-            e.preventDefault();
-        }
-    });
-    document.addEventListener("mousemove", (e) => {
+/**
+ * The Pick Event Handler
+ */
+document.body.addEventListener("mousedown", (e) => {
+    const target = Utils.getTarget(e);
+    if (e.button === 0 && !dragTable && target.dataset.action === "drag") {
+        dragTable = schema.getTable(target);
         if (dragTable) {
-            dragTable.drag(e, canvas);
-            canvas.connect();
-            e.preventDefault();
+            dragTable.pick(e, canvas);
         }
-    });
-    document.addEventListener("mouseup", (e) => {
-        if (dragTable) {
-            dragTable.drop();
-            canvas.connect();
-            dragTable = null;
-            e.preventDefault();
-        }
-    });
-}
+        e.preventDefault();
+    }
+});
+
+/**
+ * The Drag Event Handler
+ */
+document.addEventListener("mousemove", (e) => {
+    if (dragTable) {
+        dragTable.drag(e, canvas);
+        canvas.connect();
+        e.preventDefault();
+    }
+});
+
+/**
+ * The Drop Event Handler
+ */
+document.addEventListener("mouseup", (e) => {
+    if (dragTable) {
+        dragTable.drop();
+        canvas.connect();
+        dragTable = null;
+        e.preventDefault();
+    }
+});
 
 
 
