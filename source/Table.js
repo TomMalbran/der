@@ -72,6 +72,10 @@ export default class Table {
      * @returns {Void}
      */
     setFields() {
+        if (!this.data.fields) {
+            return;
+        }
+
         for (const field of Object.keys(this.data.fields)) {
             this.fields.push(field);
         }

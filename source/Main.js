@@ -32,6 +32,22 @@ function main() {
 }
 
 /**
+ * Selects a new Schema
+ * @param {Number} schemaID
+ * @returns {Void}
+ */
+function selectSchema(schemaID) {
+    const data = storage.getSchema(schemaID);
+    if (data) {
+        selection.close();
+        canvas.destroy();
+        schema.destroy();
+        storage.selectSchema(schemaID);
+        schema = new Schema(data);
+    }
+}
+
+/**
  * Initializes the Event Handlers
  * @returns {Void}
  */
@@ -45,6 +61,10 @@ function initDomListeners() {
         case "close-select":
             selection.close();
             break;
+        case "select-schema":
+            selectSchema(Number(target.dataset.schemaID));
+            break;
+
         case "open-schema":
             selection.openSchema();
             break;
@@ -58,7 +78,6 @@ function initDomListeners() {
             selection.importSchema((name, data) => {
                 storage.saveSchema(name, data);
                 selection.open(storage.getSchemas());
-                schema = new Schema(data);
             });
             break;
         default:

@@ -43,7 +43,30 @@ export default class Storage {
         return JSON.parse(schema);
     }
 
+    /**
+     * Returns the current Schema
+     * @param {Number} id
+     * @returns {Object}
+     */
+    getSchema(id) {
+        const schema = localStorage.getItem(`${id}-schema`);
+        if (schema) {
+            return JSON.parse(schema);
+        }
+        return null;
+    }
 
+
+
+    /**
+     * Selects a Schema
+     * @param {Number} id
+     * @returns {Void}
+     */
+    selectSchema(id) {
+        this.currentID = id;
+        localStorage.setItem("currentID", String(this.currentID));
+    }
 
     /**
      * Saves the Schema
@@ -55,10 +78,7 @@ export default class Storage {
         localStorage.setItem(`${this.nextID}-name`,   name);
         localStorage.setItem(`${this.nextID}-schema`, JSON.stringify(schema));
 
-        this.currentID = this.nextID;
-        this.nextID   += 1;
-
-        localStorage.setItem("currentID", String(this.currentID));
-        localStorage.setItem("nextID",    String(this.nextID));
+        this.nextID += 1;
+        localStorage.setItem("nextID", String(this.nextID));
     }
 }

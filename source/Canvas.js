@@ -13,19 +13,14 @@ export default class Canvas {
      * Canvas constructor
      */
     constructor() {
-        this.tables      = {};
         this.tableCount  = 0;
+        this.tables      = {};
         this.links       = [];
 
         this.container   = document.querySelector("main");
         this.canvas      = document.querySelector(".canvas");
-
         this.bounds      = this.container.getBoundingClientRect();
-        const canvBounds = this.canvas.getBoundingClientRect();
-        const top        = (canvBounds.height - this.bounds.height) / 2;
-        const left       = (canvBounds.width  - this.bounds.width)  / 2;
-
-        this.container.scrollTo(left, top);
+        this.center();
     }
 
     /**
@@ -37,6 +32,36 @@ export default class Canvas {
             top  : this.container.scrollTop,
             left : this.container.scrollLeft,
         };
+    }
+
+
+
+    /**
+     * Destroys the Canvas
+     * @returns {Void}
+     */
+    destroy() {
+        for (const table of Object.values(this.tables)) {
+            Utils.removeElement(table.tableElem);
+        }
+        for (const link of this.links) {
+            Utils.removeElement(link.element);
+        }
+        this.tableCount  = 0;
+        this.tables      = {};
+        this.links       = [];
+        this.center();
+    }
+
+    /**
+     * Centers the Canvas
+     * @returns {Void}
+     */
+    center() {
+        const bounds = this.canvas.getBoundingClientRect();
+        const top    = (bounds.height - this.bounds.height) / 2;
+        const left   = (bounds.width  - this.bounds.width)  / 2;
+        this.container.scrollTo(left, top);
     }
 
 

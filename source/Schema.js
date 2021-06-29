@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Utils from "./Utils.js";
 
 
 
@@ -17,11 +18,29 @@ export default class Schema {
         this.list   = document.querySelector(".schema-list ol");
 
         for (const elem of Object.values(data)) {
-            const table = new Table(elem);
-            this.tables[elem.table] = table;
-            this.list.appendChild(table.listElem);
+            if (elem.table) {
+                const table = new Table(elem);
+                this.tables[elem.table] = table;
+                this.list.appendChild(table.listElem);
+            }
         }
     }
+
+    /**
+     * Destroys the Schema
+     * @returns {Void}
+     */
+    destroy() {
+        for (const table of Object.values(this.tables)) {
+            if (table.listElem) {
+                Utils.removeElement(table.listElem);
+            }
+        }
+        this.tables = {};
+        this.data   = null;
+    }
+
+
 
     /**
      * Picks a Table

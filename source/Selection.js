@@ -41,7 +41,9 @@ export default class Selection {
         this.selectList.innerHTML = "";
         for (const schema of schemas) {
             const li = document.createElement("li");
-            li.innerHTML = schema.name;
+            li.innerHTML        = schema.name;
+            li.dataset.action   = "select-schema";
+            li.dataset.schemaID = schema.id;
             if (schema.isSelected) {
                 li.className = "selected";
             }
