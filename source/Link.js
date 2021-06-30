@@ -166,7 +166,7 @@ export default class Link {
      * @returns {Void}
      */
     connectLeftToLeft(leftTable, rightTable, top, height, startY, endY, toEnd) {
-        const left   = leftTable.left - DOWN_WIDTH - height * 0.2;
+        const left   = leftTable.left - DOWN_WIDTH;
         const width  = rightTable.left - left;
 
         const startX = leftTable.left - left - (!toEnd ? END_SPACING : START_SPACING);
@@ -174,11 +174,11 @@ export default class Link {
 
         const BX = - DOWN_WIDTH * 0.05 + startX;
         const BY = startY;
-        const CX = - DOWN_WIDTH * 0.66 + startX;
+        const CX = - DOWN_WIDTH + startX;
         const CY = startY;
-        const DX = - width * 0.33 + startX;
+        const DX = - DOWN_WIDTH + startX;
         const DY = endY;
-        const EX = - width * 0.05 + endX;
+        const EX = - DOWN_WIDTH * 0.05 + endX;
         const EY = endY;
 
         this.setBounds(left, top, width, height);
@@ -197,17 +197,17 @@ export default class Link {
      * @returns {Void}
      */
     connectRightToRight(leftTable, rightTable, top, height, startY, endY, toEnd) {
-        const left   = leftTable.right;
-        const width  = rightTable.right - left + DOWN_WIDTH + height * 0.2;
+        const left   = Math.min(leftTable.right, rightTable.right);
+        const width  = Math.abs(leftTable.right - rightTable.right) + DOWN_WIDTH;
 
-        const startX = !toEnd ? END_SPACING : START_SPACING;
+        const startX = leftTable.right - left + (!toEnd ? END_SPACING : START_SPACING);
         const endX   = rightTable.right - left + (toEnd ? END_SPACING : START_SPACING);
 
-        const BX = width * 0.05 + startX;
+        const BX = DOWN_WIDTH * 0.05 + startX;
         const BY = startY;
-        const CX = width * 0.33 + endX;
+        const CX = DOWN_WIDTH + endX;
         const CY = startY;
-        const DX = DOWN_WIDTH * 0.66 + endX;
+        const DX = DOWN_WIDTH + endX;
         const DY = endY;
         const EX = DOWN_WIDTH * 0.05 + endX;
         const EY = endY;
