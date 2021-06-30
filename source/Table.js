@@ -15,8 +15,8 @@ export default class Table {
         this.data      = data;
         this.fields    = [];
 
-        this.top       = 10;
-        this.left      = 10;
+        this.top       = 0;
+        this.left      = 0;
         this.maxFields = 15;
         this.showAll   = false;
 
@@ -66,6 +66,17 @@ export default class Table {
     }
 
 
+
+    /**
+     * Restores the Table
+     * @param {Object} data
+     * @returns {Void}
+     */
+    restore(data) {
+        this.top     = data.top;
+        this.left    = data.left;
+        this.showAll = data.showAll;
+    }
 
     /**
      * Sets the Fields
@@ -172,7 +183,7 @@ export default class Table {
 
             this.tableHidden = document.createElement("li");
             this.tableHidden.className      = "schema-hidden";
-            this.tableHidden.innerHTML      = `+${this.hiddenFields} hidden fields`;
+            this.tableHidden.innerHTML      = this.showAll ? "Hide fields" : `+${this.hiddenFields} hidden fields`;
             this.tableHidden.dataset.action = "toggle-fields";
             this.tableHidden.dataset.table  = this.name;
 
@@ -192,7 +203,7 @@ export default class Table {
         const li = document.createElement("li");
         li.innerHTML = field;
 
-        if (this.tableElems.length >= this.maxFields) {
+        if (!this.showAll && this.tableElems.length >= this.maxFields) {
             li.className = "schema-hide";
         }
         this.tableList.appendChild(li);

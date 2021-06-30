@@ -72,15 +72,19 @@ export default class Canvas {
      * @returns {Void}
      */
     addTable(table) {
+        this.tables[table.name] = table;
+        this.tableCount += 1;
+
+        // Place and set the Table
         table.addToCanvas();
         this.canvas.appendChild(table.tableElem);
         table.setBounds();
-        table.translate({
-            top  : this.container.scrollTop  + 10,
-            left : this.container.scrollLeft + 10,
-        });
-        this.tables[table.name] = table;
-        this.tableCount += 1;
+        if (!table.top && !table.left) {
+            table.translate({
+                top  : this.container.scrollTop  + 10,
+                left : this.container.scrollLeft + 10,
+            });
+        }
 
         // Adds links to/from the given Table
         for (const otherTable of Object.values(this.tables)) {

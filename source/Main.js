@@ -28,7 +28,23 @@ function main() {
     if (!storage.hasSchema) {
         selection.open(storage.getSchemas());
     } else {
-        schema = new Schema(storage.getCurrentSchema());
+        setSchema(storage.getCurrentSchema());
+    }
+}
+
+/**
+ * Creates the Schema and restores the Tables
+ * @param {Object} data
+ * @returns {Void}
+ */
+ function setSchema(data) {
+    schema = new Schema(data);
+    for (const table of Object.values(schema.tables)) {
+        const data = storage.getTable(table);
+        if (data) {
+            table.restore(data);
+            canvas.addTable(table);
+        }
     }
 }
 
@@ -44,7 +60,7 @@ function selectSchema(schemaID) {
         canvas.destroy();
         schema.destroy();
         storage.selectSchema(schemaID);
-        schema = new Schema(data);
+        setSchema(data);
     }
 }
 
@@ -90,12 +106,15 @@ document.addEventListener("click", (e) => {
             switch (target.dataset.action) {
             case "add-table":
                 canvas.addTable(table);
+                storage.setTable(table);
                 break;
             case "remove-table":
                 canvas.removeTable(table);
+                storage.removeTable(table);
                 break;
             case "toggle-fields":
                 table.toggleFields();
+                storage.setTable(table);
                 canvas.connect();
                 break;
             default:
@@ -139,6 +158,7 @@ document.addEventListener("mousemove", (e) => {
 document.addEventListener("mouseup", (e) => {
     if (dragTable) {
         dragTable.drop();
+        storage.setTable(dragTable);
         canvas.connect();
         dragTable = null;
         e.preventDefault();

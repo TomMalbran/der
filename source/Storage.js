@@ -1,3 +1,7 @@
+import Table from "./Table.js";
+
+
+
 /**
  * The Storage
  */
@@ -80,5 +84,49 @@ export default class Storage {
 
         this.nextID += 1;
         localStorage.setItem("nextID", String(this.nextID));
+    }
+
+
+
+    /**
+     * Returns the stored Table data, or null
+     * @param {Table} table
+     * @returns {(Object|null)}
+     */
+    getTable(table) {
+        const data = localStorage.getItem(this.getTableID(table));
+        return data ? JSON.parse(data) : null;
+    }
+
+    /**
+     * Adds/Edits a Table to the Storage
+     * @param {Table} table
+     * @returns {Void}
+     */
+    setTable(table) {
+        const data = {
+            top     : table.top,
+            left    : table.left,
+            showAll : table.showAll,
+        };
+        localStorage.setItem(this.getTableID(table), JSON.stringify(data));
+    }
+
+    /**
+     * Removes a Table from the Storage
+     * @param {Table} table
+     * @returns {Void}
+     */
+    removeTable(table) {
+        localStorage.removeItem(this.getTableID(table));
+    }
+
+    /**
+     * Returns the id used for the Table
+     * @param {Table} table
+     * @returns {String}
+     */
+    getTableID(table) {
+        return `${this.currentID}-table-${table.name}`;
     }
 }
