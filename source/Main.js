@@ -28,17 +28,18 @@ function main() {
     if (!storage.hasSchema) {
         selection.open(storage.getSchemas());
     } else {
-        setSchema(storage.getCurrentSchema());
+        setSchema(storage.currentID, storage.getCurrentSchema());
     }
 }
 
 /**
  * Creates the Schema and restores the Tables
+ * @param {Number} schemaID
  * @param {Object} data
  * @returns {Void}
  */
- function setSchema(data) {
-    schema = new Schema(data);
+function setSchema(schemaID, data) {
+    schema = new Schema(schemaID, data);
     for (const table of Object.values(schema.tables)) {
         const data = storage.getTable(table);
         if (data) {
@@ -55,13 +56,31 @@ function main() {
  */
 function selectSchema(schemaID) {
     const data = storage.getSchema(schemaID);
-    if (data) {
-        selection.close();
+    if (!data) {
+        return;
+    }
+    selection.close();
+    if (schema) {
         canvas.destroy();
         schema.destroy();
-        storage.selectSchema(schemaID);
-        setSchema(data);
     }
+    storage.selectSchema(schemaID);
+    setSchema(schemaID, data);
+}
+
+/**
+ * Selects a new Schema
+ * @param {Number} schemaID
+ * @returns {Void}
+ */
+function deleteSchema(schemaID) {
+    if (schema.schemaID === schemaID) {
+        canvas.destroy();
+        schema.destroy();
+    }
+    storage.deleteSchema(schemaID);
+    selection.closeDelete();
+    selection.open(storage.getSchemas());
 }
 
 
@@ -70,8 +89,11 @@ function selectSchema(schemaID) {
  * The Click Event Handler
  */
 document.addEventListener("click", (e) => {
-    const target = Utils.getTarget(e);
-    switch (target.dataset.action) {
+    const target   = Utils.getTarget(e);
+    const action   = target.dataset.action;
+    const schemaID = Number(target.dataset.schema);
+
+    switch (action) {
     case "open-select":
         selection.open(storage.getSchemas());
         break;
@@ -79,7 +101,7 @@ document.addEventListener("click", (e) => {
         selection.close();
         break;
     case "select-schema":
-        selectSchema(Number(target.dataset.schemaID));
+        selectSchema(schemaID);
         break;
 
     case "open-schema":
@@ -97,13 +119,23 @@ document.addEventListener("click", (e) => {
             selection.open(storage.getSchemas());
         });
         break;
+
+    case "open-delete":
+        selection.openDelete(schemaID);
+        break;
+    case "close-delete":
+        selection.closeDelete();
+        break;
+    case "delete-schema":
+        deleteSchema(selection.schemaID);
+        break;
     default:
     }
 
     if (schema) {
         const table = schema.getTable(target);
         if (table) {
-            switch (target.dataset.action) {
+            switch (action) {
             case "add-table":
                 canvas.addTable(table);
                 storage.setTable(table);
@@ -122,7 +154,7 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    if (target.dataset.action) {
+    if (action) {
         e.preventDefault();
     }
 });

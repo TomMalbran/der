@@ -25,7 +25,7 @@
                 <h2>Select a Schema</h2>
                 <p class="select-empty">Use the button bellow to add a new Schema.</p>
                 <ol class="select-list"></ol>
-                <button class="btn" data-action="open-schema">Add Schema</button>
+                <button class="btn btn-fill" data-action="open-schema">Add Schema</button>
                 <a href="#" class="close" data-action="close-select"></a>
             </dialog>
         </div>
@@ -48,6 +48,16 @@
                 </div>
                 <button class="btn btn-fill" data-action="import-schema">Add Schema</button>
                 <a href="#" class="close" data-action="close-schema"></a>
+            </dialog>
+        </div>
+
+        <div class="delete-dialog backdrop">
+            <dialog open>
+                <h2>Delete Schema</h2>
+                <p class="select-empty">Do you really want to delete the selected Schema?</p>
+                <button class="btn btn-fill" data-action="delete-schema">Delete Schema</button>
+                <button class="btn" data-action="close-delete">Cancel</button>
+                <a href="#" class="close" data-action="close-delete"></a>
             </dialog>
         </div>
     </body>

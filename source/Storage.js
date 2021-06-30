@@ -49,11 +49,11 @@ export default class Storage {
 
     /**
      * Returns the current Schema
-     * @param {Number} id
+     * @param {Number} schemaID
      * @returns {Object}
      */
-    getSchema(id) {
-        const schema = localStorage.getItem(`${id}-schema`);
+    getSchema(schemaID) {
+        const schema = localStorage.getItem(`${schemaID}-schema`);
         if (schema) {
             return JSON.parse(schema);
         }
@@ -64,11 +64,11 @@ export default class Storage {
 
     /**
      * Selects a Schema
-     * @param {Number} id
+     * @param {Number} schemaID
      * @returns {Void}
      */
-    selectSchema(id) {
-        this.currentID = id;
+    selectSchema(schemaID) {
+        this.currentID = schemaID;
         localStorage.setItem("currentID", String(this.currentID));
     }
 
@@ -84,6 +84,29 @@ export default class Storage {
 
         this.nextID += 1;
         localStorage.setItem("nextID", String(this.nextID));
+    }
+
+    /**
+     * Deletes a Schema
+     * @param {Number} schemaID
+     * @returns {Void}
+     */
+    deleteSchema(schemaID) {
+        const schema = this.getSchema(schemaID);
+        if (!schema) {
+            return;
+        }
+
+        localStorage.removeItem(`${schemaID}-name`);
+        localStorage.removeItem(`${schemaID}-schema`);
+        for (const elem of Object.values(schema)) {
+            if (elem.table) {
+                localStorage.removeItem(`${schemaID}-table-${elem.table}`);
+            }
+        }
+        if (this.currentID === schemaID) {
+            localStorage.setItem("currentID", "0");
+        }
     }
 
 

@@ -86,6 +86,10 @@ html, body, input {
     background-color: white;
 }
 
+.btn + .btn {
+    margin-left: 8px;
+}
+
 
 
 /**
@@ -321,6 +325,9 @@ dialog .close {
     border-top: 1px solid rgb(209, 209, 209);
 }
 .select-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     counter-increment: counter;
     padding: 8px 16px;
     border-bottom: 1px solid rgb(209, 209, 209);
@@ -332,7 +339,7 @@ dialog .close {
     background-color: rgb(232, 232, 232);
 }
 
-.select-list li::before {
+.select-list .select-name::before {
     content: counter(counter) ".";
     margin-right: 8px;
     color: var(--main-color);

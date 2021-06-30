@@ -7,6 +7,10 @@ export default class Selection {
      * Selection constructor
      */
     constructor() {
+        this.schemaID = 0;
+        this.file     = null;
+
+        // Selecion
         /** @type {HTMLElement} */
         this.selectDialog = document.querySelector(".select-dialog");
         /** @type {HTMLElement} */
@@ -14,6 +18,7 @@ export default class Selection {
         /** @type {HTMLElement} */
         this.selectList   = document.querySelector(".select-list");
 
+        // Add
         /** @type {HTMLElement} */
         this.schemaDialog = document.querySelector(".schema-dialog");
         /** @type {HTMLInputElement} */
@@ -27,6 +32,10 @@ export default class Selection {
         this.fileError    = document.querySelector(".schema-file-error");
         /** @type {HTMLElement} */
         this.jsonError    = document.querySelector(".schema-json-error");
+
+        // Delete
+        /** @type {HTMLElement} */
+        this.deleteDialog = document.querySelector(".delete-dialog");
     }
 
     /**
@@ -41,12 +50,24 @@ export default class Selection {
         this.selectList.innerHTML = "";
         for (const schema of schemas) {
             const li = document.createElement("li");
-            li.innerHTML        = schema.name;
-            li.dataset.action   = "select-schema";
-            li.dataset.schemaID = schema.id;
+            li.dataset.action = "select-schema";
+            li.dataset.schema = schema.id;
             if (schema.isSelected) {
                 li.className = "selected";
             }
+
+            const name = document.createElement("div");
+            name.innerHTML = schema.name;
+            name.className = "select-name";
+            li.appendChild(name);
+
+            const delBtn = document.createElement("button");
+            delBtn.innerHTML      = "Delete";
+            delBtn.className      = "btn";
+            delBtn.dataset.action = "open-delete";
+            delBtn.dataset.schema = schema.id;
+            li.appendChild(delBtn);
+
             this.selectList.appendChild(li);
         }
     }
@@ -136,5 +157,26 @@ export default class Selection {
                 this.closeSchema();
             }
         };
+    }
+
+
+
+    /**
+     * Opens the Delete Dialog
+     * @param {Number} schemaID
+     * @returns {Void}
+     */
+    openDelete(schemaID) {
+        this.schemaID = schemaID;
+        this.deleteDialog.style.display = "block";
+    }
+
+    /**
+     * Closes the Delete Dialog
+     * @returns {Void}
+     */
+    closeDelete() {
+        this.schemaID = 0;
+        this.deleteDialog.style.display = "none";
     }
 }

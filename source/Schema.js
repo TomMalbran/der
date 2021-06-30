@@ -10,12 +10,15 @@ export default class Schema {
 
     /**
      * The Schema constructor
+     * @param {Number} schemaID
      * @param {Object} data
      */
-    constructor(data) {
-        this.data   = data;
-        this.tables = {};
-        this.list   = document.querySelector(".schema-list ol");
+    constructor(schemaID, data) {
+        this.schemaID = schemaID;
+        this.data     = data;
+
+        this.tables   = {};
+        this.list     = document.querySelector(".schema-list ol");
 
         for (const elem of Object.values(data)) {
             if (elem.table) {
