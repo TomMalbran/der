@@ -50,7 +50,7 @@ function setSchema(schemaID, data) {
 }
 
 /**
- * Selects a new Schema
+ * Selects the given Schema
  * @param {Number} schemaID
  * @returns {Void}
  */
@@ -69,7 +69,7 @@ function selectSchema(schemaID) {
 }
 
 /**
- * Selects a new Schema
+ * Deletes the given Schema
  * @param {Number} schemaID
  * @returns {Void}
  */
@@ -78,7 +78,7 @@ function deleteSchema(schemaID) {
         canvas.destroy();
         schema.destroy();
     }
-    storage.deleteSchema(schemaID);
+    storage.removeSchema(schemaID);
     selection.closeDelete();
     selection.open(storage.getSchemas());
 }
@@ -115,7 +115,7 @@ document.addEventListener("click", (e) => {
         break;
     case "import-schema":
         selection.importSchema((name, data) => {
-            storage.saveSchema(name, data);
+            storage.setSchema(name, data);
             selection.open(storage.getSchemas());
         });
         break;

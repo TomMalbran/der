@@ -78,7 +78,7 @@ export default class Storage {
      * @param {Object} schema
      * @returns {Void}
      */
-    saveSchema(name, schema) {
+    setSchema(name, schema) {
         localStorage.setItem(`${this.nextID}-name`,   name);
         localStorage.setItem(`${this.nextID}-schema`, JSON.stringify(schema));
 
@@ -87,11 +87,11 @@ export default class Storage {
     }
 
     /**
-     * Deletes a Schema
+     * Removes a Schema
      * @param {Number} schemaID
      * @returns {Void}
      */
-    deleteSchema(schemaID) {
+    removeSchema(schemaID) {
         const schema = this.getSchema(schemaID);
         if (!schema) {
             return;
