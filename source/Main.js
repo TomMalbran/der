@@ -47,6 +47,7 @@ function setSchema(schemaID, data) {
             canvas.addTable(table);
         }
     }
+    schema.setInitialFilter(storage.getFilter());
 }
 
 /**
@@ -129,6 +130,11 @@ document.addEventListener("click", (e) => {
     case "delete-schema":
         deleteSchema(selection.schemaID);
         break;
+
+    case "clear-filter":
+        schema.clearFilter();
+        storage.removeFilter();
+        break;
     default:
     }
 
@@ -157,6 +163,14 @@ document.addEventListener("click", (e) => {
     if (action) {
         e.preventDefault();
     }
+});
+
+/**
+ * The Filter Event Handler
+ */
+document.querySelector(".schema-filter input").addEventListener("input", () => {
+    const value = schema.filterList();
+    storage.setFilter(value);
 });
 
 /**

@@ -99,6 +99,7 @@ export default class Storage {
 
         localStorage.removeItem(`${schemaID}-name`);
         localStorage.removeItem(`${schemaID}-schema`);
+        localStorage.removeItem(`${schemaID}-filter`);
         for (const elem of Object.values(schema)) {
             if (elem.table) {
                 localStorage.removeItem(`${schemaID}-table-${elem.table}`);
@@ -107,6 +108,33 @@ export default class Storage {
         if (this.currentID === schemaID) {
             localStorage.setItem("currentID", "0");
         }
+    }
+
+
+
+    /**
+     * Returns the stored filter, or empty
+     * @returns {String}
+     */
+    getFilter() {
+        return localStorage.getItem(`${this.currentID}-filter`) || "";
+    }
+
+    /**
+     * Saves the current filter
+     * @param {String} value
+     * @returns {Void}
+     */
+    setFilter(value) {
+        localStorage.setItem(`${this.currentID}-filter`, value);
+    }
+
+    /**
+     * Removes the current filter
+     * @returns {Void}
+     */
+    removeFilter() {
+        localStorage.removeItem(`${this.currentID}-filter`);
     }
 
 

@@ -129,6 +129,22 @@ export default class Table {
         this.listElem.appendChild(this.listButton);
     }
 
+    /**
+     * Shows the List element
+     * @returns {Void}
+     */
+    showInList() {
+        this.listElem.style.display = "flex";
+    }
+
+    /**
+     * Hides the List element
+     * @returns {Void}
+     */
+    hideInList() {
+        this.listElem.style.display = "none";
+    }
+
 
 
     /**

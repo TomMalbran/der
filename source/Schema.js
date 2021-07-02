@@ -16,11 +16,24 @@ export default class Schema {
     constructor(schemaID, data) {
         this.schemaID = schemaID;
         this.data     = data;
-
         this.tables   = {};
-        this.list     = document.querySelector(".schema-list ol");
 
-        for (const elem of Object.values(data)) {
+        /** @type {HTMLElement} */
+        this.list     = document.querySelector(".schema-list ol");
+        /** @type {HTMLInputElement} */
+        this.filter   = document.querySelector(".schema-filter input");
+        /** @type {HTMLElement} */
+        this.clear    = document.querySelector(".schema-filter .close");
+
+        this.createList();
+    }
+
+    /**
+     * Creates the Table List
+     * @returns {Void}
+     */
+    createList() {
+        for (const elem of Object.values(this.data)) {
             if (elem.table) {
                 const table = new Table(elem);
                 this.tables[elem.table] = table;
@@ -56,5 +69,50 @@ export default class Schema {
             return this.tables[table];
         }
         return null;
+    }
+
+
+
+    /**
+     * Filters the List
+     * @returns {String}
+     */
+    filterList() {
+        const value = String(this.filter.value).toLocaleLowerCase();
+        for (const table of Object.values(this.tables)) {
+            if (value && !table.name.includes(value)) {
+                table.hideInList();
+            } else {
+                table.showInList();
+            }
+        }
+        this.clear.style.display = value ? "block" : "none";
+        return value;
+    }
+
+    /**
+     * Sets the initial Filter
+     * @param {String} value
+     * @returns {Void}
+     */
+    setInitialFilter(value) {
+        if (value) {
+            this.clear.style.display = "block";
+            this.filter.value        = value;
+            this.filterList();
+        } else {
+            this.clear.style.display = "none";
+            this.filter.value        = "";
+        }
+    }
+
+    /**
+     * Clears the Filter
+     * @returns {Void}
+     */
+    clearFilter() {
+        this.clear.style.display = "none";
+        this.filter.value        = "";
+        this.filterList();
     }
 }

@@ -155,6 +155,55 @@ h1 {
     color: var(--main-color);
 }
 
+
+
+/**
+ * Filter Styles
+ */
+.schema-filter {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding: 0 12px 4px 12px;
+}
+.schema-filter input {
+    width: calc(100% - 30px);
+    min-width: 0;
+    border: none;
+}
+.schema-filter::before {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-top: 3px;
+    border: 3px solid var(--main-color);
+    border-radius: 50%;
+}
+.schema-filter::after {
+    content: "";
+    position: absolute;
+    top: 17px;
+    left: 28px;
+    width: 4px;
+    height: 12px;
+    background-color: var(--main-color);
+    border-radius: 2px;
+    transform: rotate(-45deg);
+}
+.schema-filter .close {
+    --close-size: 18px;
+    --close-width: 18px;
+    --close-height: 2px;
+    display: none;
+    margin-top: 5px;
+}
+
+
+
+/**
+ * Schema List Styles
+ */
 .schema-list {
     border-top: 1px solid var(--border-color);
     height: calc(100vh - var(--header-height));
@@ -266,6 +315,7 @@ main {
     --close-width: 12px;
     --close-height: 1px;
 
+    position: absolute;
     top: calc(33px / 2 - var(--close-size) / 2);
     right: 6px;
 }
@@ -311,6 +361,7 @@ dialog .close {
     --close-width: 20px;
     --close-height: 2px;
 
+    position: absolute;
     top: 12px;
     right: 12px;
 }
@@ -357,13 +408,12 @@ dialog .close {
  * Close
  */
 .close {
-    --close-color: white;
+    --close-color: var(--main-color);
     --close-size: 12px;
     --close-width: 12px;
     --close-height: 1px;
 
-    position: absolute;
-
+    position: relative;
     width: var(--close-size);
     height: var(--close-size);
 }
