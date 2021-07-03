@@ -16,6 +16,77 @@ export default class Storage {
     }
 
     /**
+     * Returns a stored String for the current Schema
+     * @param {String}  name
+     * @param {String=} defValue
+     * @returns {String}
+     */
+    getString(name, defValue = "") {
+        return localStorage.getItem(`${this.currentID}-${name}`) || defValue;
+    }
+
+    /**
+     * Saves a String to the current Schema
+     * @param {String} name
+     * @param {String} value
+     * @returns {Void}
+     */
+    setString(name, value) {
+        localStorage.setItem(`${this.currentID}-${name}`, value);
+    }
+
+    /**
+     * Returns a stored Number for the current Schema
+     * @param {String}  name
+     * @param {Number=} defValue
+     * @returns {Number}
+     */
+    getNumber(name, defValue = 0) {
+        return Number(localStorage.getItem(`${this.currentID}-${name}`)) || defValue;
+    }
+
+    /**
+     * Saves a Number to the current Schema
+     * @param {String} name
+     * @param {Number} value
+     * @returns {Void}
+     */
+    setNumber(name, value) {
+        localStorage.setItem(`${this.currentID}-${name}`, String(value));
+    }
+
+    /**
+     * Returns a stored Object for the current Schema
+     * @param {String} name
+     * @returns {?Object}
+     */
+    getData(name) {
+        const data = localStorage.getItem(`${this.currentID}-${name}`);
+        return data ? JSON.parse(data) : null;
+    }
+
+    /**
+     * Saves an Object to the current Schema
+     * @param {String} name
+     * @param {Object} value
+     * @returns {Void}
+     */
+    setData(name, value) {
+        localStorage.setItem(`${this.currentID}-${name}`, JSON.stringify(value));
+    }
+
+    /**
+     * Removes an Item from the current Schema
+     * @param {String} name
+     * @returns {Void}
+     */
+    removeItem(name) {
+        localStorage.removeItem(`${this.currentID}-${name}`);
+    }
+
+
+
+    /**
      * Returns true if there is at least one Schema
      * @returns {Boolean}
      */
@@ -43,8 +114,7 @@ export default class Storage {
      * @returns {Object}
      */
     getCurrentSchema() {
-        const schema = localStorage.getItem(`${this.currentID}-schema`);
-        return JSON.parse(schema);
+        return this.getData("schema");
     }
 
     /**
@@ -54,10 +124,7 @@ export default class Storage {
      */
     getSchema(schemaID) {
         const schema = localStorage.getItem(`${schemaID}-schema`);
-        if (schema) {
-            return JSON.parse(schema);
-        }
-        return null;
+        return schema ? JSON.parse(schema) : null;
     }
 
 
@@ -100,6 +167,8 @@ export default class Storage {
         localStorage.removeItem(`${schemaID}-name`);
         localStorage.removeItem(`${schemaID}-schema`);
         localStorage.removeItem(`${schemaID}-filter`);
+        localStorage.removeItem(`${schemaID}-zoom`);
+
         for (const elem of Object.values(schema)) {
             if (elem.table) {
                 localStorage.removeItem(`${schemaID}-table-${elem.table}`);
@@ -117,7 +186,7 @@ export default class Storage {
      * @returns {String}
      */
     getFilter() {
-        return localStorage.getItem(`${this.currentID}-filter`) || "";
+        return this.getString("filter");
     }
 
     /**
@@ -126,7 +195,7 @@ export default class Storage {
      * @returns {Void}
      */
     setFilter(value) {
-        localStorage.setItem(`${this.currentID}-filter`, value);
+        this.setString("filter", value);
     }
 
     /**
@@ -134,7 +203,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeFilter() {
-        localStorage.removeItem(`${this.currentID}-filter`);
+        this.removeItem("filter");
     }
 
 
@@ -144,7 +213,7 @@ export default class Storage {
      * @returns {Number}
      */
     getZoom() {
-        return Number(localStorage.getItem(`${this.currentID}-zoom`)) || 100;
+        return this.getNumber("zoom", 100);
     }
 
     /**
@@ -153,7 +222,7 @@ export default class Storage {
      * @returns {Void}
      */
     setZoom(value) {
-        localStorage.setItem(`${this.currentID}-zoom`, String(value));
+        this.setNumber("zoom", value);
     }
 
     /**
@@ -161,7 +230,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeZoom() {
-        localStorage.removeItem(`${this.currentID}-zoom`);
+        this.removeItem("zoom");
     }
 
 
@@ -172,8 +241,7 @@ export default class Storage {
      * @returns {(Object|null)}
      */
     getTable(table) {
-        const data = localStorage.getItem(this.getTableID(table));
-        return data ? JSON.parse(data) : null;
+        return this.getData(`table-${table.name}`);
     }
 
     /**
@@ -182,12 +250,11 @@ export default class Storage {
      * @returns {Void}
      */
     setTable(table) {
-        const data = {
+        this.setData(`table-${table.name}`, {
             top     : table.top,
             left    : table.left,
             showAll : table.showAll,
-        };
-        localStorage.setItem(this.getTableID(table), JSON.stringify(data));
+        });
     }
 
     /**
@@ -196,15 +263,6 @@ export default class Storage {
      * @returns {Void}
      */
     removeTable(table) {
-        localStorage.removeItem(this.getTableID(table));
-    }
-
-    /**
-     * Returns the id used for the Table
-     * @param {Table} table
-     * @returns {String}
-     */
-    getTableID(table) {
-        return `${this.currentID}-table-${table.name}`;
+        this.removeItem(`table-${table.name}`);
     }
 }
