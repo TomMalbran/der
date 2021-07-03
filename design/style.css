@@ -5,6 +5,7 @@
     --main-color: #061e2e;
     --border-color: rgb(239, 239, 239);
     --grid-color: rgb(242, 242, 242);
+    --box-shadow: 2px 2px 9px rgb(209, 209, 209);
 
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
     --title-font: Esteban, Georgia, serif;
@@ -13,6 +14,7 @@
     --header-height: 72px;
     --border-radius: 6px;
 
+    --z-zoom: 99;
     --z-dialog: 100;
 }
 
@@ -236,14 +238,14 @@ main {
     right: 0;
     bottom: 0;
     overflow: auto;
-}
-.canvas {
-    width: calc(4 * (100vw - var(--aside-width)));
-    height: 400vh;
     background-size: 10px 10px;
     background-image:
         linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+}
+.canvas {
+    width: calc(4 * (100vw - var(--aside-width)));
+    height: 400vh;
 }
 
 .canvas > svg {
@@ -265,7 +267,7 @@ main {
     left: 0;
     background-color: white;
     border-radius: var(--border-radius);
-    box-shadow: 2px 2px 9px rgb(209 209 209);
+    box-shadow: var(--box-shadow);
     overflow: hidden;
     z-index: 2;
 }
@@ -318,6 +320,56 @@ main {
     position: absolute;
     top: calc(33px / 2 - var(--close-size) / 2);
     right: 6px;
+}
+
+
+
+/**
+ * Zoom Styles
+ */
+.zoom {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: var(--z-zoom);
+}
+.zoom li {
+    width: 36px;
+    height: 32px;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: bold;
+    text-align: center;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.zoom li:hover {
+    background-color: rgb(242, 242, 242);
+}
+.zoom li:first-child {
+    border-bottom: none;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+}
+.zoom li:last-child {
+    border-top: none;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+.zoom-disabled.zoom-disabled {
+    color: rgb(200, 200, 200);
+    cursor: not-allowed;
+}
+.zoom-percent.zoom-percent {
+    height: auto;
+    font-size: 12px;
+    line-height: 2;
 }
 
 

@@ -16,11 +16,16 @@ export default class Canvas {
         this.tables     = {};
         this.links      = [];
 
-        this.container   = document.querySelector("main");
-        this.canvas      = document.querySelector(".canvas");
-        this.bounds      = this.container.getBoundingClientRect();
+        this.container  = document.querySelector("main");
+        this.bounds     = this.container.getBoundingClientRect();
 
+        /** @type {HTMLElement} */
+        this.canvas     = document.querySelector(".canvas");
 
+        this.zoom       = 100;
+        this.percent    = document.querySelector(".zoom-percent");
+        this.zoomInBtn  = document.querySelector(".zoom-in");
+        this.zoomOutBtn = document.querySelector(".zoom-out");
 
         /** @type {Table} */
         this.currTable  = null;
@@ -53,6 +58,65 @@ export default class Canvas {
         const top    = (bounds.height - this.bounds.height) / 2;
         const left   = (bounds.width  - this.bounds.width)  / 2;
         this.container.scrollTo(left, top);
+    }
+
+
+
+    /**
+     * Sets the initial Zoom
+     * @param {Number} value
+     * @returns {Void}
+     */
+    setInitialZoom(value) {
+        this.zoom = value;
+        this.setZoom();
+    }
+
+    /**
+     * Increases the Canvas Zoom
+     * @returns {Number}
+     */
+    zoomIn() {
+        if (this.zoom >= 150) {
+            return this.zoom;
+        }
+        this.zoom += 10;
+        this.setZoom();
+        return this.zoom;
+    }
+
+    /**
+     * Decreases the Canvas Zoom
+     * @returns {Number}
+     */
+    zoomOut() {
+        if (this.zoom <= 50) {
+            return this.zoom;
+        }
+        this.zoom -= 10;
+        this.setZoom();
+        return this.zoom;
+    }
+
+    /**
+     * Resets the Canvas Zoom
+     * @returns {Number}
+     */
+    resetZoom() {
+        this.zoom = 100;
+        this.setZoom();
+        return this.zoom;
+    }
+
+    /**
+     * Sets the Canvas Zoom
+     * @returns {Void}
+     */
+    setZoom() {
+        this.percent.innerHTML = `${this.zoom}%`;
+        this.canvas.style.transform = `scale(${this.zoom / 100})`;
+        this.zoomInBtn.classList.toggle("zoom-disabled", this.zoom === 150);
+        this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === 50);
     }
 
 

@@ -140,6 +140,33 @@ export default class Storage {
 
 
     /**
+     * Returns the stored zoom, or empty
+     * @returns {Number}
+     */
+    getZoom() {
+        return Number(localStorage.getItem(`${this.currentID}-zoom`)) || 100;
+    }
+
+    /**
+     * Saves the current zoom
+     * @param {Number} value
+     * @returns {Void}
+     */
+    setZoom(value) {
+        localStorage.setItem(`${this.currentID}-zoom`, String(value));
+    }
+
+    /**
+     * Removes the current zoom
+     * @returns {Void}
+     */
+    removeZoom() {
+        localStorage.removeItem(`${this.currentID}-zoom`);
+    }
+
+
+
+    /**
      * Returns the stored Table data, or null
      * @param {Table} table
      * @returns {(Object|null)}

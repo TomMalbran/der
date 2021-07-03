@@ -35,6 +35,8 @@ function main() {
  * @returns {Void}
  */
 function setSchema(schemaID, data) {
+    canvas.setInitialZoom(100);
+
     schema = new Schema(schemaID, data);
     for (const table of Object.values(schema.tables)) {
         const data = storage.getTable(table);
@@ -44,6 +46,8 @@ function setSchema(schemaID, data) {
         }
     }
     schema.setInitialFilter(storage.getFilter());
+
+    canvas.setInitialZoom(storage.getZoom());
 }
 
 /**
@@ -130,6 +134,18 @@ document.addEventListener("click", (e) => {
     case "clear-filter":
         schema.clearFilter();
         storage.removeFilter();
+        break;
+    case "zoom-in":
+        const zoomIn = canvas.zoomIn();
+        storage.setZoom(zoomIn);
+        break;
+    case "zoom-out":
+        const zoomOut = canvas.zoomOut();
+        storage.setZoom(zoomOut);
+        break;
+    case "reset-zoom":
+        canvas.resetZoom();
+        storage.removeZoom();
         break;
     default:
     }
