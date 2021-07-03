@@ -200,6 +200,17 @@ export default class Canvas {
     }
 
     /**
+     * Shows the Table
+     * @param {Table} table
+     * @returns {Void}
+     */
+    showTable(table) {
+        if (this.tables[table.name]) {
+            this.tables[table.name].scrollIntoView();
+        }
+    }
+
+    /**
      * Re-connects the Links
      * @returns {Void}
      */

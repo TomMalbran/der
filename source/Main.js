@@ -156,6 +156,9 @@ document.addEventListener("click", (e) => {
         const table = schema.getTable(target);
         if (table) {
             switch (action) {
+            case "show-table":
+                canvas.showTable(table);
+                break;
             case "add-table":
                 canvas.addTable(table);
                 storage.setTable(table);

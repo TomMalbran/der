@@ -135,6 +135,9 @@ export default class Table {
         this.listButton = document.createElement("button");
 
         this.listText.innerHTML        = this.data.table;
+        this.listText.dataset.action   = "show-table";
+        this.listText.dataset.table    = this.data.table;
+
         this.listButton.innerHTML      = "Add";
         this.listButton.className      = "btn";
         this.listButton.dataset.action = "add-table";
@@ -167,6 +170,7 @@ export default class Table {
      * @returns {Void}
      */
     addToCanvas() {
+        this.listText.classList.add("selectable");
         this.listButton.style.display = "none";
 
         if (!this.tableElem) {
@@ -179,6 +183,7 @@ export default class Table {
      * @returns {Void}
      */
     removeFromCanvas() {
+        this.listText.classList.remove("selectable");
         this.listButton.style.display = "block";
     }
 
@@ -262,6 +267,18 @@ export default class Table {
             this.showAll = false;
         }
         this.setBounds();
+    }
+
+    /**
+     * Scrolls the Table into view
+     * @returns {Void}
+     */
+    scrollIntoView() {
+        this.tableElem.scrollIntoView({
+            behavior : "smooth",
+            block    : "center",
+            inline   : "center",
+        });
     }
 
 

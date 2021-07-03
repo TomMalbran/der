@@ -225,6 +225,9 @@ h1 {
     padding: 6px 12px;
     border-bottom: 1px solid var(--border-color);
 }
+.schema-list ol li .selectable {
+    cursor: pointer;
+}
 
 
 
