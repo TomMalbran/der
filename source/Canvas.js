@@ -13,28 +13,20 @@ export default class Canvas {
      * Canvas constructor
      */
     constructor() {
-        this.tableCount  = 0;
-        this.tables      = {};
-        this.links       = [];
+        this.tables     = {};
+        this.links      = [];
 
         this.container   = document.querySelector("main");
         this.canvas      = document.querySelector(".canvas");
         this.bounds      = this.container.getBoundingClientRect();
+
+
+
+        /** @type {Table} */
+        this.currTable  = null;
+
         this.center();
     }
-
-    /**
-     * Returns the Table scroll
-     * @return {{top: Number, left: Number}}
-     */
-    get scroll() {
-        return {
-            top  : this.container.scrollTop,
-            left : this.container.scrollLeft,
-        };
-    }
-
-
 
     /**
      * Destroys the Canvas
@@ -47,9 +39,8 @@ export default class Canvas {
         for (const link of this.links) {
             Utils.removeElement(link.element);
         }
-        this.tableCount  = 0;
-        this.tables      = {};
-        this.links       = [];
+        this.tables = {};
+        this.links  = [];
         this.center();
     }
 
@@ -73,7 +64,6 @@ export default class Canvas {
      */
     addTable(table) {
         this.tables[table.name] = table;
-        this.tableCount += 1;
 
         // Place and set the Table
         table.addToCanvas();
@@ -129,8 +119,6 @@ export default class Canvas {
         }
     }
 
-
-
     /**
      * Removes a Table from the Canvas
      * @param {Table} table
@@ -148,5 +136,53 @@ export default class Canvas {
                 this.links.splice(i, 1);
             }
         }
+    }
+
+
+
+    /**
+     * Picks a Table
+     * @param {MouseEvent} event
+     * @param {Table}      table
+     * @returns {Void}
+     */
+    pickTable(event, table) {
+        this.currTable  = table;
+        this.startMouse = { top : event.pageY, left : event.pageX };
+        this.startPos   = { top : table.top,   left : table.left  };
+        table.pick();
+    }
+
+    /**
+     * Drags the Table
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    dragTable(event) {
+        if (!this.currTable) {
+            return false;
+        }
+        const mult = this.zoom / 100;
+        this.currTable.translate({
+            top  : this.startPos.top + (event.pageY - this.startMouse.top) / mult,
+            left : this.startPos.left + (event.pageX - this.startMouse.left) / mult,
+        });
+        this.connect();
+        return true;
+    }
+
+    /**
+     * Drops the Table
+     * @returns {?Table}
+     */
+    dropTable() {
+        if (!this.currTable) {
+            return null;
+        }
+        let result = this.currTable;
+        this.currTable.drop();
+        this.connect();
+        this.currTable = null;
+        return result;
     }
 }

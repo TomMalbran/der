@@ -253,26 +253,10 @@ export default class Table {
 
     /**
      * Picks the Table
-     * @param {MouseEvent} event
-     * @param {Canvas}     canvas
      * @returns {Void}
      */
-    pick(event, canvas) {
-        const bounds  = this.tableHeader.getBoundingClientRect();
-        const pos     = { top : event.pageY, left : event.pageX };
-        this.startPos = { top : pos.top - bounds.top, left : pos.left - bounds.left };
-        this.move(event, canvas);
+    pick() {
         this.tableElem.classList.add("schema-dragging");
-    }
-
-    /**
-     * Drags the Table
-     * @param {MouseEvent} event
-     * @param {Canvas}     canvas
-     * @returns {Void}
-     */
-    drag(event, canvas) {
-        this.move(event, canvas);
     }
 
     /**
@@ -282,21 +266,6 @@ export default class Table {
     drop() {
         this.tableElem.classList.remove("schema-dragging");
     }
-
-    /**
-     * Moves the Table
-     * @param {MouseEvent} event
-     * @param {Canvas}     canvas
-     * @returns {Void}
-     */
-    move(event, canvas) {
-        this.translate({
-            top  : event.pageY - this.startPos.top  - canvas.bounds.top  + canvas.scroll.top,
-            left : event.pageX - this.startPos.left - canvas.bounds.left + canvas.scroll.left,
-        });
-    }
-
-
 
     /**
      * Sets the Table Width and Height

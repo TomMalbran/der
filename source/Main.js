@@ -2,7 +2,6 @@ import Selection from "./Selection.js";
 import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
 import Schema    from "./Schema.js";
-import Table     from "./Table.js";
 import Utils     from "./Utils.js";
 
 // Variables
@@ -10,9 +9,6 @@ let selection = null;
 let storage   = null;
 let canvas    = null;
 let schema    = null;
-
-/** @type {Table} */
-let dragTable = null;
 
 
 
@@ -178,10 +174,10 @@ document.querySelector(".schema-filter input").addEventListener("input", () => {
  */
 document.body.addEventListener("mousedown", (e) => {
     const target = Utils.getTarget(e);
-    if (e.button === 0 && !dragTable && target.dataset.action === "drag") {
-        dragTable = schema.getTable(target);
-        if (dragTable) {
-            dragTable.pick(e, canvas);
+    if (e.button === 0 && !canvas.currTable && target.dataset.action === "drag") {
+        const table = schema.getTable(target);
+        if (table) {
+            canvas.pickTable(e, table);
         }
         e.preventDefault();
     }
@@ -191,9 +187,7 @@ document.body.addEventListener("mousedown", (e) => {
  * The Drag Event Handler
  */
 document.addEventListener("mousemove", (e) => {
-    if (dragTable) {
-        dragTable.drag(e, canvas);
-        canvas.connect();
+    if (canvas.dragTable(e)) {
         e.preventDefault();
     }
 });
@@ -202,11 +196,9 @@ document.addEventListener("mousemove", (e) => {
  * The Drop Event Handler
  */
 document.addEventListener("mouseup", (e) => {
-    if (dragTable) {
-        dragTable.drop();
-        storage.setTable(dragTable);
-        canvas.connect();
-        dragTable = null;
+    const table = canvas.dropTable();
+    if (table) {
+        storage.setTable(table);
         e.preventDefault();
     }
 });
