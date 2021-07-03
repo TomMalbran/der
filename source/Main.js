@@ -9,6 +9,7 @@ let selection = null;
 let storage   = null;
 let canvas    = null;
 let schema    = null;
+let timer     = null;
 
 
 
@@ -47,6 +48,7 @@ function setSchema(schemaID, data) {
     }
     schema.setInitialFilter(storage.getFilter());
 
+    canvas.setInitialScroll(storage.getScroll());
     canvas.setInitialZoom(storage.getZoom());
 }
 
@@ -184,6 +186,18 @@ document.addEventListener("click", (e) => {
 document.querySelector(".schema-filter input").addEventListener("input", () => {
     const value = schema.filterList();
     storage.setFilter(value);
+});
+
+/**
+ * The Scroll Event Handler
+ */
+document.querySelector("main").addEventListener("scroll", () => {
+    if (timer) {
+        window.clearTimeout(timer);
+    }
+    timer = window.setTimeout(() => {
+        storage.setScroll(canvas.scroll);
+    }, 500);
 });
 
 /**

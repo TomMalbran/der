@@ -49,6 +49,32 @@ export default class Canvas {
         this.center();
     }
 
+
+
+    /**
+     * Returns the current scroll
+     * @return {{top: Number, left: Number}}
+     */
+    get scroll() {
+        return {
+            top  : this.container.scrollTop,
+            left : this.container.scrollLeft,
+        };
+    }
+
+    /**
+     * Sets the Initial scroll
+     * @param {{top: Number, left: Number}} scroll
+     * @returns {Void}
+     */
+    setInitialScroll(scroll) {
+        if (scroll) {
+            this.container.scrollTo(scroll.left, scroll.top);
+        } else {
+            this.center();
+        }
+    }
+
     /**
      * Centers the Canvas
      * @returns {Void}

@@ -167,6 +167,7 @@ export default class Storage {
         localStorage.removeItem(`${schemaID}-name`);
         localStorage.removeItem(`${schemaID}-schema`);
         localStorage.removeItem(`${schemaID}-filter`);
+        localStorage.removeItem(`${schemaID}-scroll`);
         localStorage.removeItem(`${schemaID}-zoom`);
 
         for (const elem of Object.values(schema)) {
@@ -204,6 +205,25 @@ export default class Storage {
      */
     removeFilter() {
         this.removeItem("filter");
+    }
+
+
+
+    /**
+     * Returns the stored scroll, or empty
+     * @returns {Object}
+     */
+    getScroll() {
+        return this.getData("scroll");
+    }
+
+    /**
+     * Saves the current scroll
+     * @param {Object} value
+     * @returns {Void}
+     */
+    setScroll(value) {
+        this.setData("scroll", value);
     }
 
 
