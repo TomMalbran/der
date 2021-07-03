@@ -161,6 +161,7 @@ document.addEventListener("click", (e) => {
             case "remove-table":
                 canvas.removeTable(table);
                 storage.removeTable(table);
+                table.destroy();
                 break;
             case "toggle-fields":
                 table.toggleFields();
@@ -188,7 +189,7 @@ document.querySelector(".schema-filter input").addEventListener("input", () => {
 /**
  * The Pick Event Handler
  */
-document.body.addEventListener("mousedown", (e) => {
+document.addEventListener("mousedown", (e) => {
     const target = Utils.getTarget(e);
     if (e.button === 0 && !canvas.currTable && target.dataset.action === "drag") {
         const table = schema.getTable(target);

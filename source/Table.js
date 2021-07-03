@@ -1,4 +1,4 @@
-import Canvas from "./Canvas.js";
+import Utils from "./Utils.js";
 
 
 
@@ -25,6 +25,32 @@ export default class Table {
     }
 
     /**
+     * Destroys the Table
+     * @returns {Void}
+     */
+    destroy() {
+        this.top       = 0;
+        this.left      = 0;
+        this.maxFields = 15;
+        this.showAll   = false;
+
+        Utils.removeElement(this.tableElem);
+    }
+
+    /**
+     * Restores the Table
+     * @param {Object} data
+     * @returns {Void}
+     */
+    restore(data) {
+        this.top     = data.top;
+        this.left    = data.left;
+        this.showAll = data.showAll;
+    }
+
+
+
+    /**
      * Returns the Table Name
      * @returns {String}
      */
@@ -36,7 +62,7 @@ export default class Table {
      * Returns true if the Table has Joins or Foreigns
      * @returns {Boolean}
      */
-     get hasLinks() {
+    get hasLinks() {
         return this.data.joins || this.data.foreigns;
     }
 
@@ -66,17 +92,6 @@ export default class Table {
     }
 
 
-
-    /**
-     * Restores the Table
-     * @param {Object} data
-     * @returns {Void}
-     */
-    restore(data) {
-        this.top     = data.top;
-        this.left    = data.left;
-        this.showAll = data.showAll;
-    }
 
     /**
      * Sets the Fields

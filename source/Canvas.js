@@ -39,7 +39,7 @@ export default class Canvas {
      */
     destroy() {
         for (const table of Object.values(this.tables)) {
-            Utils.removeElement(table.tableElem);
+            table.destroy();
         }
         for (const link of this.links) {
             Utils.removeElement(link.element);
