@@ -83,11 +83,11 @@ export default class Table {
 
     /**
      * Returns the Field Position
-     * @param {String} field
+     * @param {String} name
      * @returns {Number}
      */
-    getFieldIndex(field) {
-        const index = this.fields.findIndex((key) => key === field);
+    getFieldIndex(name) {
+        const index = this.fields.findIndex((field) => field.name === name);
         return (index > this.maxFields && !this.showAll) ? this.maxFields : index;
     }
 
@@ -102,26 +102,26 @@ export default class Table {
             return;
         }
 
-        for (const field of Object.keys(this.data.fields)) {
-            this.fields.push(field);
+        for (const [ name, field ] of Object.entries(this.data.fields)) {
+            this.fields.push({ name, type : field.type, isPrimary : field.type === "id" || field.isPrimary });
         }
         if (this.data.hasPositions) {
-            this.fields.push("position");
+            this.fields.push({ name : "position", type : "number" });
         }
         if (this.data.canCreate && this.data.hasTimestamps) {
-            this.fields.push("createdTime");
+            this.fields.push({ name : "createdTime", type : "date" });
         }
         if (this.data.canCreate && this.data.hasUsers) {
-            this.fields.push("createdUser");
+            this.fields.push({ name : "createdUser", type : "number" });
         }
         if (this.data.canEdit && this.data.hasTimestamps) {
-            this.fields.push("modifiedTime");
+            this.fields.push({ name : "modifiedTime", type : "date" });
         }
         if (this.data.canEdit && this.data.hasUsers) {
-            this.fields.push("modifiedUser");
+            this.fields.push({ name : "modifiedUser", type : "number" });
         }
         if (this.data.canDelete) {
-            this.fields.push("isDeleted");
+            this.fields.push({ name : "isDeleted", type : "boolean" });
         }
     }
 
@@ -232,12 +232,19 @@ export default class Table {
 
     /**
      * Adds a Table Field Elem
-     * @param {String} field
+     * @param {Object} field
      * @returns {Void}
      */
     addFieldElem(field) {
-        const li = document.createElement("li");
-        li.innerHTML = field;
+        const li   = document.createElement("li");
+        const name = document.createElement(field.isPrimary ? "b" : "span");
+        const type = document.createElement("span");
+
+        name.innerHTML = field.name;
+        type.innerHTML = field.type;
+
+        li.appendChild(name);
+        li.appendChild(type);
 
         if (!this.showAll && this.tableElems.length >= this.maxFields) {
             li.className = "schema-hide";

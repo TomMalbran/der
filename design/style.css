@@ -3,7 +3,8 @@
  */
 :root {
     --main-color: #061e2e;
-    --border-color: rgb(239, 239, 239);
+    --light-color: rgb(118, 130, 139);
+    --border-color: rgb(224, 224, 224);
     --grid-color: rgb(242, 242, 242);
     --box-shadow: 2px 2px 9px rgb(209, 209, 209);
 
@@ -28,6 +29,12 @@
     font-style: normal;
     font-weight: normal;
     src: local("Lato"), url("../fonts/lato-regular.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: bold;
+    src: local("Lato"), url("../fonts/lato-bold.ttf") format("truetype");
 }
 @font-face {
     font-family: "Esteban";
@@ -292,18 +299,30 @@ main {
     border-bottom-right-radius: var(--border-radius);
 }
 .schema-table ol li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     padding: 4px 8px;
     border-bottom: 1px solid var(--border-color);
+    color:rgb(50, 50, 50);
 }
 .schema-table ol li:last-child {
     border-bottom: none;
 }
+.schema-table ol li b {
+    color: black;
+}
+.schema-table ol li span:last-child {
+    color: var(--light-color);
+    margin-left: 16px;
+    font-size: 12px;
+}
 
-.schema-hide {
+.schema-hide.schema-hide {
     display: none;
 }
-.schema-hidden {
-    color: #76828b;
+.schema-hidden.schema-hidden {
+    color: var(--light-color);
     cursor: pointer;
 }
 
@@ -372,6 +391,7 @@ main {
 .zoom-percent.zoom-percent {
     height: auto;
     font-size: 12px;
+    font-weight: normal;
     line-height: 2;
 }
 
