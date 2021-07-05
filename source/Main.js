@@ -95,6 +95,7 @@ document.addEventListener("click", (e) => {
     const target   = Utils.getTarget(e);
     const action   = target.dataset.action;
     const schemaID = Number(target.dataset.schema);
+    canvas.unselectTable();
 
     switch (action) {
     case "open-select":
@@ -159,6 +160,10 @@ document.addEventListener("click", (e) => {
             case "show-table":
                 canvas.showTable(table);
                 break;
+            case "drag-table":
+            case "select-table":
+                canvas.selectTable(table);
+                break;
             case "add-table":
                 canvas.addTable(table);
                 storage.setTable(table);
@@ -208,7 +213,7 @@ document.querySelector("main").addEventListener("scroll", () => {
  */
 document.addEventListener("mousedown", (e) => {
     const target = Utils.getTarget(e);
-    if (e.button === 0 && !canvas.currTable && target.dataset.action === "drag") {
+    if (e.button === 0 && !canvas.currTable && target.dataset.action === "drag-table") {
         const table = schema.getTable(target);
         if (table) {
             canvas.pickTable(e, table);

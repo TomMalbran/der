@@ -194,11 +194,13 @@ export default class Table {
     createTableElem() {
         this.tableElem = document.createElement("div");
         this.tableElem.className       = "schema-table";
+        this.tableElem.dataset.action  = "select-table";
+        this.tableElem.dataset.table   = this.name;
         this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         this.tableHeader = document.createElement("header");
         this.tableHeader.innerHTML      = this.name;
-        this.tableHeader.dataset.action = "drag";
+        this.tableHeader.dataset.action = "drag-table";
         this.tableHeader.dataset.table  = this.name;
 
         const remove = document.createElement("a");
@@ -274,6 +276,35 @@ export default class Table {
             this.showAll = false;
         }
         this.setBounds();
+    }
+
+
+
+    /**
+     * Selects the Table
+     * @returns {Void}
+     */
+    select() {
+        this.tableElem.classList.remove("disabled");
+        this.tableElem.classList.add("selected");
+    }
+
+    /**
+     * Disables the Table
+     * @returns {Void}
+     */
+    disable() {
+        this.tableElem.classList.remove("selected");
+        this.tableElem.classList.add("disabled");
+    }
+
+    /**
+     * Un-selects the Table
+     * @returns {Void}
+     */
+    unselect() {
+        this.tableElem.classList.remove("selected");
+        this.tableElem.classList.remove("disabled");
     }
 
     /**

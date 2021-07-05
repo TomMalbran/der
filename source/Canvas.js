@@ -13,22 +13,26 @@ export default class Canvas {
      * Canvas constructor
      */
     constructor() {
-        this.tables     = {};
-        this.links      = [];
+        this.tables        = {};
+        this.links         = [];
 
-        this.container  = document.querySelector("main");
-        this.bounds     = this.container.getBoundingClientRect();
+        this.container     = document.querySelector("main");
+        this.bounds        = this.container.getBoundingClientRect();
 
         /** @type {HTMLElement} */
-        this.canvas     = document.querySelector(".canvas");
+        this.canvas        = document.querySelector(".canvas");
 
-        this.zoom       = 100;
-        this.percent    = document.querySelector(".zoom-percent");
-        this.zoomInBtn  = document.querySelector(".zoom-in");
-        this.zoomOutBtn = document.querySelector(".zoom-out");
+        // Zoom
+        this.zoom          = 100;
+        this.percent       = document.querySelector(".zoom-percent");
+        this.zoomInBtn     = document.querySelector(".zoom-in");
+        this.zoomOutBtn    = document.querySelector(".zoom-out");
 
         /** @type {Table} */
-        this.currTable  = null;
+        this.selectedTable = null;
+
+        /** @type {Table} */
+        this.grabbedTable  = null;
 
         this.center();
     }
@@ -168,9 +172,6 @@ export default class Canvas {
 
         // Adds links to/from the given Table
         for (const otherTable of Object.values(this.tables)) {
-            if (!otherTable.hasLinks) {
-                continue;
-            }
             for (const [ key, field ] of Object.entries(otherTable.links)) {
                 if (field.onTable) {
                     continue;
@@ -200,17 +201,6 @@ export default class Canvas {
     }
 
     /**
-     * Shows the Table
-     * @param {Table} table
-     * @returns {Void}
-     */
-    showTable(table) {
-        if (this.tables[table.name]) {
-            this.tables[table.name].scrollIntoView();
-        }
-    }
-
-    /**
      * Re-connects the Links
      * @returns {Void}
      */
@@ -232,10 +222,80 @@ export default class Canvas {
         // Remove the links to/from the table
         for (let i = this.links.length - 1; i >= 0; i--) {
             const link = this.links[i];
-            if (link.thisTable.name === table.name || link.otherTable.name === table.name) {
+            if (link.isLinkedTo(table)) {
                 Utils.removeElement(link.element);
                 this.links.splice(i, 1);
             }
+        }
+    }
+
+
+
+    /**
+     * Shows the given Table
+     * @param {Table} table
+     * @returns {Void}
+     */
+    showTable(table) {
+        if (this.tables[table.name]) {
+            table.scrollIntoView();
+            this.selectTable(table);
+        }
+    }
+
+    /**
+     * Selects the given Table
+     * @param {Table} table
+     * @returns {Void}
+     */
+    selectTable(table) {
+        if (!this.tables[table.name] || (this.selectedTable !== null && this.selectTable.name === table.name)) {
+            return;
+        }
+        this.selectedTable = table;
+
+        for (const otherTable of Object.values(this.tables)) {
+            let hasLink = false;
+            otherTable.unselect();
+            for (const field of Object.values(otherTable.links)) {
+                if (!field.onTable && field.table === table.name) {
+                    hasLink = true;
+                    break;
+                }
+            }
+            if (!hasLink) {
+                otherTable.disable();
+            }
+        }
+        for (const field of Object.values(table.links)) {
+            if (!field.onTable && this.tables[field.table]) {
+                this.tables[field.table].unselect();
+            }
+        }
+        table.select();
+
+        for (const link of this.links) {
+            if (!link.isLinkedTo(table)) {
+                link.disable();
+            } else {
+                link.unselect();
+            }
+        }
+    }
+
+    /**
+     * Unselects the selected Table
+     * @returns {Void}
+     */
+    unselectTable() {
+        if (!this.selectedTable) {
+            return;
+        }
+        for (const table of Object.values(this.tables)) {
+            table.unselect();
+        }
+        for (const link of this.links) {
+            link.unselect();
         }
     }
 
@@ -248,9 +308,13 @@ export default class Canvas {
      * @returns {Void}
      */
     pickTable(event, table) {
-        this.currTable  = table;
-        this.startMouse = { top : event.pageY, left : event.pageX };
-        this.startPos   = { top : table.top,   left : table.left  };
+        if (!this.tables[table.name]) {
+            return;
+        }
+        this.selectTable(table);
+        this.grabbedTable = table;
+        this.startMouse   = { top : event.pageY, left : event.pageX };
+        this.startPos     = { top : table.top,   left : table.left  };
         table.pick();
     }
 
@@ -260,11 +324,11 @@ export default class Canvas {
      * @returns {Boolean}
      */
     dragTable(event) {
-        if (!this.currTable) {
+        if (!this.grabbedTable) {
             return false;
         }
         const mult = this.zoom / 100;
-        this.currTable.translate({
+        this.grabbedTable.translate({
             top  : this.startPos.top + (event.pageY - this.startMouse.top) / mult,
             left : this.startPos.left + (event.pageX - this.startMouse.left) / mult,
         });
@@ -277,13 +341,13 @@ export default class Canvas {
      * @returns {?Table}
      */
     dropTable() {
-        if (!this.currTable) {
+        if (!this.grabbedTable) {
             return null;
         }
-        let result = this.currTable;
-        this.currTable.drop();
+        let result = this.grabbedTable;
+        this.grabbedTable.drop();
         this.connect();
-        this.currTable = null;
+        this.grabbedTable = null;
         return result;
     }
 }

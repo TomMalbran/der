@@ -5,6 +5,7 @@
     --main-color: #061e2e;
     --light-color: rgb(118, 130, 139);
     --border-color: rgb(224, 224, 224);
+    --disabled-color: rgb(94, 109, 120);
     --grid-color: rgb(242, 242, 242);
     --box-shadow: 2px 2px 9px rgb(209, 209, 209);
 
@@ -268,7 +269,6 @@ main {
     top: 0;
     left: 0;
     background-color: white;
-    border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
     z-index: 2;
@@ -280,6 +280,8 @@ main {
     text-align: center;
     color: white;
     font-weight: bold;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
     cursor: grab;
 }
 .schema-table ol {
@@ -287,6 +289,7 @@ main {
     margin: 0;
     padding: 0;
     border: 1px solid var(--border-color);
+    border-top: none;
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
 }
@@ -337,6 +340,24 @@ main {
 }
 
 
+.schema-table.selected ol {
+    border-color: var(--main-color);
+}
+.schema-table.selected ol li {
+    border-color: var(--main-color);
+}
+
+.schema-table.disabled header {
+    background-color: var(--border-color);
+    color: var(--disabled-color);
+}
+.schema-table.disabled ol li,
+.schema-table.disabled ol li b {
+    color: var(--disabled-color);
+}
+.schema-table.disabled .close {
+    --close-color: var(--disabled-color);
+}
 
 
 
@@ -358,6 +379,16 @@ main {
 .schema-link polygon {
     fill: var(--main-color);
     stroke: none;
+}
+
+.schema-link.disabled {
+    z-index: 1;
+}
+.schema-link.disabled path {
+    stroke: var(--border-color);
+}
+.schema-link.disabled polygon {
+    fill: var(--border-color);
 }
 
 

@@ -46,9 +46,33 @@ export default class Link {
 
         this.element.appendChild(this.arrow);
         this.element.appendChild(this.path);
+    }
 
 
 
+    /**
+     * Returns true if this link is from or the given Table
+     * @param {Table} table
+     * @returns {Boolean}
+     */
+    isLinkedTo(table) {
+        return this.thisTable.name === table.name || this.otherTable.name === table.name;
+    }
+
+    /**
+     * Disables the Link
+     * @returns {Void}
+     */
+    disable() {
+        this.element.classList.add("disabled");
+    }
+
+    /**
+     * Un-selects the Link
+     * @returns {Void}
+     */
+    unselect() {
+        this.element.classList.remove("disabled");
     }
 
 
