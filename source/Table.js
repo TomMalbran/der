@@ -324,8 +324,8 @@ export default class Table {
      * @returns {Void}
      */
     translate(pos) {
-        this.top    = pos.top;
-        this.left   = pos.left;
+        this.top    = Math.round(pos.top);
+        this.left   = Math.round(pos.left);
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
         this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
