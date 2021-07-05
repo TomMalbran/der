@@ -176,7 +176,7 @@ document.addEventListener("click", (e) => {
             case "toggle-fields":
                 table.toggleFields();
                 storage.setTable(table);
-                canvas.connect();
+                canvas.reconnect(table);
                 break;
             default:
             }

@@ -201,16 +201,6 @@ export default class Canvas {
     }
 
     /**
-     * Re-connects the Links
-     * @returns {Void}
-     */
-    connect() {
-        for (const link of this.links) {
-            link.connect();
-        }
-    }
-
-    /**
      * Removes a Table from the Canvas
      * @param {Table} table
      * @returns {Void}
@@ -299,6 +289,19 @@ export default class Canvas {
         }
     }
 
+    /**
+     * Re-connects the Links
+     * @param {Table} table
+     * @returns {Void}
+     */
+    reconnect(table) {
+        for (const link of this.links) {
+            if (link.isLinkedTo(table)) {
+                link.connect();
+            }
+        }
+    }
+
 
 
     /**
@@ -332,7 +335,7 @@ export default class Canvas {
             top  : this.startPos.top + (event.pageY - this.startMouse.top) / mult,
             left : this.startPos.left + (event.pageX - this.startMouse.left) / mult,
         });
-        this.connect();
+        this.reconnect(this.grabbedTable);
         return true;
     }
 
@@ -346,7 +349,7 @@ export default class Canvas {
         }
         let result = this.grabbedTable;
         this.grabbedTable.drop();
-        this.connect();
+        this.reconnect(this.grabbedTable);
         this.grabbedTable = null;
         return result;
     }
