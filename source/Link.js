@@ -5,8 +5,7 @@ const SELF_WIDTH    = 70;
 const DOWN_WIDTH    = 70;
 const ROW_HEIGHT    = 26;
 const HEADER_HEIGHT = 33;
-const START_SPACING = 2;
-const END_SPACING   = 10;
+const ARROW_SIZE    = 10;
 
 
 
@@ -38,32 +37,18 @@ export default class Link {
      */
     create() {
         this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.element.classList.add("schema-link");
         this.element.setAttribute("width", "100%");
         this.element.setAttribute("height", "100%");
 
-        const defs   = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-        const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
-        marker.setAttribute("id", "arrowhead");
-        marker.setAttribute("viewBox", "0 0 10 10");
-        marker.setAttribute("refX", "3");
-        marker.setAttribute("refY", "5");
-        marker.setAttribute("markerWidth", "6");
-        marker.setAttribute("markerHeight", "6");
-        marker.setAttribute("orient", "auto-start-reverse");
+        this.path  = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        this.arrow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
 
-        const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        arrow.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
-
-        marker.appendChild(arrow);
-        defs.appendChild(marker);
-
-        this.path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        this.path.setAttribute("fill", "none");
-        this.path.setAttribute("stroke", "#061e2e");
-        this.path.setAttribute("stroke-width", "2");
-
-        this.element.appendChild(defs);
+        this.element.appendChild(this.arrow);
         this.element.appendChild(this.path);
+
+
+
     }
 
 
@@ -138,8 +123,8 @@ export default class Link {
         const left   = this.thisTable.right;
         const width  = SELF_WIDTH;
 
-        const startX = START_SPACING;
-        const endX   = END_SPACING;
+        const startX = 0;
+        const endX   = ARROW_SIZE;
 
         const BX = width * 0.05 + startX;
         const BY = startY;
@@ -151,7 +136,8 @@ export default class Link {
         const EY = endY;
 
         this.setBounds(left, top, width, height);
-        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY, true);
+        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY);
+        this.setArrow(startX, startY, endX, endY, true, false);
     }
 
     /**
@@ -169,8 +155,8 @@ export default class Link {
         const left   = leftTable.left - DOWN_WIDTH;
         const width  = rightTable.left - left;
 
-        const startX = leftTable.left - left - (!toEnd ? END_SPACING : START_SPACING);
-        const endX   = width - (toEnd ? END_SPACING : START_SPACING);
+        const startX = leftTable.left - left - (!toEnd ? ARROW_SIZE : 0);
+        const endX   = width - (toEnd ? ARROW_SIZE : 0);
 
         const BX = - DOWN_WIDTH * 0.05 + startX;
         const BY = startY;
@@ -182,7 +168,8 @@ export default class Link {
         const EY = endY;
 
         this.setBounds(left, top, width, height);
-        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY, toEnd);
+        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY);
+        this.setArrow(startX, startY, endX, endY, toEnd, true);
     }
 
     /**
@@ -200,8 +187,8 @@ export default class Link {
         const left   = Math.min(leftTable.right, rightTable.right);
         const width  = Math.abs(leftTable.right - rightTable.right) + DOWN_WIDTH;
 
-        const startX = leftTable.right - left + (!toEnd ? END_SPACING : START_SPACING);
-        const endX   = rightTable.right - left + (toEnd ? END_SPACING : START_SPACING);
+        const startX = leftTable.right - left + (!toEnd ? ARROW_SIZE : 0);
+        const endX   = rightTable.right - left + (toEnd ? ARROW_SIZE : 0);
 
         const BX = DOWN_WIDTH * 0.05 + startX;
         const BY = startY;
@@ -213,7 +200,8 @@ export default class Link {
         const EY = endY;
 
         this.setBounds(left, top, width, height);
-        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY, toEnd);
+        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY);
+        this.setArrow(startX, startY, endX, endY, toEnd, false);
     }
 
     /**
@@ -231,8 +219,8 @@ export default class Link {
         const left   = leftTable.right;
         const width  = rightTable.left - left;
 
-        const startX = !toEnd ? END_SPACING : START_SPACING;
-        const endX   = width - (toEnd ? END_SPACING : START_SPACING);
+        const startX = !toEnd ? ARROW_SIZE : 0;
+        const endX   = width - (toEnd ? ARROW_SIZE : 0);
 
         const BX = width * 0.05 + startX;
         const BY = startY;
@@ -244,7 +232,8 @@ export default class Link {
         const EY = endY;
 
         this.setBounds(left, top, width, height);
-        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY, toEnd);
+        this.setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY);
+        this.setArrow(startX, startY, endX, endY, toEnd, toEnd);
     }
 
 
@@ -273,26 +262,42 @@ export default class Link {
     }
 
     /**
-     * Sets the Path and size
+     * Sets the Path
+     * @param {Number} startX
+     * @param {Number} startY
+     * @param {Number} BX
+     * @param {Number} BY
+     * @param {Number} CX
+     * @param {Number} CY
+     * @param {Number} DX
+     * @param {Number} DY
+     * @param {Number} EX
+     * @param {Number} EY
+     * @param {Number} endX
+     * @param {Number} endY
+     * @returns {Void}
+     */
+    setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY) {
+        const path = `M${startX},${startY} L${BX},${BY} C${CX},${CY} ${DX},${DY} ${EX},${EY} L${endX},${endY}`;
+        this.path.setAttribute("d", path);
+    }
+
+    /**
+     * Sets the Arraw
      * @param {Number}  startX
      * @param {Number}  startY
-     * @param {Number}  BX
-     * @param {Number}  BY
-     * @param {Number}  CX
-     * @param {Number}  CY
-     * @param {Number}  DX
-     * @param {Number}  DY
-     * @param {Number}  EX
-     * @param {Number}  EY
      * @param {Number}  endX
      * @param {Number}  endY
      * @param {Boolean} toEnd
+     * @param {Boolean} toRight
      * @returns {Void}
      */
-    setPath(startX, startY, BX, BY, CX, CY, DX, DY, EX, EY, endX, endY, toEnd) {
-        const path = `M${startX},${startY} L${BX},${BY} C${CX},${CY} ${DX},${DY} ${EX},${EY} L${endX},${endY}`;
-        this.path.setAttribute("d", path);
-        this.path.setAttribute(toEnd ? "marker-end" : "marker-start", "url(#arrowhead)");
-        this.path.setAttribute(!toEnd ? "marker-end" : "marker-start", "");
+    setArrow(startX, startY, endX, endY, toEnd, toRight) {
+        const AX     = toEnd ? endX : startX;
+        const AY     = toEnd ? endY : startY;
+        const width  = toRight ? ARROW_SIZE : -ARROW_SIZE;
+        const half   = ARROW_SIZE / 2;
+        const points = `${AX} ${AY - half}, ${AX + width} ${AY}, ${AX} ${AY + half}`;
+        this.arrow.setAttribute("points", points);
     }
 }

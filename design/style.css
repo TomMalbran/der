@@ -258,14 +258,6 @@ main {
     height: 400vh;
 }
 
-.canvas > svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-
 
 
 /**
@@ -342,6 +334,30 @@ main {
     position: absolute;
     top: calc(33px / 2 - var(--close-size) / 2);
     right: 6px;
+}
+
+
+
+
+
+/**
+ * Link Styles
+ */
+.schema-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+.schema-link path {
+    fill: none;
+    stroke: var(--main-color);
+    stroke-width: 2;
+}
+.schema-link polygon {
+    fill: var(--main-color);
+    stroke: none;
 }
 
 
