@@ -16,6 +16,13 @@
     --header-height: 72px;
     --border-radius: 6px;
 
+    --z-link-disabled: 1;
+    --z-link-normal: 2;
+    --z-table-disabled: 3;
+    --z-table-normal: 4;
+    --z-table-selected: 5;
+    --z-table-dragging: 6;
+
     --z-zoom: 99;
     --z-dialog: 100;
 }
@@ -271,7 +278,7 @@ main {
     background-color: white;
     box-shadow: var(--box-shadow);
     overflow: hidden;
-    z-index: 2;
+    z-index: var(--z-table-normal);
 }
 .schema-table header {
     position: relative;
@@ -283,6 +290,7 @@ main {
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
     cursor: grab;
+    transition: all 0.1s;
 }
 .schema-table ol {
     list-style: none;
@@ -292,6 +300,7 @@ main {
     border-top: none;
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
+    transition: border-color 0.1s;
 }
 .schema-table ol li {
     display: flex;
@@ -321,13 +330,6 @@ main {
     cursor: pointer;
 }
 
-.schema-dragging {
-    z-index: 3;
-}
-.schema-dragging header {
-    cursor: grabbing;
-}
-
 .schema-table .close {
     --close-color: white;
     --close-size: 12px;
@@ -340,6 +342,9 @@ main {
 }
 
 
+.schema-table.selected {
+    z-index: var(--z-table-selected);
+}
 .schema-table.selected ol {
     border-color: var(--main-color);
 }
@@ -347,6 +352,9 @@ main {
     border-color: var(--main-color);
 }
 
+.schema-table.disabled {
+    z-index: var(--z-table-disabled);
+}
 .schema-table.disabled header {
     background-color: var(--border-color);
     color: var(--disabled-color);
@@ -359,6 +367,13 @@ main {
     --close-color: var(--disabled-color);
 }
 
+.schema-table.dragging {
+    z-index: var(--z-table-dragging);
+}
+.schema-table.dragging header {
+    cursor: grabbing;
+}
+
 
 
 /**
@@ -369,20 +384,22 @@ main {
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: 2;
+    z-index: var(--z-link-normal);
 }
 .schema-link path {
     fill: none;
     stroke: var(--main-color);
     stroke-width: 2;
+    transition: stroke 0.1s;
 }
 .schema-link polygon {
     fill: var(--main-color);
     stroke: none;
+    transition: fill 0.1s;
 }
 
 .schema-link.disabled {
-    z-index: 1;
+    z-index: var(--z-link-disabled);
 }
 .schema-link.disabled path {
     stroke: var(--border-color);

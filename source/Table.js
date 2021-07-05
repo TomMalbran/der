@@ -326,7 +326,7 @@ export default class Table {
      * @returns {Void}
      */
     pick() {
-        this.tableElem.classList.add("schema-dragging");
+        this.tableElem.classList.add("dragging");
     }
 
     /**
@@ -334,7 +334,7 @@ export default class Table {
      * @returns {Void}
      */
     drop() {
-        this.tableElem.classList.remove("schema-dragging");
+        this.tableElem.classList.remove("dragging");
     }
 
     /**
