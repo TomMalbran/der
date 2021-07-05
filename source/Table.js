@@ -342,9 +342,8 @@ export default class Table {
      * @returns {Void}
      */
     setBounds() {
-        const bounds = this.tableElem.getBoundingClientRect();
-        this.width  = bounds.width;
-        this.height = bounds.height;
+        this.width  = this.tableElem.offsetWidth;
+        this.height = this.tableElem.offsetHeight;
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
     }
