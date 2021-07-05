@@ -166,6 +166,7 @@ document.addEventListener("click", (e) => {
                 break;
             case "add-table":
                 canvas.addTable(table);
+                canvas.selectTable(table);
                 storage.setTable(table);
                 break;
             case "remove-table":
