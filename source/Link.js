@@ -59,12 +59,20 @@ export default class Link {
         return this.thisTable.name === table.name || this.otherTable.name === table.name;
     }
 
+    getField(table) {
+        if (this.thisTable.name === table.name) {
+            return this.thisField;
+        }
+        return this.otherField;
+    }
+
     /**
      * Disables the Link
      * @returns {Void}
      */
     disable() {
         this.element.classList.add("disabled");
+        this.removeColor();
     }
 
     /**
@@ -73,6 +81,28 @@ export default class Link {
      */
     unselect() {
         this.element.classList.remove("disabled");
+        this.removeColor();
+    }
+
+    /**
+     * Sets the Link color
+     * @param {Number} color
+     * @returns {Void}
+     */
+    setColor(color) {
+        this.colorClass = `color${color}`;
+        this.element.classList.add(this.colorClass);
+    }
+
+    /**
+     * Removes the Link color
+     * @returns {Void}
+     */
+    removeColor() {
+        if (this.colorClass) {
+            this.element.classList.remove(this.colorClass);
+            this.colorClass = "";
+        }
     }
 
 

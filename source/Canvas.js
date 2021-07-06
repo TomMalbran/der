@@ -2,6 +2,9 @@ import Table from "./Table.js";
 import Link  from "./Link.js";
 import Utils from "./Utils.js";
 
+// Constants
+const COLOR_AMOUNT = 6;
+
 
 
 /**
@@ -244,6 +247,7 @@ export default class Canvas {
         }
         this.selectedTable = table;
 
+        // Select or Disable the Tables
         for (const otherTable of Object.values(this.tables)) {
             let hasLink = false;
             otherTable.unselect();
@@ -264,11 +268,21 @@ export default class Canvas {
         }
         table.select();
 
+        // Add colors or disable the Links
+        let   lastColor = 0;
+        const colors    = {};
         for (const link of this.links) {
-            if (!link.isLinkedTo(table)) {
-                link.disable();
+            if (link.isLinkedTo(table)) {
+                const field = link.getField(table);
+                if (!colors[field]) {
+                    colors[field] = lastColor + 1;
+                    lastColor = (lastColor + 1) % COLOR_AMOUNT;
+                }
+                link.thisTable.setFieldColor(link.thisField, colors[field]);
+                link.otherTable.setFieldColor(link.otherField, colors[field]);
+                link.setColor(colors[field]);
             } else {
-                link.unselect();
+                link.disable();
             }
         }
     }

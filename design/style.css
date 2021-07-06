@@ -9,6 +9,13 @@
     --grid-color: rgb(242, 242, 242);
     --box-shadow: 2px 2px 9px rgb(209, 209, 209);
 
+    --selected-color1: rgb(54, 162, 235);
+    --selected-color2: rgb(255, 205, 86);
+    --selected-color3: rgb(255, 99, 132);
+    --selected-color4: rgb(75, 192, 192);
+    --selected-color5: rgb(255, 159, 64);
+    --selected-color6: rgb(153, 102, 255);
+
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
     --title-font: Esteban, Georgia, serif;
 
@@ -406,6 +413,76 @@ main {
 }
 .schema-link.disabled polygon {
     fill: var(--border-color);
+}
+
+
+
+/**
+ * Schema Colors
+ */
+.schema-table li.colored,
+.schema-table li.colored span:last-child {
+    color: black;
+}
+
+.schema-table li.color1 {
+    background-color: var(--selected-color1);
+}
+.schema-link.color1 path {
+    stroke: var(--selected-color1);
+}
+.schema-link.color1 polygon {
+    fill: var(--selected-color1);
+}
+
+.schema-table li.color2 {
+    background-color: var(--selected-color2);
+}
+.schema-link.color2 path {
+    stroke: var(--selected-color2);
+}
+.schema-link.color2 polygon {
+    fill: var(--selected-color2);
+}
+
+.schema-table li.color3 {
+    background-color: var(--selected-color3);
+}
+.schema-link.color3 path {
+    stroke: var(--selected-color3);
+}
+.schema-link.color3 polygon {
+    fill: var(--selected-color3);
+}
+
+.schema-table li.color4 {
+    background-color: var(--selected-color4);
+}
+.schema-link.color4 path {
+    stroke: var(--selected-color4);
+}
+.schema-link.color4 polygon {
+    fill: var(--selected-color4);
+}
+
+.schema-table li.color5 {
+    background-color: var(--selected-color5);
+}
+.schema-link.color5 path {
+    stroke: var(--selected-color5);
+}
+.schema-link.color5 polygon {
+    fill: var(--selected-color5);
+}
+
+.schema-table li.color6 {
+    background-color: var(--selected-color6);
+}
+.schema-link.color6 path {
+    stroke: var(--selected-color6);
+}
+.schema-link.color6 polygon {
+    fill: var(--selected-color6);
 }
 
 

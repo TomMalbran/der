@@ -210,8 +210,9 @@ export default class Table {
         remove.dataset.table  = this.name;
         this.tableHeader.appendChild(remove);
 
-        this.tableList  = document.createElement("ol");
-        this.tableElems = [];
+        this.tableList   = document.createElement("ol");
+        this.tableElems  = [];
+        this.tableColors = [];
         for (const field of this.fields) {
             this.addFieldElem(field);
         }
@@ -281,11 +282,23 @@ export default class Table {
 
 
     /**
+     * Scrolls the Table into view
+     * @returns {Void}
+     */
+    scrollIntoView() {
+        this.tableElem.scrollIntoView({
+            behavior : "smooth",
+            block    : "center",
+            inline   : "center",
+        });
+    }
+
+    /**
      * Selects the Table
      * @returns {Void}
      */
     select() {
-        this.tableElem.classList.remove("disabled");
+        this.unselect();
         this.tableElem.classList.add("selected");
     }
 
@@ -294,7 +307,7 @@ export default class Table {
      * @returns {Void}
      */
     disable() {
-        this.tableElem.classList.remove("selected");
+        this.unselect();
         this.tableElem.classList.add("disabled");
     }
 
@@ -305,18 +318,23 @@ export default class Table {
     unselect() {
         this.tableElem.classList.remove("selected");
         this.tableElem.classList.remove("disabled");
+
+        for (const [ index, color ] of Object.entries(this.tableColors)) {
+            this.tableElems[index].classList.remove("colored", `color${color}`);
+        }
+        this.tableColors = {};
     }
 
     /**
-     * Scrolls the Table into view
+     * Set the color of a Field
+     * @param {String} key
+     * @param {Number} color
      * @returns {Void}
      */
-    scrollIntoView() {
-        this.tableElem.scrollIntoView({
-            behavior : "smooth",
-            block    : "center",
-            inline   : "center",
-        });
+    setFieldColor(key, color) {
+        const index = this.getFieldIndex(key);
+        this.tableColors[index] = color;
+        this.tableElems[index].classList.add("colored", `color${color}`);
     }
 
 
