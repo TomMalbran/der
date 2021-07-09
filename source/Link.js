@@ -59,20 +59,30 @@ export default class Link {
         return this.thisTable.name === table.name || this.otherTable.name === table.name;
     }
 
+    /**
+     * Returns the field corresponding to the given Table
+     * @param {Table} table
+     * @returns {String}
+     */
     getField(table) {
+        if (this.thisTable.name === table.name && this.otherTable.name === table.name) {
+            return this.otherField;
+        }
         if (this.thisTable.name === table.name) {
             return this.thisField;
         }
         return this.otherField;
     }
 
+
+
     /**
      * Disables the Link
      * @returns {Void}
      */
     disable() {
-        this.element.classList.add("disabled");
         this.removeColor();
+        this.element.classList.add("disabled");
     }
 
     /**
@@ -80,8 +90,8 @@ export default class Link {
      * @returns {Void}
      */
     unselect() {
-        this.element.classList.remove("disabled");
         this.removeColor();
+        this.element.classList.remove("disabled");
     }
 
     /**
@@ -90,6 +100,7 @@ export default class Link {
      * @returns {Void}
      */
     setColor(color) {
+        this.removeColor();
         this.colorClass = `color${color}`;
         this.element.classList.add(this.colorClass);
     }
