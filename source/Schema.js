@@ -22,7 +22,9 @@ export default class Schema {
         this.schemaID = schemaID;
         this.data     = data;
         this.tables   = {};
+
         this.width    = INITIAL_WIDTH;
+        this.oldWidth = INITIAL_WIDTH;
 
         /** @type {HTMLElement} */
         this.aside    = document.querySelector("aside");
@@ -181,19 +183,32 @@ export default class Schema {
     }
 
     /**
+     * Toggles the minimize of the aside
+     * @returns {Void}
+     */
+    toggleMinimize() {
+        if (this.width === SHRINK_WIDTH) {
+            const newWidth = this.oldWidth === SHRINK_WIDTH ? INITIAL_WIDTH : this.oldWidth;
+            this.setWidth(newWidth);
+        } else {
+            this.oldWidth = this.width;
+            this.setWidth(SHRINK_WIDTH);
+        }
+    }
+
+    /**
      * Sets the Aside width
      * @param {Number} width
      * @returns {Void}
      */
     setWidth(width) {
-        if (!width) {
-            return;
-        }
-        this.width = width;
-        this.aside.style.width = `${this.width}px`;
-        this.main.style.left   = `${this.width}px`;
+        this.width    = width;
+        this.oldWidth = width;
 
-        if (this.width < MIN_WIDTH) {
+        this.aside.style.width = `${width}px`;
+        this.main.style.left   = `${width}px`;
+
+        if (width < MIN_WIDTH) {
             this.aside.classList.add("aside-small");
         } else {
             this.aside.classList.remove("aside-small");

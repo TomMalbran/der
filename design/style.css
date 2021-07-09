@@ -185,6 +185,11 @@ h1 {
     color: var(--main-color);
 }
 
+
+
+/**
+ * Aside Resizer
+ */
 .aside-resizer {
     position: absolute;
     top: 0;
@@ -193,10 +198,37 @@ h1 {
     width: 4px;
     cursor: ew-resize;
     z-index: var(--z-resizer);
+    transition: background-color 0.2s;
 }
 .aside-resizer:hover {
     background-color: var(--main-color);
 }
+
+.aside-resizer .arrow {
+    --arrow-size: 8px;
+    --arrow-width: 8px;
+    --arrow-space: 7px;
+    --arrow-height: 1px;
+
+    position: absolute;
+    top: 24px;
+    left: 1px;
+    padding: 7px;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    transform: translate(-50%);
+    transition: all 0.2s;
+}
+aside:hover .arrow {
+    opacity: 1;
+}
+.aside-resizer .arrow:hover {
+    --arrow-color: white;
+    border-color: var(--main-color);
+    background-color: var(--main-color);
+}
+
 
 .aside-small header {
     transform: translateX(64px) rotate(90deg);
@@ -204,6 +236,11 @@ h1 {
 .aside-small h1 {
     margin-right: 16px;
 }
+.aside-small .arrow {
+    opacity: 0;
+    transform: translate(-50%) rotate(180deg);
+}
+
 .aside-small .schema-filter,
 .aside-small .schema-list {
     opacity: 0;
@@ -654,6 +691,51 @@ dialog .close {
 
 
 /**
+ * Arrow
+ */
+.arrow {
+    --arrow-color: var(--main-color);
+    --arrow-size: 12px;
+    --arrow-width: 12px;
+    --arrow-height: 1px;
+    --arrow-space: 0;
+
+    position: relative;
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    cursor: pointer;
+}
+.arrow:before,
+.arrow:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: var(--arrow-space);
+    width: var(--arrow-width);
+    height: var(--arrow-height);
+    background-color: var(--arrow-color);
+    transition: all 0.2s;
+    transform-origin: left center;
+}
+.arrow:before {
+    transform: rotate(35deg);
+}
+.arrow:after {
+    transform: rotate(-35deg);
+}
+.arrow:hover:before,
+.arrow:active:before {
+    transform: rotate(25deg);
+}
+.arrow:hover:after,
+.arrow:active:after {
+    transform: rotate(-25deg);
+}
+
+
+
+/**
  * Close
  */
 .close {
@@ -665,6 +747,7 @@ dialog .close {
     position: relative;
     width: var(--close-size);
     height: var(--close-size);
+    cursor: pointer;
 }
 .close:before,
 .close:after {

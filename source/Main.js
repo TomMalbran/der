@@ -39,6 +39,9 @@ function setSchema(schemaID, data) {
     canvas.setInitialZoom(100);
 
     schema = new Schema(schemaID, data);
+    schema.setInitialFilter(storage.getFilter());
+    schema.setInitialWidth(storage.getWidth());
+
     for (const table of Object.values(schema.tables)) {
         const data = storage.getTable(table);
         if (data) {
@@ -46,8 +49,6 @@ function setSchema(schemaID, data) {
             canvas.addTable(table);
         }
     }
-    schema.setInitialFilter(storage.getFilter());
-    schema.setInitialWidth(storage.getWidth());
 
     canvas.setInitialScroll(storage.getScroll());
     canvas.setInitialZoom(storage.getZoom());
@@ -135,6 +136,10 @@ document.addEventListener("click", (e) => {
         deleteSchema(selection.schemaID);
         break;
 
+    case "toggle-aside":
+        schema.toggleMinimize();
+        storage.setWidth(schema.width);
+        break;
     case "clear-filter":
         schema.clearFilter();
         storage.removeFilter();
@@ -192,6 +197,19 @@ document.addEventListener("click", (e) => {
 });
 
 /**
+ * The Double Click Event Handler
+ */
+document.addEventListener("dblclick", (e) => {
+    const target = Utils.getTarget(e);
+    const action = target.dataset.action;
+
+    if (action === "resize-aside") {
+        schema.toggleMinimize();
+        storage.setWidth(schema.width);
+    }
+});
+
+/**
  * The Filter Event Handler
  */
 document.querySelector(".schema-filter input").addEventListener("input", () => {
@@ -216,10 +234,12 @@ document.querySelector("main").addEventListener("scroll", () => {
  */
 document.addEventListener("mousedown", (e) => {
     const target = Utils.getTarget(e);
+    const action = target.dataset.action;
+
     if (e.button !== 0) {
         return;
     }
-    switch (target.dataset.action) {
+    switch (action) {
     case "drag-table":
         if (!canvas.currTable) {
             const table = schema.getTable(target);
