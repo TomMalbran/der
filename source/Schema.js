@@ -3,7 +3,7 @@ import Utils from "./Utils.js";
 
 // Constantes
 const INITIAL_WIDTH = 240;
-const MIN_WIDTH     = 170;
+const MIN_WIDTH     = 180;
 const SHRINK_WIDTH  = 60;
 
 
@@ -140,6 +140,7 @@ export default class Schema {
         this.isResizing = true;
         this.startLeft  = event.pageX;
         this.startWidth = this.width;
+        this.aside.classList.add("aside-dragging");
     }
 
     /**
@@ -167,6 +168,9 @@ export default class Schema {
         if (this.width < MIN_WIDTH) {
             this.setWidth(SHRINK_WIDTH);
         }
+        window.setTimeout(() => {
+            this.aside.classList.remove("aside-dragging");
+        }, 50);
         return true;
     }
 
