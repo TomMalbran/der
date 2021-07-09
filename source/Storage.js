@@ -210,6 +210,33 @@ export default class Storage {
 
 
     /**
+     * Returns the stored width, or empty
+     * @returns {Number}
+     */
+    getWidth() {
+        return this.getNumber("width");
+    }
+
+    /**
+     * Saves the current width
+     * @param {Number} value
+     * @returns {Void}
+     */
+    setWidth(value) {
+        this.setNumber("width", value);
+    }
+
+    /**
+     * Removes the current width
+     * @returns {Void}
+     */
+    removeWidth() {
+        this.removeItem("width");
+    }
+
+
+
+    /**
      * Returns the stored scroll, or empty
      * @returns {Object}
      */

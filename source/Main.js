@@ -47,6 +47,7 @@ function setSchema(schemaID, data) {
         }
     }
     schema.setInitialFilter(storage.getFilter());
+    schema.setInitialWidth(storage.getWidth());
 
     canvas.setInitialScroll(storage.getScroll());
     canvas.setInitialZoom(storage.getZoom());
@@ -215,12 +216,23 @@ document.querySelector("main").addEventListener("scroll", () => {
  */
 document.addEventListener("mousedown", (e) => {
     const target = Utils.getTarget(e);
-    if (e.button === 0 && !canvas.currTable && target.dataset.action === "drag-table") {
-        const table = schema.getTable(target);
-        if (table) {
-            canvas.pickTable(e, table);
+    if (e.button !== 0) {
+        return;
+    }
+    switch (target.dataset.action) {
+    case "drag-table":
+        if (!canvas.currTable) {
+            const table = schema.getTable(target);
+            if (table) {
+                canvas.pickTable(e, table);
+            }
+            e.preventDefault();
         }
+        break;
+    case "resize-aside":
+        schema.pickResizer(e);
         e.preventDefault();
+        break;
     }
 });
 
@@ -229,6 +241,9 @@ document.addEventListener("mousedown", (e) => {
  */
 document.addEventListener("mousemove", (e) => {
     if (canvas.dragTable(e)) {
+        e.preventDefault();
+    }
+    if (schema.dragResizer(e)) {
         e.preventDefault();
     }
 });
@@ -240,6 +255,10 @@ document.addEventListener("mouseup", (e) => {
     const table = canvas.dropTable();
     if (table) {
         storage.setTable(table);
+        e.preventDefault();
+    }
+    if (schema.dropResizer()) {
+        storage.setWidth(schema.width);
         e.preventDefault();
     }
 });

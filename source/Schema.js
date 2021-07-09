@@ -1,6 +1,11 @@
 import Table from "./Table.js";
 import Utils from "./Utils.js";
 
+// Constantes
+const INITIAL_WIDTH = 240;
+const MIN_WIDTH     = 170;
+const SHRINK_WIDTH  = 60;
+
 
 
 /**
@@ -17,6 +22,12 @@ export default class Schema {
         this.schemaID = schemaID;
         this.data     = data;
         this.tables   = {};
+        this.width    = INITIAL_WIDTH;
+
+        /** @type {HTMLElement} */
+        this.aside    = document.querySelector("aside");
+        /** @type {HTMLElement} */
+        this.main     = document.querySelector("main");
 
         /** @type {HTMLElement} */
         this.list     = document.querySelector(".schema-list ol");
@@ -114,5 +125,78 @@ export default class Schema {
         this.clear.style.display = "none";
         this.filter.value        = "";
         this.filterList();
+    }
+
+
+
+    /**
+     * Picks the Resizer
+     * @param {MouseEvent} event
+     * @returns {Void}
+     */
+    pickResizer(event) {
+        this.isResizing = true;
+        this.startLeft  = event.pageX;
+        this.startWidth = this.width;
+    }
+
+    /**
+     * Drags the Resizer
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    dragResizer(event) {
+        if (!this.isResizing) {
+            return false;
+        }
+        this.setWidth(this.startWidth + (event.pageX - this.startLeft));
+        return true;
+    }
+
+    /**
+     * Drops the Resizer
+     * @returns {Boolean}
+     */
+    dropResizer() {
+        if (!this.isResizing) {
+            return false;
+        }
+        this.isResizing = false;
+        if (this.width < MIN_WIDTH) {
+            this.setWidth(SHRINK_WIDTH);
+        }
+        return true;
+    }
+
+    /**
+     * Sets the initial Width
+     * @param {Number} width
+     * @returns {Void}
+     */
+    setInitialWidth(width) {
+        const initialWidth = width || INITIAL_WIDTH;
+        if (this.width !== initialWidth) {
+            this.setWidth(initialWidth);
+        }
+    }
+
+    /**
+     * Sets the Aside width
+     * @param {Number} width
+     * @returns {Void}
+     */
+    setWidth(width) {
+        if (!width) {
+            return;
+        }
+        this.width = width;
+        this.aside.style.width = `${this.width}px`;
+        this.main.style.left   = `${this.width}px`;
+
+        if (this.width < MIN_WIDTH) {
+            this.aside.classList.add("aside-small");
+        } else {
+            this.aside.classList.remove("aside-small");
+        }
     }
 }

@@ -30,6 +30,8 @@
     --z-table-selected: 5;
     --z-table-dragging: 6;
 
+    --z-aside: 1;
+    --z-resizer: 98;
     --z-zoom: 99;
     --z-dialog: 100;
 }
@@ -164,12 +166,16 @@ aside {
     width: var(--aside-width);
     bottom: 0;
     border-right: 1px solid var(--border-color);
+    background-color: white;
+    z-index: var(--z-aside);
 }
 aside header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
+    transform-origin: top left;
+    transition: transform 0.1s;
 }
 h1 {
     margin: 0;
@@ -177,6 +183,31 @@ h1 {
     font-size: 40px;
     line-height: 1;
     color: var(--main-color);
+}
+
+.aside-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -4px;
+    width: 4px;
+    cursor: ew-resize;
+    z-index: var(--z-resizer);
+}
+.aside-resizer:hover {
+    background-color: var(--main-color);
+}
+
+.aside-small header {
+    transform: translateX(64px) rotate(90deg);
+}
+.aside-small h1 {
+    margin-right: 16px;
+}
+.aside-small .schema-filter,
+.aside-small .schema-list {
+    opacity: 0;
+    pointer-events: none;
 }
 
 
@@ -189,6 +220,7 @@ h1 {
     display: flex;
     align-items: flex-start;
     padding: 0 12px 4px 12px;
+    transition: opacity 0.2s;
 }
 .schema-filter input {
     width: calc(100% - 30px);
@@ -232,6 +264,7 @@ h1 {
     border-top: 1px solid var(--border-color);
     height: calc(100vh - var(--header-height));
     overflow: auto;
+    transition: opacity 0.2s;
 }
 .schema-list ol {
     margin: 0;
