@@ -16,9 +16,13 @@ export default class Canvas {
      * Canvas constructor
      */
     constructor() {
+        /** @type {Object.<String, Table>} */
         this.tables        = {};
+
+        /** @type {Link[]} */
         this.links         = [];
 
+        /** @type {HTMLElement} */
         this.container     = document.querySelector("main");
         this.bounds        = this.container.getBoundingClientRect();
 
@@ -174,33 +178,15 @@ export default class Canvas {
         }
 
         // Adds links to/from the given Table
-        for (const otherTable of Object.values(this.tables)) {
-            for (const [ key, field ] of Object.entries(otherTable.links)) {
-                if (field.onTable) {
-                    continue;
-                }
-                if ((otherTable.name === table.name && this.tables[field.table]) || field.table === table.name) {
-                    this.createLink(otherTable, key, field);
+        for (const toTable of Object.values(this.tables)) {
+            for (const link of toTable.links) {
+                if ((toTable.name === table.name && this.tables[link.toTableName]) || link.toTableName === table.name) {
+                    link.create(this.tables[link.fromTableName], this.tables[link.toTableName]);
+                    this.links.push(link);
+                    this.canvas.appendChild(link.element);
                 }
             }
         }
-    }
-
-    /**
-     * Creates a Link
-     * @param {Table}  table
-     * @param {String} key
-     * @param {Object} field
-     * @returns {Void}
-     */
-    createLink(table, key, field) {
-        const otherTable = this.tables[field.table];
-        const thisKey    = field.rightKey || key;
-        const otherKey   = field.leftKey  || key;
-        const link       = new Link(table, thisKey, otherTable, otherKey);
-
-        this.links.push(link);
-        this.canvas.appendChild(link.element);
     }
 
     /**
@@ -247,44 +233,33 @@ export default class Canvas {
         }
         this.selectedTable = table;
 
-        // Select or Disable the Tables
+        // Disable all the Tables
         for (const otherTable of Object.values(this.tables)) {
-            let hasLink = false;
-            otherTable.unselect();
-            for (const field of Object.values(otherTable.links)) {
-                if (!field.onTable && field.table === table.name) {
-                    hasLink = true;
-                    break;
-                }
-            }
-            if (!hasLink) {
-                otherTable.disable();
-            }
+            otherTable.disable();
         }
-        for (const field of Object.values(table.links)) {
-            if (!field.onTable && this.tables[field.table]) {
-                this.tables[field.table].unselect();
-            }
-        }
-        table.select();
 
         // Add colors or disable the Links
         let   lastColor = 0;
         const colors    = {};
         for (const link of this.links) {
             if (link.isLinkedTo(table)) {
-                const field = link.getField(table);
+                const field = link.getFieldName(table);
                 if (!colors[field]) {
                     colors[field] = lastColor + 1;
-                    lastColor = (lastColor + 1) % COLOR_AMOUNT;
+                    lastColor     = (lastColor + 1) % COLOR_AMOUNT;
                 }
-                link.thisTable.setFieldColor(link.thisField, colors[field]);
-                link.otherTable.setFieldColor(link.otherField, colors[field]);
+                link.toTable.unselect();
+                link.fromTable.unselect();
+                link.fromField.setColor(colors[field]);
+                link.toField.setColor(colors[field]);
                 link.setColor(colors[field]);
             } else {
                 link.disable();
             }
         }
+
+        // Select the Table
+        table.select();
     }
 
     /**
@@ -297,6 +272,9 @@ export default class Canvas {
         }
         for (const table of Object.values(this.tables)) {
             table.unselect();
+            for (const field of table.fields) {
+                field.removeColor();
+            }
         }
         for (const link of this.links) {
             link.unselect();
@@ -328,7 +306,9 @@ export default class Canvas {
         if (!this.tables[table.name]) {
             return;
         }
+        this.unselectTable();
         this.selectTable(table);
+
         this.grabbedTable = table;
         this.startMouse   = { top : event.pageY, left : event.pageX };
         this.startPos     = { top : table.top,   left : table.left  };

@@ -14,7 +14,7 @@ function getTarget(event) {
 
 /**
  * Removes the Element from the DOM
- * @param {HTMLElement} element
+ * @param {(HTMLElement|SVGSVGElement)} element
  * @returns {Void}
  */
 function removeElement(element) {

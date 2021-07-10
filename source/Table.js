@@ -1,3 +1,5 @@
+import Field from "./Field.js";
+import Link  from "./Link.js";
 import Utils from "./Utils.js";
 
 
@@ -13,14 +15,20 @@ export default class Table {
      */
     constructor(data) {
         this.data      = data;
-        this.fields    = [];
 
         this.top       = 0;
         this.left      = 0;
         this.maxFields = 15;
         this.showAll   = false;
 
+        /** @type {Field[]} */
+        this.fields    = [];
         this.setFields();
+
+        /** @type {Link[]} */
+        this.links     = [];
+        this.setLinks();
+
         this.createListElem();
     }
 
@@ -59,26 +67,12 @@ export default class Table {
     }
 
     /**
-     * Returns true if the Table has Joins or Foreigns
-     * @returns {Boolean}
+     * Returns the Field Position
+     * @param {String} name
+     * @returns {Field}
      */
-    get hasLinks() {
-        return this.data.joins || this.data.foreigns;
-    }
-
-    /**
-     * Returns the Table Joins and Foreigns
-     * @returns {Object}
-     */
-    get links() {
-        let result = [];
-        if (this.data.joins) {
-            result = this.data.joins;
-        }
-        if (this.data.foreigns) {
-            result = { ...result, ...this.data.foreigns };
-        }
-        return result;
+    getField(name) {
+        return this.fields.find((field) => field.name === name);
     }
 
     /**
@@ -102,28 +96,57 @@ export default class Table {
             return;
         }
 
-        for (const [ name, field ] of Object.entries(this.data.fields)) {
-            this.fields.push({ name, type : field.type, isPrimary : field.type === "id" || field.isPrimary });
+        let index = 0;
+        for (const [ name, data ] of Object.entries(this.data.fields)) {
+            this.fields.push(new Field(index, name, data));
+            index++;
         }
         if (this.data.hasPositions) {
-            this.fields.push({ name : "position", type : "number" });
+            this.fields.push(new Field(index, "position", { type : "number" }));
+            index++;
         }
         if (this.data.canCreate && this.data.hasTimestamps) {
-            this.fields.push({ name : "createdTime", type : "date" });
+            this.fields.push(new Field(index, "createdTime", { type : "date" }));
+            index++;
         }
         if (this.data.canCreate && this.data.hasUsers) {
-            this.fields.push({ name : "createdUser", type : "number" });
+            this.fields.push(new Field(index, "createdUser", { type : "number" }));
+            index++;
         }
         if (this.data.canEdit && this.data.hasTimestamps) {
-            this.fields.push({ name : "modifiedTime", type : "date" });
+            this.fields.push(new Field(index, "modifiedTime", { type : "date" }));
+            index++;
         }
         if (this.data.canEdit && this.data.hasUsers) {
-            this.fields.push({ name : "modifiedUser", type : "number" });
+            this.fields.push(new Field(index, "modifiedUser", { type : "number" }));
+            index++;
         }
         if (this.data.canDelete) {
-            this.fields.push({ name : "isDeleted", type : "boolean" });
+            this.fields.push(new Field(index, "isDeleted", { type : "boolean" }));
+            index++;
         }
     }
+
+    /**
+     * Sets the Links using the Joins and Foreigns data
+     * @returns {Void}
+     */
+    setLinks() {
+        if (this.data.joins) {
+            for (const [ key, data ] of Object.entries(this.data.joins)) {
+                if (!data.onTable) {
+                    this.links.push(new Link(this.name, key, data));
+                }
+            }
+        }
+        if (this.data.foreigns) {
+            for (const [ key, data ] of Object.entries(this.data.foreigns)) {
+                this.links.push(new Link(this.name, key, data));
+            }
+        }
+    }
+
+
 
     /**
      * Creates the List element
@@ -198,62 +221,38 @@ export default class Table {
         this.tableElem.dataset.table   = this.name;
         this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
-        this.tableHeader = document.createElement("header");
-        this.tableHeader.innerHTML      = this.name;
-        this.tableHeader.dataset.action = "drag-table";
-        this.tableHeader.dataset.table  = this.name;
+        const header = document.createElement("header");
+        header.innerHTML      = this.name;
+        header.dataset.action = "drag-table";
+        header.dataset.table  = this.name;
 
         const remove = document.createElement("a");
         remove.href           = "#";
         remove.className      = "close";
         remove.dataset.action = "remove-table";
         remove.dataset.table  = this.name;
-        this.tableHeader.appendChild(remove);
+        header.appendChild(remove);
 
-        this.tableList   = document.createElement("ol");
-        this.tableElems  = [];
-        this.tableColors = [];
-        for (const field of this.fields) {
-            this.addFieldElem(field);
+        const list = document.createElement("ol");
+        for (const [ index, field ] of this.fields.entries()) {
+            field.createTableElem(!this.showAll && index >= this.maxFields);
+            list.appendChild(field.tableElem);
         }
 
         if (this.fields.length > this.maxFields) {
             this.hiddenFields = this.fields.length - this.maxFields;
 
-            this.tableHidden = document.createElement("li");
-            this.tableHidden.className      = "schema-hidden";
-            this.tableHidden.innerHTML      = this.showAll ? "Hide fields" : `+${this.hiddenFields} hidden fields`;
-            this.tableHidden.dataset.action = "toggle-fields";
-            this.tableHidden.dataset.table  = this.name;
+            this.hiddenElem = document.createElement("li");
+            this.hiddenElem.className      = "schema-hidden";
+            this.hiddenElem.innerHTML      = this.showAll ? "Hide fields" : `+${this.hiddenFields} hidden fields`;
+            this.hiddenElem.dataset.action = "toggle-fields";
+            this.hiddenElem.dataset.table  = this.name;
 
-            this.tableList.appendChild(this.tableHidden);
+            list.appendChild(this.hiddenElem);
         }
 
-        this.tableElem.appendChild(this.tableHeader);
-        this.tableElem.appendChild(this.tableList);
-    }
-
-    /**
-     * Adds a Table Field Elem
-     * @param {Object} field
-     * @returns {Void}
-     */
-    addFieldElem(field) {
-        const li   = document.createElement("li");
-        const name = document.createElement(field.isPrimary ? "b" : "span");
-        const type = document.createElement("span");
-
-        name.innerHTML = field.name;
-        type.innerHTML = field.type;
-
-        li.appendChild(name);
-        li.appendChild(type);
-
-        if (!this.showAll && this.tableElems.length >= this.maxFields) {
-            li.className = "schema-hide";
-        }
-        this.tableList.appendChild(li);
-        this.tableElems.push(li);
+        this.tableElem.appendChild(header);
+        this.tableElem.appendChild(list);
     }
 
     /**
@@ -262,18 +261,18 @@ export default class Table {
      */
     toggleFields() {
         if (!this.showAll) {
-            for (const elem of this.tableElems) {
-                elem.className = "";
+            for (const field of this.fields) {
+                field.toggleVisibility(false);
             }
-            this.tableHidden.innerHTML = "Hide fields";
+            this.hiddenElem.innerHTML = "Hide fields";
             this.showAll = true;
         } else {
-            for (const [ index, elem ] of this.tableElems.entries()) {
+            for (const [ index, field ] of this.fields.entries()) {
                 if (index >= this.maxFields) {
-                    elem.className = "schema-hide";
+                    field.toggleVisibility(true);
                 }
             }
-            this.tableHidden.innerHTML = `+${this.hiddenFields} hidden fields`;
+            this.hiddenElem.innerHTML = `+${this.hiddenFields} hidden fields`;
             this.showAll = false;
         }
         this.setBounds();
@@ -318,23 +317,6 @@ export default class Table {
     unselect() {
         this.tableElem.classList.remove("selected");
         this.tableElem.classList.remove("disabled");
-
-        for (const [ index, color ] of Object.entries(this.tableColors)) {
-            this.tableElems[index].classList.remove("colored", `color${color}`);
-        }
-        this.tableColors = {};
-    }
-
-    /**
-     * Set the color of a Field
-     * @param {String} key
-     * @param {Number} color
-     * @returns {Void}
-     */
-    setFieldColor(key, color) {
-        const index = this.getFieldIndex(key);
-        this.tableColors[index] = color;
-        this.tableElems[index].classList.add("colored", `color${color}`);
     }
 
 

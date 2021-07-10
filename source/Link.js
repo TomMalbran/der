@@ -16,26 +16,32 @@ export default class Link {
 
     /**
      * Link constructor
-     * @param {Table}  thisTable
-     * @param {String} thisField
-     * @param {Table}  otherTable
-     * @param {String} otherField
+     * @param {String} tableName
+     * @param {String} keyName
+     * @param {Object} data
      */
-    constructor(thisTable, thisField, otherTable, otherField) {
-        this.thisTable  = thisTable;
-        this.thisField  = thisField;
-        this.otherTable = otherTable;
-        this.otherField = otherField;
-
-        this.create();
-        this.connect();
+    constructor(tableName, keyName, data) {
+        this.fromTableName = tableName;
+        this.fromFieldName = data.rightKey || keyName;
+        this.toTableName   = data.table;
+        this.toFieldName   = data.leftKey || keyName;
     }
 
     /**
      * Creates the SVG element
+     * @param {Table} fromTable
+     * @param {Table} toTable
      * @returns {Void}
      */
-    create() {
+    create(fromTable, toTable) {
+        if (this.element) {
+            return;
+        }
+        this.fromTable = fromTable;
+        this.fromField = fromTable.getField(this.fromFieldName);
+        this.toTable   = toTable;
+        this.toField   = toTable.getField(this.toFieldName);
+
         this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         this.element.classList.add("schema-link");
         this.element.setAttribute("width", "100%");
@@ -46,6 +52,8 @@ export default class Link {
 
         this.element.appendChild(this.arrow);
         this.element.appendChild(this.path);
+
+        this.connect();
     }
 
 
@@ -56,7 +64,7 @@ export default class Link {
      * @returns {Boolean}
      */
     isLinkedTo(table) {
-        return this.thisTable.name === table.name || this.otherTable.name === table.name;
+        return this.fromTableName === table.name || this.toTableName === table.name;
     }
 
     /**
@@ -64,14 +72,14 @@ export default class Link {
      * @param {Table} table
      * @returns {String}
      */
-    getField(table) {
-        if (this.thisTable.name === table.name && this.otherTable.name === table.name) {
-            return this.otherField;
+    getFieldName(table) {
+        if (this.fromTableName === table.name && this.toTableName === table.name) {
+            return this.toFieldName;
         }
-        if (this.thisTable.name === table.name) {
-            return this.thisField;
+        if (this.fromTableName === table.name) {
+            return this.fromFieldName;
         }
-        return this.otherField;
+        return this.toFieldName;
     }
 
 
@@ -123,9 +131,6 @@ export default class Link {
      * @returns {Void}
      */
     connect() {
-        const thisPosition  = this.thisTable.getFieldIndex(this.thisField);
-        const otherPosition = this.otherTable.getFieldIndex(this.otherField);
-
         let topTable      = null;
         let bottomTable   = null;
         let leftTable     = null;
@@ -134,34 +139,34 @@ export default class Link {
         let rightPosition = null;
         let toEnd         = false;
 
-        if (this.thisTable.top >= this.otherTable.top) {
-            topTable    = this.thisTable;
-            bottomTable = this.otherTable;
+        if (this.fromTable.top >= this.toTable.top) {
+            topTable    = this.fromTable;
+            bottomTable = this.toTable;
         } else {
-            topTable    = this.otherTable;
-            bottomTable = this.thisTable;
+            topTable    = this.toTable;
+            bottomTable = this.fromTable;
         }
 
-        if (this.thisTable.left <= this.otherTable.left) {
-            leftTable     = this.thisTable;
-            rightTable    = this.otherTable;
-            leftPosition  = thisPosition;
-            rightPosition = otherPosition;
+        if (this.fromTable.left <= this.toTable.left) {
+            leftTable     = this.fromTable;
+            rightTable    = this.toTable;
+            leftPosition  = this.fromField.index;
+            rightPosition = this.toField.index;
             toEnd         = true;
         } else {
-            leftTable     = this.otherTable;
-            rightTable    = this.thisTable;
-            leftPosition  = otherPosition;
-            rightPosition = thisPosition;
+            leftTable     = this.toTable;
+            rightTable    = this.fromTable;
+            leftPosition  = this.toField.index;
+            rightPosition = this.fromField.index;
             toEnd         = false;
         }
 
-        const top    = Math.min(this.thisTable.top, this.otherTable.top);
-        const height = Math.max(this.otherTable.bottom, this.thisTable.bottom) - top;
+        const top    = Math.min(this.fromTable.top, this.toTable.top);
+        const height = Math.max(this.toTable.bottom, this.fromTable.bottom) - top;
         const startY = leftTable.top - top + leftPosition * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
         const endY   = rightTable.top - top + rightPosition * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
 
-        if (this.thisTable.name === this.otherTable.name) {
+        if (this.fromTable.name === this.toTable.name) {
             this.connectToSelf(top, height, startY, endY);
         } else {
             if (leftTable.right + 50 > rightTable.left) {
@@ -185,7 +190,7 @@ export default class Link {
      * @returns {Void}
      */
     connectToSelf(top, height, startY, endY) {
-        const left   = this.thisTable.right;
+        const left   = this.fromTable.right;
         const width  = SELF_WIDTH;
 
         const startX = 0;
