@@ -19,8 +19,9 @@
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
     --title-font: Esteban, Georgia, serif;
 
-    --aside-width: 240px;
+    --aside-width: 300px;
     --header-height: 72px;
+    --filter-height: 33px;
     --border-radius: 6px;
 
     --z-link-disabled: 1;
@@ -88,13 +89,13 @@ html, body, input {
  */
 .btn {
     display: inline-block;
-    padding: 3px 9px;
+    padding: 4px 12px;
     background-color: white;
     border: 1px solid var(--main-color);
     border-radius: 9999px;
     color: var(--main-color);
     font-family: var(--main-font);
-    font-size: 13px;
+    font-size: 14px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -278,9 +279,9 @@ h1 {
  * Filter Styles
  */
 .schema-filter {
+    display: none;
     position: relative;
-    display: flex;
-    align-items: flex-start;
+    align-items: center;
     padding: 0 12px 4px 12px;
     transition: opacity 0.2s;
 }
@@ -294,7 +295,6 @@ h1 {
     display: block;
     width: 12px;
     height: 12px;
-    margin-top: 3px;
     border: 3px solid var(--main-color);
     border-radius: 50%;
 }
@@ -302,7 +302,7 @@ h1 {
     content: "";
     position: absolute;
     top: 17px;
-    left: 28px;
+    left: 26px;
     width: 4px;
     height: 12px;
     background-color: var(--main-color);
@@ -314,7 +314,11 @@ h1 {
     --close-width: 18px;
     --close-height: 2px;
     display: none;
-    margin-top: 5px;
+    margin-right: 8px;
+}
+
+.schema-total {
+    white-space: nowrap;
 }
 
 
@@ -324,7 +328,7 @@ h1 {
  */
 .schema-list {
     border-top: 1px solid var(--border-color);
-    height: calc(100vh - var(--header-height));
+    height: calc(100vh - var(--header-height) - var(--filter-height));
     overflow: auto;
     transition: opacity 0.2s;
 }

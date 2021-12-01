@@ -33,10 +33,14 @@ export default class Schema {
 
         /** @type {HTMLElement} */
         this.list     = document.querySelector(".schema-list ol");
+        /** @type {HTMLElement} */
+        this.filter   = document.querySelector(".schema-filter");
         /** @type {HTMLInputElement} */
-        this.filter   = document.querySelector(".schema-filter input");
+        this.input    = document.querySelector(".schema-filter input");
         /** @type {HTMLElement} */
         this.clear    = document.querySelector(".schema-filter .close");
+        /** @type {HTMLElement} */
+        this.total    = document.querySelector(".schema-total");
 
         this.createList();
     }
@@ -91,15 +95,20 @@ export default class Schema {
      * @returns {String}
      */
     filterList() {
-        const value = String(this.filter.value).toLocaleLowerCase();
+        const value = String(this.input.value).toLocaleLowerCase();
+        let   count = 0;
         for (const table of Object.values(this.tables)) {
             if (value && !table.name.includes(value)) {
                 table.hideInList();
             } else {
                 table.showInList();
+                count++;
             }
         }
+
         this.clear.style.display = value ? "block" : "none";
+        this.total.innerHTML     = `${count} table${count !== 1 ? "s" : ""}`;
+
         return value;
     }
 
@@ -109,14 +118,11 @@ export default class Schema {
      * @returns {Void}
      */
     setInitialFilter(value) {
+        this.filter.style.display = "flex";
         if (value) {
-            this.clear.style.display = "block";
-            this.filter.value        = value;
-            this.filterList();
-        } else {
-            this.clear.style.display = "none";
-            this.filter.value        = "";
+            this.input.value = value;
         }
+        this.filterList();
     }
 
     /**
@@ -124,8 +130,7 @@ export default class Schema {
      * @returns {Void}
      */
     clearFilter() {
-        this.clear.style.display = "none";
-        this.filter.value        = "";
+        this.input.value = "";
         this.filterList();
     }
 
