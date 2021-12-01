@@ -195,9 +195,6 @@ export default class Canvas {
      * @returns {Void}
      */
     removeTable(table) {
-        table.removeFromCanvas();
-        Utils.removeElement(table.tableElem);
-
         // Remove the links to/from the table
         for (let i = this.links.length - 1; i >= 0; i--) {
             const link = this.links[i];
@@ -206,6 +203,11 @@ export default class Canvas {
                 this.links.splice(i, 1);
             }
         }
+
+        // Remove the table
+        table.removeFromCanvas();
+        Utils.removeElement(table.tableElem);
+        delete this.tables[table.name];
     }
 
 

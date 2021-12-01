@@ -35,8 +35,10 @@ export default class Link {
      */
     create(fromTable, toTable) {
         if (this.element) {
+            this.connect();
             return;
         }
+
         this.fromTable = fromTable;
         this.fromField = fromTable.getField(this.fromFieldName);
         this.toTable   = toTable;
