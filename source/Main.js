@@ -260,10 +260,10 @@ document.addEventListener("mousedown", (e) => {
  * The Drag Event Handler
  */
 document.addEventListener("mousemove", (e) => {
-    if (canvas.dragTable(e)) {
+    if (canvas && canvas.dragTable(e)) {
         e.preventDefault();
     }
-    if (schema.dragResizer(e)) {
+    if (schema && schema.dragResizer(e)) {
         e.preventDefault();
     }
 });
@@ -272,12 +272,14 @@ document.addEventListener("mousemove", (e) => {
  * The Drop Event Handler
  */
 document.addEventListener("mouseup", (e) => {
-    const table = canvas.dropTable();
-    if (table) {
-        storage.setTable(table);
-        e.preventDefault();
+    if (canvas) {
+        const table = canvas.dropTable();
+        if (table) {
+            storage.setTable(table);
+            e.preventDefault();
+        }
     }
-    if (schema.dropResizer()) {
+    if (schema && schema.dropResizer()) {
         storage.setWidth(schema.width);
         e.preventDefault();
     }
