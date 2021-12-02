@@ -46,6 +46,11 @@ function setSchema(schemaID, data) {
         const data = storage.getTable(table);
         if (data) {
             table.restore(data);
+        }
+        if (table.isExpanded) {
+            table.restoreExpanded();
+        }
+        if (table.onCanvas) {
             canvas.addTable(table);
         }
     }
@@ -163,6 +168,10 @@ document.addEventListener("click", (e) => {
         const table = schema.getTable(target);
         if (table) {
             switch (action) {
+            case "expand-table":
+                table.toggleExpand();
+                storage.setTable(table);
+                break;
             case "show-table":
                 canvas.showTable(table);
                 break;
@@ -177,8 +186,8 @@ document.addEventListener("click", (e) => {
                 break;
             case "remove-table":
                 canvas.removeTable(table);
-                storage.removeTable(table);
                 table.destroy();
+                storage.setTable(table);
                 break;
             case "toggle-fields":
                 table.toggleFields();

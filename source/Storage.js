@@ -298,9 +298,11 @@ export default class Storage {
      */
     setTable(table) {
         this.setData(`table-${table.name}`, {
-            top     : table.top,
-            left    : table.left,
-            showAll : table.showAll,
+            isExpanded : table.isExpanded,
+            onCanvas   : table.onCanvas,
+            top        : table.top,
+            left       : table.left,
+            showAll    : table.showAll,
         });
     }
 

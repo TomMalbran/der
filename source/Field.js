@@ -20,7 +20,23 @@
     }
 
     /**
-     * Adds a Table Field Elem
+     * Creates a Table Field Elem
+     * @returns {Void}
+     */
+    createListElem() {
+        this.listElem = document.createElement("li");
+        const name = document.createElement(this.isPrimary ? "b" : "span");
+        const type = document.createElement("span");
+
+        name.innerHTML = this.name;
+        type.innerHTML = this.type;
+
+        this.listElem.appendChild(name);
+        this.listElem.appendChild(type);
+    }
+
+    /**
+     * Creates a Table Field Elem
      * @param {Boolean} isHidden
      * @returns {Void}
      */

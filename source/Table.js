@@ -14,19 +14,21 @@ export default class Table {
      * @param {Object} data
      */
     constructor(data) {
-        this.data      = data;
+        this.data       = data;
+        this.isExpanded = false;
 
-        this.top       = 0;
-        this.left      = 0;
-        this.maxFields = 15;
-        this.showAll   = false;
+        this.onCanvas   = false;
+        this.top        = 0;
+        this.left       = 0;
+        this.maxFields  = 15;
+        this.showAll    = false;
 
         /** @type {Field[]} */
-        this.fields    = [];
+        this.fields     = [];
         this.setFields();
 
         /** @type {Link[]} */
-        this.links     = [];
+        this.links      = [];
         this.setLinks();
 
         this.createListElem();
@@ -37,6 +39,7 @@ export default class Table {
      * @returns {Void}
      */
     destroy() {
+        this.onCanvas  = false;
         this.top       = 0;
         this.left      = 0;
         this.maxFields = 15;
@@ -51,9 +54,11 @@ export default class Table {
      * @returns {Void}
      */
     restore(data) {
-        this.top     = data.top;
-        this.left    = data.left;
-        this.showAll = data.showAll;
+        this.onCanvas   = data.onCanvas;
+        this.isExpanded = data.isExpanded;
+        this.top        = data.top;
+        this.left       = data.left;
+        this.showAll    = data.showAll;
     }
 
 
@@ -154,8 +159,17 @@ export default class Table {
      */
     createListElem() {
         this.listElem   = document.createElement("li");
+        this.listInner  = document.createElement("div");
+        this.listArrow  = document.createElement("a");
         this.listText   = document.createElement("span");
         this.listButton = document.createElement("button");
+
+        this.listInner.className       = "schema-item";
+
+        this.listArrow.href            = "#";
+        this.listArrow.className       = "arrow";
+        this.listArrow.dataset.action  = "expand-table";
+        this.listArrow.dataset.table   = this.data.table;
 
         this.listText.innerHTML        = this.data.table;
         this.listText.dataset.action   = "show-table";
@@ -166,8 +180,10 @@ export default class Table {
         this.listButton.dataset.action = "add-table";
         this.listButton.dataset.table  = this.data.table;
 
-        this.listElem.appendChild(this.listText);
-        this.listElem.appendChild(this.listButton);
+        this.listElem.appendChild(this.listInner);
+        this.listInner.appendChild(this.listArrow);
+        this.listInner.appendChild(this.listText);
+        this.listInner.appendChild(this.listButton);
     }
 
     /**
@@ -175,7 +191,7 @@ export default class Table {
      * @returns {Void}
      */
     showInList() {
-        this.listElem.style.display = "flex";
+        this.listElem.style.display = "block";
     }
 
     /**
@@ -189,10 +205,53 @@ export default class Table {
 
 
     /**
+     * Toggles the List expanded
+     * @returns {Void}
+     */
+    toggleExpand() {
+        if (!this.expandElem) {
+            this.createExpandElem();
+        }
+        if (this.isExpanded) {
+            this.listElem.classList.remove("schema-expanded");
+        } else {
+            this.listElem.classList.add("schema-expanded");
+        }
+        this.isExpanded = !this.isExpanded;
+    }
+
+    /**
+     * Restores the List expanded
+     * @returns {Void}
+     */
+    restoreExpanded() {
+        this.createExpandElem();
+        this.listElem.classList.add("schema-expanded");
+    }
+
+    /**
+     * Creates the Expand element
+     * @returns {Void}
+     */
+    createExpandElem() {
+        this.expandElem = document.createElement("ol");
+        this.expandElem.className = "schema-expand";
+
+        for (const field of this.fields) {
+            field.createListElem();
+            this.expandElem.appendChild(field.listElem);
+        }
+        this.listElem.appendChild(this.expandElem);
+    }
+
+
+
+    /**
      * Adds a Table Element to the Canvas
      * @returns {Void}
      */
     addToCanvas() {
+        this.onCanvas = true;
         this.listText.classList.add("selectable");
         this.listButton.style.display = "none";
 
@@ -206,6 +265,7 @@ export default class Table {
      * @returns {Void}
      */
     removeFromCanvas() {
+        this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listButton.style.display = "block";
     }
