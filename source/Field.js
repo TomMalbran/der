@@ -73,6 +73,9 @@
      * @returns {Void}
      */
     setColor(color) {
+        if (this.color) {
+            return;
+        }
         this.color = color;
         this.tableElem.classList.add("colored", `color${color}`);
     }
