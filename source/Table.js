@@ -149,6 +149,15 @@ export default class Table {
                 this.links.push(new Link(this.name, key, data));
             }
         }
+        if (this.data.hasUsers) {
+            const data = { table : "credentials", leftKey : "CREDENTIAL_ID" };
+            if (this.data.canCreate && !this.data.joins["createdUser"] && !this.data.foreigns["createdUser"]) {
+                this.links.push(new Link(this.name, "createdUser", data));
+            }
+            if (this.data.canEdit && !this.data.joins["modifiedUser"] && !this.data.foreigns["modifiedUser"]) {
+                this.links.push(new Link(this.name, "modifiedUser", data));
+            }
+        }
     }
 
 
