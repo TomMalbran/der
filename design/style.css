@@ -284,7 +284,6 @@ h1 {
     align-items: center;
     padding: 0 12px 4px 12px;
     transition: opacity 0.2s;
-    flex-shrink: 0;
 }
 .schema-filter input {
     width: calc(100% - 30px);
@@ -293,6 +292,7 @@ h1 {
 }
 .schema-filter::before {
     content: "";
+    flex-shrink: 0;
     display: block;
     width: 12px;
     height: 12px;
@@ -302,7 +302,7 @@ h1 {
 .schema-filter::after {
     content: "";
     position: absolute;
-    top: 17px;
+    top: 19px;
     left: 26px;
     width: 4px;
     height: 12px;
@@ -314,11 +314,13 @@ h1 {
     --close-size: 18px;
     --close-width: 18px;
     --close-height: 2px;
+    flex-shrink: 0;
     display: none;
     margin-right: 8px;
 }
 
 .schema-total {
+    flex-shrink: 0;
     white-space: nowrap;
 }
 
