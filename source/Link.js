@@ -133,6 +133,9 @@ export default class Link {
      * @returns {Void}
      */
     connect() {
+        const fromFieldIndex = this.fromTable.getFieldIndex(this.fromField.name);
+        const toFieldIndex   = this.toTable.getFieldIndex(this.toField.name);
+
         let topTable      = null;
         let bottomTable   = null;
         let leftTable     = null;
@@ -152,20 +155,20 @@ export default class Link {
         if (this.fromTable.left <= this.toTable.left) {
             leftTable     = this.fromTable;
             rightTable    = this.toTable;
-            leftPosition  = this.fromField.index;
-            rightPosition = this.toField.index;
+            leftPosition  = fromFieldIndex;
+            rightPosition = toFieldIndex;
             toEnd         = true;
         } else {
             leftTable     = this.toTable;
             rightTable    = this.fromTable;
-            leftPosition  = this.toField.index;
-            rightPosition = this.fromField.index;
+            leftPosition  = toFieldIndex;
+            rightPosition = fromFieldIndex;
             toEnd         = false;
         }
 
         const top    = Math.min(this.fromTable.top, this.toTable.top);
         const height = Math.max(this.toTable.bottom, this.fromTable.bottom) - top;
-        const startY = leftTable.top - top + leftPosition * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
+        const startY = leftTable.top  - top + leftPosition  * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
         const endY   = rightTable.top - top + rightPosition * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
 
         if (this.fromTable.name === this.toTable.name) {
