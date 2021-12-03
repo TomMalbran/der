@@ -111,6 +111,18 @@ export default class Storage {
 
     /**
      * Returns the current Schema
+     * @param {Number} schemaID
+     * @returns {Object}
+     */
+    getSchemaData(schemaID) {
+        const name = localStorage.getItem(`${schemaID}-name`);
+        if (name) {
+            return { id : schemaID, name };
+        }
+    }
+
+    /**
+     * Returns the current Schema
      * @returns {Object}
      */
     getCurrentSchema() {
@@ -141,16 +153,41 @@ export default class Storage {
 
     /**
      * Saves the Schema
+     * @param {Number} schemaID
      * @param {String} name
-     * @param {Object} schema
+     * @param {Object} newSchema
      * @returns {Void}
      */
-    setSchema(name, schema) {
-        localStorage.setItem(`${this.nextID}-name`,   name);
-        localStorage.setItem(`${this.nextID}-schema`, JSON.stringify(schema));
+    setSchema(schemaID, name, newSchema) {
+        // Remove the deleted tables
+        if (schemaID) {
+            const oldSchema = this.getSchema(schemaID);
+            for (const oldElem of Object.values(oldSchema)) {
+                if (oldElem.table) {
+                    let found = false;
+                    for (const newElem of Object.values(newSchema)) {
+                        if (newElem.table === oldElem.table) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        localStorage.removeItem(`${schemaID}-table-${oldElem.table}`);
+                    }
+                }
+            }
+        }
 
-        this.nextID += 1;
-        localStorage.setItem("nextID", String(this.nextID));
+        // Save the name and Schema
+        const id = schemaID || this.nextID;
+        localStorage.setItem(`${id}-name`,   name);
+        localStorage.setItem(`${id}-schema`, JSON.stringify(newSchema));
+
+        // Update the next ID if this is a new Schema
+        if (!schemaID) {
+            this.nextID += 1;
+            localStorage.setItem("nextID", String(this.nextID));
+        }
     }
 
     /**

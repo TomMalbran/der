@@ -18,9 +18,13 @@ export default class Selection {
         /** @type {HTMLElement} */
         this.selectList   = document.querySelector(".select-list");
 
-        // Add
+        // Add/Edit
         /** @type {HTMLElement} */
         this.schemaDialog = document.querySelector(".schema-dialog");
+        /** @type {HTMLElement} */
+        this.schemaTitle  = document.querySelector(".schema-title");
+        /** @type {HTMLElement} */
+        this.schemaButton = document.querySelector(".schema-btn");
         /** @type {HTMLInputElement} */
         this.nameField    = document.querySelector(".schema-name");
         /** @type {HTMLInputElement} */
@@ -61,12 +65,22 @@ export default class Selection {
             name.className = "select-name";
             li.appendChild(name);
 
-            const delBtn = document.createElement("button");
-            delBtn.innerHTML      = "Delete";
-            delBtn.className      = "btn";
-            delBtn.dataset.action = "open-delete";
-            delBtn.dataset.schema = schema.id;
-            li.appendChild(delBtn);
+            const buttons = document.createElement("div");
+            li.appendChild(buttons);
+
+            const editBtn = document.createElement("button");
+            editBtn.innerHTML      = "Edit";
+            editBtn.className      = "btn";
+            editBtn.dataset.action = "open-edit";
+            editBtn.dataset.schema = schema.id;
+            buttons.appendChild(editBtn);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.innerHTML      = "Delete";
+            deleteBtn.className      = "btn";
+            deleteBtn.dataset.action = "open-delete";
+            deleteBtn.dataset.schema = schema.id;
+            buttons.appendChild(deleteBtn);
 
             this.selectList.appendChild(li);
         }
@@ -84,10 +98,17 @@ export default class Selection {
 
     /**
      * Opens the Schema Dialog
+     * @param {Number} schemaID
+     * @param {Object} schema
      * @returns {Void}
      */
-    openSchema() {
+    openSchema(schemaID, schema) {
+        this.schemaID = schemaID;
+
         this.schemaDialog.style.display = "block";
+        this.schemaTitle.innerText      = schemaID ? "Edit the Schema" : "Add a Schema";
+        this.schemaButton.innerText     = schemaID ? "Edit Schema" : "Add Schema";
+        this.nameField.value            = schemaID ? schema.name : "";
     }
 
     /**
@@ -95,6 +116,7 @@ export default class Selection {
      * @returns {Void}
      */
     closeSchema() {
+        this.schemaID = 0;
         this.schemaDialog.style.display = "none";
     }
 
@@ -144,7 +166,7 @@ export default class Selection {
             const text = String(reader.result);
             try {
                 const json = JSON.parse(text);
-                onDone(name, json);
+                onDone(this.schemaID, name, json);
             } catch {
                 hasError = true;
                 this.jsonError.style.display = "block";

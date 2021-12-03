@@ -37,15 +37,15 @@
                 <h2>Select a Schema</h2>
                 <p class="select-empty">Use the button bellow to add a new Schema.</p>
                 <ol class="select-list"></ol>
-                <button class="btn btn-fill" data-action="open-schema">Add Schema</button>
+                <button class="btn btn-fill" data-action="open-add">Add Schema</button>
                 <a href="#" class="close" data-action="close-select"></a>
             </dialog>
         </div>
 
         <div class="schema-dialog backdrop">
             <dialog open>
-                <h2>Add a Schema</h2>
-                <p>Name the Schema a select the json file.</p>
+                <h2 class="schema-title">Add a Schema</h2>
+                <p>Name the Schema and select the json file.</p>
                 <div class="field">
                     <input type="text" name="name" placeholder="Name" class="schema-name" />
                     <div class="error schema-name-error">You must complete de schema name.</div>
@@ -58,7 +58,7 @@
                     <div class="error schema-file-error">You must complete de schema file.</div>
                     <div class="error schema-json-error">The file must be a valid JSON file.</div>
                 </div>
-                <button class="btn btn-fill" data-action="import-schema">Add Schema</button>
+                <button class="btn btn-fill schema-btn" data-action="import-schema">Add Schema</button>
                 <a href="#" class="close" data-action="close-schema"></a>
             </dialog>
         </div>

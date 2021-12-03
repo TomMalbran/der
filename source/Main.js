@@ -62,20 +62,20 @@ function setSchema(schemaID, data) {
 /**
  * Selects the given Schema
  * @param {Number} schemaID
- * @returns {Void}
+ * @returns {Boolean}
  */
 function selectSchema(schemaID) {
     const data = storage.getSchema(schemaID);
     if (!data) {
-        return;
+        return false;
     }
-    selection.close();
     if (schema) {
         canvas.destroy();
         schema.destroy();
     }
     storage.selectSchema(schemaID);
     setSchema(schemaID, data);
+    return true;
 }
 
 /**
@@ -112,11 +112,19 @@ document.addEventListener("click", (e) => {
         selection.close();
         break;
     case "select-schema":
-        selectSchema(schemaID);
+        if (selectSchema(schemaID)) {
+            selection.close();
+        }
         break;
 
-    case "open-schema":
+    case "open-add":
         selection.openSchema();
+        break;
+    case "open-edit":
+        const schemaData = storage.getSchemaData(schemaID);
+        if (schemaData) {
+            selection.openSchema(schemaID, schemaData);
+        }
         break;
     case "close-schema":
         selection.closeSchema();
@@ -125,9 +133,12 @@ document.addEventListener("click", (e) => {
         selection.selectFile();
         break;
     case "import-schema":
-        selection.importSchema((name, data) => {
-            storage.setSchema(name, data);
+        selection.importSchema((schemaID, name, data) => {
+            storage.setSchema(schemaID, name, data);
             selection.open(storage.getSchemas());
+            if (schema && schema.schemaID === schemaID) {
+                selectSchema(schemaID);
+            }
         });
         break;
 
