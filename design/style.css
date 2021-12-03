@@ -141,6 +141,7 @@ input:focus {
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 320px;
     margin: 0 auto;
     padding: 3px 3px 3px 12px;
@@ -351,16 +352,21 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px 6px 24px;
+    padding: 6px 12px 6px 30px;
+}
+.schema-item span {
+    font-weight: 600;
 }
 .schema-item .selectable {
     cursor: pointer;
 }
 .schema-item .arrow {
+    --arrow-color: var(--light-color);
     --arrow-height: 2px;
+    --arrow-width: 8px;
     position: absolute;
     top: 50%;
-    left: 8px;
+    left: 12px;
     transform: translateY(-50%);
     transition: all 0.1s;
 }
@@ -688,7 +694,7 @@ main {
     right: 0;
     bottom: 0;
     z-index: var(--z-dialog);
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(232, 232, 237, 0.8);
 }
 dialog {
     position: absolute;
@@ -701,6 +707,7 @@ dialog {
     background-color: white;
     border-radius: 12px;
     border: none;
+    box-shadow: 0 11px 34px rgba(0, 0, 0, 0.2);
     font-size: 16px;
     text-align: center;
 }
