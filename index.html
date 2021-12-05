@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>DER</title>
-        <link rel="stylesheet" href="design/style.css" />
+        <link rel="stylesheet" href="design/Main.css" />
         <script type="module" src="source/Main.js"></script>
     </head>
     <body>
@@ -47,15 +47,23 @@
                 <h2 class="schema-title">Add a Schema</h2>
                 <p>Name the Schema and select the json file.</p>
                 <div class="field">
-                    <input type="text" name="name" placeholder="Name" class="schema-name" />
+                    <label>Name</label>
+                    <input type="text" name="name" class="schema-name" />
                     <div class="error schema-name-error">You must complete de schema name.</div>
                 </div>
-                <div class="field">
-                    <div class="input-file">
-                        <span class="schema-file"></span>
-                        <button class="btn" data-action="schema-file">Upload File</button>
-                    </div>
-                    <div class="error schema-file-error">You must complete de schema file.</div>
+                <div class="field field-input">
+                    <section>
+                        <div>
+                            <label>Main File</label>
+                            <div class="schema-file"></div>
+                        </div>
+                        <div>
+                            <button class="btn" data-action="main-file">Upload File</button>
+                        </div>
+                    </section>
+                    <div class="error schema-file-error">You must complete the schema main file.</div>
+                    <div class="error schema-json-error">The file must be a valid JSON file.</div>
+                </div>
                     <div class="error schema-json-error">The file must be a valid JSON file.</div>
                 </div>
                 <button class="btn btn-fill schema-btn" data-action="import-schema">Add Schema</button>
