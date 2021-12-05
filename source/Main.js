@@ -105,6 +105,7 @@ document.addEventListener("click", (e) => {
     canvas.unselectTable();
 
     switch (action) {
+    // Selection Dialog
     case "open-select":
         selection.open(storage.getSchemas());
         break;
@@ -117,6 +118,7 @@ document.addEventListener("click", (e) => {
         }
         break;
 
+    // Schema Dialog
     case "open-add":
         selection.openSchema();
         break;
@@ -139,12 +141,13 @@ document.addEventListener("click", (e) => {
         selection.importSchema((schemaID, name, data) => {
             storage.setSchema(schemaID, name, data);
             selection.open(storage.getSchemas());
-            if (schema && schema.schemaID === schemaID) {
+            if (schema && data && schema.schemaID === schemaID) {
                 selectSchema(schemaID);
             }
         });
         break;
 
+    // Delete Dialog
     case "open-delete":
         selection.openDelete(schemaID);
         break;
@@ -155,6 +158,7 @@ document.addEventListener("click", (e) => {
         deleteSchema(selection.schemaID);
         break;
 
+    // Aside
     case "toggle-aside":
         schema.toggleMinimize();
         storage.setWidth(schema.width);
@@ -163,6 +167,8 @@ document.addEventListener("click", (e) => {
         schema.clearFilter();
         storage.removeFilter();
         break;
+
+    // Zoom
     case "zoom-in":
         const zoomIn = canvas.zoomIn();
         storage.setZoom(zoomIn);
