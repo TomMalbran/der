@@ -129,8 +129,11 @@ document.addEventListener("click", (e) => {
     case "close-schema":
         selection.closeSchema();
         break;
-    case "schema-file":
-        selection.selectFile();
+    case "main-file":
+        selection.selectFile(0);
+        break;
+    case "secondary-file":
+        selection.selectFile(1);
         break;
     case "import-schema":
         selection.importSchema((schemaID, name, data) => {

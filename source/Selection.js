@@ -7,9 +7,6 @@ export default class Selection {
      * Selection constructor
      */
     constructor() {
-        this.schemaID = 0;
-        this.file     = null;
-
         // Selecion
         /** @type {HTMLElement} */
         this.selectDialog = document.querySelector(".select-dialog");
@@ -27,15 +24,15 @@ export default class Selection {
         this.schemaButton = document.querySelector(".schema-btn");
         /** @type {HTMLInputElement} */
         this.nameField    = document.querySelector(".schema-name");
-        /** @type {HTMLInputElement} */
-        this.fileField    = document.querySelector(".schema-file");
+        /** @type {NodeListOf<HTMLElement>} */
+        this.fileFields   = document.querySelectorAll(".schema-file");
 
         /** @type {HTMLElement} */
         this.nameError    = document.querySelector(".schema-name-error");
-        /** @type {HTMLElement} */
-        this.fileError    = document.querySelector(".schema-file-error");
-        /** @type {HTMLElement} */
-        this.jsonError    = document.querySelector(".schema-json-error");
+        /** @type {NodeListOf<HTMLElement>} */
+        this.fileErrors   = document.querySelectorAll(".schema-file-error");
+        /** @type {NodeListOf<HTMLElement>} */
+        this.jsonErrors   = document.querySelectorAll(".schema-json-error");
 
         // Delete
         /** @type {HTMLElement} */
@@ -104,11 +101,16 @@ export default class Selection {
      */
     openSchema(schemaID, schema) {
         this.schemaID = schemaID;
+        this.files    = [];
+        this.schemas  = [];
 
+        this.hideErrors();
         this.schemaDialog.style.display = "block";
         this.schemaTitle.innerText      = schemaID ? "Edit the Schema" : "Add a Schema";
-        this.schemaButton.innerText     = schemaID ? "Edit Schema" : "Add Schema";
-        this.nameField.value            = schemaID ? schema.name : "";
+        this.schemaButton.innerText     = schemaID ? "Edit Schema"     : "Add Schema";
+        this.nameField.value            = schemaID ? schema.name       : "";
+        this.fileFields[0].innerHTML    = "";
+        this.fileFields[1].innerHTML    = "";
     }
 
     /**
@@ -116,21 +118,22 @@ export default class Selection {
      * @returns {Void}
      */
     closeSchema() {
-        this.schemaID = 0;
         this.schemaDialog.style.display = "none";
+        this.hideErrors();
     }
 
     /**
      * Selects a File in the Add Dialog
+     * @param {Number} index
      * @returns {Void}
      */
-    selectFile() {
+    selectFile(index) {
         const input    = document.createElement("input");
         input.type     = "file";
         input.accept   = ".json";
         input.onchange = () => {
-            this.file = input.files[0];
-            this.fileField.innerHTML = this.file.name;
+            this.files[index]                = input.files[0];
+            this.fileFields[index].innerHTML = this.files[index].name;
         };
         input.click();
     }
@@ -141,44 +144,93 @@ export default class Selection {
      * @returns {Void}
      */
     importSchema(onDone) {
-        let   hasError = false;
+        const isEdit   = this.schemaID;
         const name     = this.nameField.value;
+        let   hasError = false;
+        let   count    = 0;
 
-        this.fileError.style.display = "none";
-        this.nameError.style.display = "none";
-        this.jsonError.style.display = "none";
-
+        this.hideErrors();
         if (!name) {
             hasError = true;
             this.nameError.style.display = "block";
         }
-        if (!this.file) {
+        if (!isEdit && !this.files[0]) {
             hasError = true;
-            this.fileError.style.display = "block";
+            this.fileErrors[0].style.display = "block";
         }
         if (hasError) {
             return;
         }
 
-        const reader = new FileReader();
-        reader.readAsText(this.file);
-        reader.onload = () => {
-            const text = String(reader.result);
-            try {
-                const json = JSON.parse(text);
-                onDone(this.schemaID, name, json);
-            } catch {
-                hasError = true;
-                this.jsonError.style.display = "block";
-            }
+        if (this.files[0]) {
+            for (let i = 0; i < this.files.length; i++) {
+                const reader = new FileReader();
+                reader.readAsText(this.files[i]);
+                reader.onload = () => {
+                    const text = String(reader.result);
+                    try {
+                        this.schemas[i] = JSON.parse(text);
+                        count += 1;
+                        if (!hasError && count === this.files.length) {
+                            const data = this.generateSchemaData();
+                            onDone(this.schemaID, name, data);
+                            this.closeSchema();
+                        }
+                    } catch {
+                        hasError = true;
+                        this.jsonErrors[i].style.display = "block";
+                    }
+                };
 
-            if (!hasError) {
-                this.file                = null;
-                this.nameField.value     = "";
-                this.fileField.innerHTML = "";
-                this.closeSchema();
             }
-        };
+        } else {
+            onDone(this.schemaID, name);
+            this.closeSchema();
+        }
+    }
+
+    /**
+     * Generates the Schema Data
+     * @returns {Void}
+     */
+    generateSchemaData() {
+        if (!this.schemas.length) {
+            return null;
+        }
+        if (this.schemas.length === 1) {
+            return this.schemas[0];
+        }
+
+        let   hasEmpty = false;
+        const result   = this.schemas[0];
+        for (const [ key, table ] of Object.entries(result)) {
+            if (!table.table) {
+                hasEmpty = true;
+            }
+            if (!table.table && this.schemas[1][key]) {
+                result[key] = this.schemas[1][key];
+            }
+        }
+        if (!hasEmpty) {
+            for (const key of Object.keys(this.schemas[1])) {
+                result[key] = this.schemas[1][key];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Hides the Errors
+     * @returns {Void}
+     */
+    hideErrors() {
+        this.nameError.style.display = "none";
+        for (let i = 0; i < this.fileErrors.length; i++) {
+            this.fileErrors[i].style.display = "none";
+        }
+        for (let i = 0; i < this.jsonErrors.length; i++) {
+            this.jsonErrors[i].style.display = "none";
+        }
     }
 
 

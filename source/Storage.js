@@ -155,17 +155,17 @@ export default class Storage {
      * Saves the Schema
      * @param {Number} schemaID
      * @param {String} name
-     * @param {Object} newSchema
+     * @param {Object} newData
      * @returns {Void}
      */
-    setSchema(schemaID, name, newSchema) {
+    setSchema(schemaID, name, newData) {
         // Remove the deleted tables
-        if (schemaID) {
-            const oldSchema = this.getSchema(schemaID);
-            for (const oldElem of Object.values(oldSchema)) {
+        if (schemaID && newData) {
+            const oldData = this.getSchema(schemaID);
+            for (const oldElem of Object.values(oldData)) {
                 if (oldElem.table) {
                     let found = false;
-                    for (const newElem of Object.values(newSchema)) {
+                    for (const newElem of Object.values(newData)) {
                         if (newElem.table === oldElem.table) {
                             found = true;
                             break;
@@ -180,8 +180,10 @@ export default class Storage {
 
         // Save the name and Schema
         const id = schemaID || this.nextID;
-        localStorage.setItem(`${id}-name`,   name);
-        localStorage.setItem(`${id}-schema`, JSON.stringify(newSchema));
+        localStorage.setItem(`${id}-name`, name);
+        if (newData) {
+            localStorage.setItem(`${id}-schema`, JSON.stringify(newData));
+        }
 
         // Update the next ID if this is a new Schema
         if (!schemaID) {
