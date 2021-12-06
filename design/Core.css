@@ -7,6 +7,7 @@
     --border-color: rgb(224, 224, 224);
     --disabled-color: rgb(94, 109, 120);
     --grid-color: rgb(242, 242, 242);
+    --input-color: rgb(189, 189, 189);
     --box-shadow: 2px 2px 9px rgb(209, 209, 209);
 
     --selected-color1: rgb(54, 162, 235);
@@ -20,7 +21,8 @@
     --title-font: Esteban, Georgia, serif;
 
     --aside-width: 300px;
-    --header-height: 72px;
+    --header-height: 62px;
+    --title-height: 46px;
     --filter-height: 33px;
     --border-radius: 6px;
 
@@ -121,7 +123,7 @@ html, body, input {
 
 
 /**
- * Inputs
+ * Input Fields
  */
 input {
     appearance: none;
@@ -138,7 +140,7 @@ input:focus {
     padding: 6px 12px;
     text-align: left;
     margin-bottom: 16px;
-    border: 1px solid rgb(189, 189, 189);
+    border: 1px solid var(--input-color);
     border-radius: var(--border-radius);
 }
 .field label {
@@ -158,29 +160,96 @@ input:focus {
     background-color: transparent;
 }
 
-.field-input section {
+.error {
+    display: none;
+    color: rgb(188, 28, 72);
+    font-size: 12px;
+}
+
+
+
+/**
+ * File Input
+ */
+.file-input section {
     display: flex;
     gap: 6px;
 }
-.field-input section > div:first-child {
+.file-input section > div:first-child {
     flex-grow: 2;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-.field-input section > div:first-child > div {
+.file-input section > div:first-child > div {
     min-height: 17px;
     font-size: 14px;
 }
-.field-input section > div:last-child {
+.file-input section > div:last-child {
     display: flex;
     align-items: flex-end;
 }
+.file-input section > div:last-child .close {
+    margin: 0 6px 8px 0;
+}
 
-.error {
-    display: none;
-    color: rgb(188, 28, 72);
-    font-size: 12px;
+
+
+/**
+ * Toggle Input
+ */
+.toggle-input {
+    --toggle-size: 18px;
+    --toggle-spacing: 2px;
+
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.toggle-input input[role="switch"] {
+    margin-right: 12px;
+}
+
+input[role="switch"] {
+    appearance: none;
+    flex-shrink: 0;
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    border: none;
+    outline-offset: 0;
+    box-sizing: content-box;
+    cursor: pointer;
+    background: var(--input-color);
+    width: calc(var(--toggle-size) * 2 + var(--toggle-spacing) * 2);
+    height: calc(var(--toggle-size) + var(--toggle-spacing) * 2);
+    border-radius: var(--toggle-size);
+    transition: all .25s ease;
+}
+input[role="switch"]:before {
+    content: "";
+    position: absolute;
+    top: var(--toggle-spacing);
+    left: var(--toggle-spacing);
+    width: var(--toggle-size);
+    height: var(--toggle-size);
+    background: white;
+    border-radius: 50%;
+    transition: transform .2s ease;
+}
+input[role="switch"]:checked {
+    background-color: var(--main-color);
+}
+input[role="switch"]:checked:before {
+    transform: translateX(var(--toggle-size));
+}
+input[role="switch"]:not(:disabled):hover,
+input[role="switch"]:focus {
+    box-shadow: 0 0 5px var(--main-color);
+    outline: none;
+}
+input[role="switch"]:disabled {
+    background-color: var(--darker-gray);
 }
 
 

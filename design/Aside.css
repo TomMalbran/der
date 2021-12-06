@@ -1,0 +1,266 @@
+/**
+ * Aside
+ */
+aside {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--aside-width);
+    bottom: 0;
+    border-right: 1px solid var(--border-color);
+    background-color: white;
+    z-index: var(--z-aside);
+}
+aside header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 6px 16px;
+}
+h1 {
+    margin: 0;
+    font-family: var(--title-font);
+    font-size: 40px;
+    line-height: 1;
+    color: var(--main-color);
+    transform-origin: top left;
+    transition: transform 0.1s;
+}
+
+
+
+/**
+ * Resizer
+ */
+.aside-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -4px;
+    width: 4px;
+    cursor: ew-resize;
+    z-index: var(--z-resizer);
+    transition: all 0.2s;
+}
+.aside-resizer:hover {
+    background-color: var(--main-color);
+}
+
+.aside-arrow.aside-arrow {
+    --arrow-size: 8px;
+    --arrow-width: 8px;
+    --arrow-space: 7px;
+    --arrow-height: 1px;
+
+    position: absolute;
+    top: 24px;
+    right: 1px;
+    padding: 7px;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    transform: translate(50%) rotate(180deg);
+    transition: all 0.2s;
+    z-index: var(--z-arrow);
+}
+.aside-arrow:hover {
+    --arrow-color: white;
+    border-color: var(--main-color);
+    background-color: var(--main-color);
+}
+.aside-dragging .aside-arrow {
+    opacity: 0;
+}
+
+
+
+/**
+ * Header
+ */
+.schema-header {
+    display: none;
+    color: var(--main-color);
+    font-family: var(--title-font);
+    font-size: 20px;
+    padding: 0 20px 20px 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transform-origin: top left;
+    transition: transform 0.1s;
+}
+
+
+
+/**
+ * Filter
+ */
+.schema-filter {
+    display: none;
+    position: relative;
+    align-items: center;
+    padding: 0 12px 4px 12px;
+    transition: opacity 0.2s;
+}
+.schema-filter input {
+    width: calc(100% - 30px);
+    min-width: 0;
+    padding: 6px 12px;
+    border: none;
+}
+.schema-filter::before {
+    content: "";
+    flex-shrink: 0;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border: 3px solid var(--main-color);
+    border-radius: 50%;
+}
+.schema-filter::after {
+    content: "";
+    position: absolute;
+    top: 19px;
+    left: 26px;
+    width: 4px;
+    height: 12px;
+    background-color: var(--main-color);
+    border-radius: 2px;
+    transform: rotate(-45deg);
+}
+.schema-filter .close {
+    --close-size: 18px;
+    --close-width: 18px;
+    --close-height: 2px;
+    flex-shrink: 0;
+    display: none;
+    margin-right: 8px;
+}
+
+.schema-total {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+
+/**
+ * List
+ */
+.schema-list {
+    border-top: 1px solid var(--border-color);
+    height: calc(100vh - var(--header-height) - var(--title-height) - var(--filter-height));
+    overflow: auto;
+    transition: opacity 0.2s;
+}
+.schema-list ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.schema-list > ol > li {
+    border-bottom: 1px solid var(--border-color);
+}
+.schema-item {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px 6px 30px;
+}
+.schema-item span {
+    font-weight: 600;
+}
+.schema-item .selectable {
+    cursor: pointer;
+}
+.schema-item .arrow {
+    --arrow-color: var(--light-color);
+    --arrow-height: 2px;
+    --arrow-width: 8px;
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    transition: all 0.1s;
+}
+
+.schema-expand {
+    display: none;
+}
+.schema-expand li {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 8px;
+    margin-left: 22px;
+    border-top: 1px solid var(--border-color);
+    font-size: 13px;
+}
+.schema-expand li span:last-child {
+    color: var(--light-color);
+    margin-left: 16px;
+    font-size: 12px;
+}
+
+.schema-expanded .schema-expand {
+    display: block;
+}
+.schema-expanded .schema-item .arrow {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+
+
+/**
+ * Small
+ */
+.aside-small h1 {
+    transform: translateX(32px) rotate(90deg);
+    margin-right: 16px;
+}
+.aside-small .btn {
+    opacity: 0;
+}
+.aside-small .schema-header {
+    transform: translate(36px, 32px) rotate(90deg);
+    overflow: visible;
+}
+.aside-small:not(.aside-dragging) .aside-resizer {
+    display: none;
+}
+.aside-small .aside-arrow {
+    opacity: 0;
+    transform: translate(50%);
+}
+.aside-small .schema-filter,
+.aside-small .schema-list {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+.aside-small:not(.aside-dragging):hover {
+    width: var(--aside-width) !important;
+}
+.aside-small:not(.aside-dragging):hover h1 {
+    transform: none;
+    margin-right: 0;
+}
+.aside-small:not(.aside-dragging):hover .schema-header {
+    transform: none;
+}
+.aside-small:not(.aside-dragging):hover .btn {
+    opacity: 1;
+}
+.aside-small:not(.aside-dragging):hover .aside-arrow {
+    opacity: 1;
+}
+.aside-small:not(.aside-dragging):hover .schema-filter,
+.aside-small:not(.aside-dragging):hover .schema-list {
+    opacity: 1;
+    pointer-events: all;
+}

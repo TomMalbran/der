@@ -12,6 +12,7 @@
                 <h1>DER</h1>
                 <button class="btn btn-fill open" data-action="open-select">Select</button>
             </header>
+            <section class="schema-header"></section>
             <section class="schema-filter">
                 <input type="text" name="filter" placeholder="Filter tables" />
                 <a href="#" class="close" data-action="clear-filter"></a>
@@ -45,36 +46,51 @@
         <div class="schema-dialog backdrop">
             <dialog open>
                 <h2 class="schema-title">Add a Schema</h2>
-                <p>Name the Schema and select the json file.</p>
+                <p>Name the Schema and select the json files.</p>
+                <div class="toggle-input">
+                    <input class="schema-urls" type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
+                    <div class="input-tip">Use urls</div>
+                </div>
                 <div class="field">
                     <label>Name</label>
                     <input type="text" name="name" class="schema-name" />
                     <div class="error schema-name-error">You must complete de schema name.</div>
                 </div>
-                <div class="field field-input">
+                <div class="field file-input schema-file">
                     <section>
                         <div>
                             <label>Main File</label>
-                            <div class="schema-file"></div>
+                            <div class="schema-file-name"></div>
                         </div>
                         <div>
-                            <button class="btn" data-action="main-file">Upload File</button>
+                            <a href="#" class="close" data-action="remove-main-file"></a>
+                            <button class="btn" data-action="upload-main-file">Upload File</button>
                         </div>
                     </section>
                     <div class="error schema-file-error">You must complete the schema main file.</div>
                     <div class="error schema-json-error">The file must be a valid JSON file.</div>
                 </div>
-                <div class="field field-input">
+                <div class="field file-input schema-file">
                     <section>
                         <div>
                             <label>Secondary File</label>
-                            <div class="schema-file"></div>
+                            <div class="schema-file-name"></div>
                         </div>
                         <div>
-                            <button class="btn" data-action="secondary-file">Upload File</button>
+                            <a href="#" class="close" data-action="remove-sec-file"></a>
+                            <button class="btn" data-action="upload-sec-file">Upload File</button>
                         </div>
                     </section>
                     <div class="error schema-json-error">The file must be a valid JSON file.</div>
+                </div>
+                <div class="field schema-url">
+                    <label>Main Url</label>
+                    <input type="text" name="mainUrl" />
+                    <div class="error schema-url-error">You must complete de main url.</div>
+                </div>
+                <div class="field schema-url">
+                    <label>Secondary Url</label>
+                    <input type="text" name="secUrl" />
                 </div>
                 <button class="btn btn-fill schema-btn" data-action="import-schema">Add Schema</button>
                 <a href="#" class="close" data-action="close-schema"></a>

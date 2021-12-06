@@ -22,17 +22,28 @@ export default class Selection {
         this.schemaTitle  = document.querySelector(".schema-title");
         /** @type {HTMLElement} */
         this.schemaButton = document.querySelector(".schema-btn");
+
         /** @type {HTMLInputElement} */
-        this.nameField    = document.querySelector(".schema-name");
+        this.useUrlsInput = document.querySelector(".schema-urls");
+        /** @type {HTMLInputElement} */
+        this.nameInput    = document.querySelector(".schema-name");
         /** @type {NodeListOf<HTMLElement>} */
         this.fileFields   = document.querySelectorAll(".schema-file");
+        /** @type {NodeListOf<HTMLElement>} */
+        this.fileInputs   = document.querySelectorAll(".schema-file-name");
+        /** @type {NodeListOf<HTMLElement>} */
+        this.urlFields    = document.querySelectorAll(".schema-url");
+        /** @type {NodeListOf<HTMLInputElement>} */
+        this.urlInputs    = document.querySelectorAll(".schema-url input");
 
         /** @type {HTMLElement} */
         this.nameError    = document.querySelector(".schema-name-error");
-        /** @type {NodeListOf<HTMLElement>} */
-        this.fileErrors   = document.querySelectorAll(".schema-file-error");
+        /** @type {HTMLElement} */
+        this.fileError    = document.querySelector(".schema-file-error");
         /** @type {NodeListOf<HTMLElement>} */
         this.jsonErrors   = document.querySelectorAll(".schema-json-error");
+        /** @type {HTMLElement} */
+        this.urlError     = document.querySelector(".schema-url-error");
 
         // Delete
         /** @type {HTMLElement} */
@@ -52,7 +63,7 @@ export default class Selection {
         for (const schema of schemas) {
             const li = document.createElement("li");
             li.dataset.action = "select-schema";
-            li.dataset.schema = schema.id;
+            li.dataset.schema = schema.schemaID;
             if (schema.isSelected) {
                 li.className = "selected";
             }
@@ -69,14 +80,14 @@ export default class Selection {
             editBtn.innerHTML      = "Edit";
             editBtn.className      = "btn";
             editBtn.dataset.action = "open-edit";
-            editBtn.dataset.schema = schema.id;
+            editBtn.dataset.schema = schema.schemaID;
             buttons.appendChild(editBtn);
 
             const deleteBtn = document.createElement("button");
             deleteBtn.innerHTML      = "Delete";
             deleteBtn.className      = "btn";
             deleteBtn.dataset.action = "open-delete";
-            deleteBtn.dataset.schema = schema.id;
+            deleteBtn.dataset.schema = schema.schemaID;
             buttons.appendChild(deleteBtn);
 
             this.selectList.appendChild(li);
@@ -95,22 +106,28 @@ export default class Selection {
 
     /**
      * Opens the Schema Dialog
-     * @param {Number} schemaID
-     * @param {Object} schema
+     * @param {Object} data
      * @returns {Void}
      */
-    openSchema(schemaID, schema) {
-        this.schemaID = schemaID;
+    openSchema(data) {
+        const isEdit  = Boolean(data.schemaID);
+        const useUrls = Boolean(data.useUrls);
+        this.data     = data;
         this.files    = [];
-        this.schemas  = [];
 
+        this.toggleUrls(useUrls);
         this.hideErrors();
+
         this.schemaDialog.style.display = "block";
-        this.schemaTitle.innerText      = schemaID ? "Edit the Schema" : "Add a Schema";
-        this.schemaButton.innerText     = schemaID ? "Edit Schema"     : "Add Schema";
-        this.nameField.value            = schemaID ? schema.name       : "";
-        this.fileFields[0].innerHTML    = "";
-        this.fileFields[1].innerHTML    = "";
+        this.schemaTitle.innerText      = isEdit ? "Edit the Schema" : "Add a Schema";
+        this.schemaButton.innerText     = isEdit ? "Edit Schema"     : "Add Schema";
+        this.nameInput.value            = isEdit ? data.name         : "";
+
+        this.useUrlsInput.checked       = useUrls;
+        this.fileInputs[0].innerHTML    = isEdit && !useUrls ? this.data.file1 : "";
+        this.fileInputs[1].innerHTML    = isEdit && !useUrls ? this.data.file2 : "";
+        this.urlInputs[0].value         = isEdit && useUrls  ? this.data.url1  : "";
+        this.urlInputs[1].value         = isEdit && useUrls  ? this.data.url2  : "";
     }
 
     /**
@@ -123,7 +140,7 @@ export default class Selection {
     }
 
     /**
-     * Selects a File in the Add Dialog
+     * Selects a File in the Add/Edit Dialog
      * @param {Number} index
      * @returns {Void}
      */
@@ -133,9 +150,39 @@ export default class Selection {
         input.accept   = ".json";
         input.onchange = () => {
             this.files[index]                = input.files[0];
-            this.fileFields[index].innerHTML = this.files[index].name;
+            this.fileInputs[index].innerHTML = this.files[index].name;
+            this.data[`file${index + 1}`]    = this.files[index].name;
         };
         input.click();
+    }
+
+    /**
+     * Removes a File in the Add/Edit Dialog
+     * @param {Number} index
+     * @returns {Void}
+     */
+    removeFile(index) {
+        this.files[index]                = null;
+        this.fileInputs[index].innerHTML = "";
+        this.data[`file${index + 1}`]    = "";
+
+        if (index === 1) {
+            this.data.schemas.pop();
+        } else {
+            this.data.schemas[index] = null;
+        }
+    }
+
+    /**
+     * Toggles between Files and Urls in the Add/Edit Dialog
+     * @returns {Void}
+     */
+    toggleUrls(isChecked) {
+        this.useUrls = isChecked;
+        this.fileFields[0].style.display = !this.useUrls ? "flex" : "none";
+        this.fileFields[1].style.display = !this.useUrls ? "flex" : "none";
+        this.urlFields[0].style.display  = this.useUrls  ? "flex" : "none";
+        this.urlFields[1].style.display  = this.useUrls  ? "flex" : "none";
     }
 
     /**
@@ -144,36 +191,50 @@ export default class Selection {
      * @returns {Void}
      */
     importSchema(onDone) {
-        const isEdit   = this.schemaID;
-        const name     = this.nameField.value;
+        const isEdit   = Boolean(this.data.schemaID);
         let   hasError = false;
         let   count    = 0;
 
+        this.data.useUrls = this.useUrlsInput.checked;
+        this.data.name    = this.nameInput.value;
+        this.data.url1    = this.urlInputs[0].value;
+        this.data.url2    = this.urlInputs[1].value;
+        if (!this.data.schemas) {
+            this.data.schemas = [];
+        }
+
         this.hideErrors();
-        if (!name) {
+        if (!this.data.name) {
             hasError = true;
             this.nameError.style.display = "block";
         }
-        if (!isEdit && !this.files[0]) {
+        if (!isEdit && !this.data.useUrls && !this.files[0]) {
             hasError = true;
-            this.fileErrors[0].style.display = "block";
+            this.fileError.style.display = "block";
+        }
+        if (this.data.useUrls && !this.urlInputs[0].value) {
+            hasError = true;
+            this.urlError.style.display = "block";
         }
         if (hasError) {
             return;
         }
 
-        if (this.files[0]) {
+        if (!this.data.useUrls && (this.files[0] || this.files[1])) {
             for (let i = 0; i < this.files.length; i++) {
+                if (!this.files[i]) {
+                    count += 1;
+                    continue;
+                }
                 const reader = new FileReader();
                 reader.readAsText(this.files[i]);
                 reader.onload = () => {
                     const text = String(reader.result);
                     try {
-                        this.schemas[i] = JSON.parse(text);
+                        this.data.schemas[i] = JSON.parse(text);
                         count += 1;
                         if (!hasError && count === this.files.length) {
-                            const data = this.generateSchemaData();
-                            onDone(this.schemaID, name, data);
+                            onDone(this.data);
                             this.closeSchema();
                         }
                     } catch {
@@ -181,42 +242,11 @@ export default class Selection {
                         this.jsonErrors[i].style.display = "block";
                     }
                 };
-
             }
         } else {
-            onDone(this.schemaID, name);
+            onDone(this.data);
             this.closeSchema();
         }
-    }
-
-    /**
-     * Generates the Schema Data
-     * @returns {Void}
-     */
-    generateSchemaData() {
-        if (!this.schemas.length) {
-            return null;
-        }
-        if (this.schemas.length === 1) {
-            return this.schemas[0];
-        }
-
-        let   hasEmpty = false;
-        const result   = this.schemas[0];
-        for (const [ key, table ] of Object.entries(result)) {
-            if (!table.table) {
-                hasEmpty = true;
-            }
-            if (!table.table && this.schemas[1][key]) {
-                result[key] = this.schemas[1][key];
-            }
-        }
-        if (!hasEmpty) {
-            for (const key of Object.keys(this.schemas[1])) {
-                result[key] = this.schemas[1][key];
-            }
-        }
-        return result;
     }
 
     /**
@@ -224,13 +254,11 @@ export default class Selection {
      * @returns {Void}
      */
     hideErrors() {
-        this.nameError.style.display = "none";
-        for (let i = 0; i < this.fileErrors.length; i++) {
-            this.fileErrors[i].style.display = "none";
-        }
-        for (let i = 0; i < this.jsonErrors.length; i++) {
-            this.jsonErrors[i].style.display = "none";
-        }
+        this.nameError.style.display     = "none";
+        this.urlError.style.display      = "none";
+        this.fileError.style.display     = "none";
+        this.jsonErrors[0].style.display = "none";
+        this.jsonErrors[1].style.display = "none";
     }
 
 

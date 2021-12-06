@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Utils from "./Utils.js";
 
 
 
@@ -11,77 +12,85 @@ export default class Storage {
      * Storage constructor
      */
     constructor() {
-        this.currentID = Number(localStorage.getItem("currentID")) || 0;
-        this.nextID    = Number(localStorage.getItem("nextID"))    || 1;
+        this.currentID = this.getNumber("currentID", 0);
+        this.nextID    = this.getNumber("nextID", 1);
+    }
+
+    /**
+     * Returns true if there is an item
+     * @param {...(String|Number)} keys
+     * @returns {Boolean}
+     */
+    hasItem(...keys) {
+        return !!localStorage.getItem(keys.join("-"));
     }
 
     /**
      * Returns a stored String for the current Schema
-     * @param {String}  name
-     * @param {String=} defValue
+     * @param {...(String|Number)} keys
      * @returns {String}
      */
-    getString(name, defValue = "") {
-        return localStorage.getItem(`${this.currentID}-${name}`) || defValue;
+    getString(...keys) {
+        return localStorage.getItem(keys.join("-")) || "";
     }
 
     /**
      * Saves a String to the current Schema
-     * @param {String} name
-     * @param {String} value
+     * @param {...*} items
      * @returns {Void}
      */
-    setString(name, value) {
-        localStorage.setItem(`${this.currentID}-${name}`, value);
+    setString(...items) {
+        const value = items.pop();
+        localStorage.setItem(items.join("-"), value);
     }
 
     /**
      * Returns a stored Number for the current Schema
-     * @param {String}  name
-     * @param {Number=} defValue
+     * @param {...*} items
      * @returns {Number}
      */
-    getNumber(name, defValue = 0) {
-        return Number(localStorage.getItem(`${this.currentID}-${name}`)) || defValue;
+    getNumber(...items) {
+        const defValue = items.pop();
+        return Number(localStorage.getItem(items.join("-"))) || defValue;
     }
 
     /**
      * Saves a Number to the current Schema
-     * @param {String} name
-     * @param {Number} value
+     * @param {...*} items
      * @returns {Void}
      */
-    setNumber(name, value) {
-        localStorage.setItem(`${this.currentID}-${name}`, String(value));
+    setNumber(...items) {
+        const value = items.pop();
+        localStorage.setItem(items.join("-"), String(value));
     }
 
     /**
      * Returns a stored Object for the current Schema
-     * @param {String} name
+     * @param {...(String|Number)} keys
      * @returns {?Object}
      */
-    getData(name) {
-        const data = localStorage.getItem(`${this.currentID}-${name}`);
+    getData(...keys) {
+        const data = localStorage.getItem(keys.join("-"));
         return data ? JSON.parse(data) : null;
     }
 
     /**
      * Saves an Object to the current Schema
-     * @param {String} name
-     * @param {Object} value
+     * @param {...*} items
      * @returns {Void}
      */
-    setData(name, value) {
-        localStorage.setItem(`${this.currentID}-${name}`, JSON.stringify(value));
+    setData(...items) {
+        const value = items.pop();
+        localStorage.setItem(items.join("-"), JSON.stringify(value));
     }
 
     /**
      * Removes an Item from the current Schema
-     * @param {String} name
+     * @param {...(String|Number)} keys
      * @returns {Void}
      */
-    removeItem(name) {
-        localStorage.removeItem(`${this.currentID}-${name}`);
+    removeItem(...keys) {
+        localStorage.removeItem(keys.join("-"));
     }
 
 
@@ -91,7 +100,7 @@ export default class Storage {
      * @returns {Boolean}
      */
     get hasSchema() {
-        return this.currentID > 0 && !!localStorage.getItem(`${this.currentID}-name`);
+        return this.currentID > 0 && this.hasItem(this.currentID, "data");
     }
 
     /**
@@ -100,43 +109,48 @@ export default class Storage {
      */
     getSchemas() {
         const result = [];
-        for (let id = 1; id < this.nextID; id++) {
-            const name = localStorage.getItem(`${id}-name`);
-            if (name) {
-                result.push({ id, name, isSelected : id === this.currentID });
+        for (let schemaID = 1; schemaID < this.nextID; schemaID++) {
+            const data = this.getData(schemaID, "data");
+            if (data) {
+                result.push({
+                    schemaID,
+                    name       : data.name,
+                    isSelected : schemaID === this.currentID,
+                });
             }
         }
         return result;
     }
 
     /**
-     * Returns the current Schema
+     * Returns the Schema Data
      * @param {Number} schemaID
      * @returns {Object}
      */
     getSchemaData(schemaID) {
-        const name = localStorage.getItem(`${schemaID}-name`);
-        if (name) {
-            return { id : schemaID, name };
+        return this.getData(schemaID, "data");
+    }
+
+    /**
+     * Returns the Schema
+     * @param {Number=}  schemaID
+     * @param {Boolean=} fetchNew
+     * @returns {Promise}
+     */
+    async getSchema(schemaID = this.currentID, fetchNew = true) {
+        const data   = this.getSchemaData(schemaID);
+        const result = { schemaID };
+        if (!data) {
+            return;
         }
-    }
-
-    /**
-     * Returns the current Schema
-     * @returns {Object}
-     */
-    getCurrentSchema() {
-        return this.getData("schema");
-    }
-
-    /**
-     * Returns the current Schema
-     * @param {Number} schemaID
-     * @returns {Object}
-     */
-    getSchema(schemaID) {
-        const schema = localStorage.getItem(`${schemaID}-schema`);
-        return schema ? JSON.parse(schema) : null;
+        result.name = data.name;
+        if (!fetchNew) {
+            result.schema = this.mergeSchemas(data);
+        } else {
+            result.schema = await this.fetchSchemas(data);
+            this.setData(data.schemaID, "data", data);
+        }
+        return result;
     }
 
 
@@ -148,48 +162,97 @@ export default class Storage {
      */
     selectSchema(schemaID) {
         this.currentID = schemaID;
-        localStorage.setItem("currentID", String(this.currentID));
+        this.setNumber("currentID", this.currentID);
     }
 
     /**
      * Saves the Schema
-     * @param {Number} schemaID
-     * @param {String} name
-     * @param {Object} newData
-     * @returns {Void}
+     * @param {Object} data
+     * @returns {Promise}
      */
-    setSchema(schemaID, name, newData) {
-        // Remove the deleted tables
-        if (schemaID && newData) {
-            const oldData = this.getSchema(schemaID);
-            for (const oldElem of Object.values(oldData)) {
+    async setSchema(data) {
+        const isEdit = Boolean(data.schemaID);
+
+        // Update the next ID if this is a new Schema
+        if (!isEdit) {
+            data.schemaID = this.nextID;
+            this.nextID += 1;
+            this.setNumber("nextID", this.nextID);
+        }
+
+        // Fetch the Schemas
+        const newSchema = await this.fetchSchemas(data);
+
+        // Remove the deleted Tables
+        if (isEdit) {
+            const oldSchema = this.getSchema(data.schemaID, false);
+            for (const oldElem of Object.values(oldSchema)) {
                 if (oldElem.table) {
                     let found = false;
-                    for (const newElem of Object.values(newData)) {
+                    for (const newElem of Object.values(newSchema)) {
                         if (newElem.table === oldElem.table) {
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        localStorage.removeItem(`${schemaID}-table-${oldElem.table}`);
+                        this.removeItem(data.schemaID, "table", oldElem.table);
                     }
                 }
             }
         }
 
-        // Save the name and Schema
-        const id = schemaID || this.nextID;
-        localStorage.setItem(`${id}-name`, name);
-        if (newData) {
-            localStorage.setItem(`${id}-schema`, JSON.stringify(newData));
+        // Save the Schema data
+        this.setData(data.schemaID, "data", data);
+    }
+
+    /**
+     * Fetches and Merges the Schemas
+     * @const {Object} data
+     * @returns {Promise}
+     */
+    async fetchSchemas(data) {
+        if (!data.useUrls) {
+            return this.mergeSchemas(data);
         }
 
-        // Update the next ID if this is a new Schema
-        if (!schemaID) {
-            this.nextID += 1;
-            localStorage.setItem("nextID", String(this.nextID));
+        await fetch(data.url1).then((response) => response.json()).then((response) => {
+            data.schemas[0] = response;
+        });
+        if (data.url2) {
+            await fetch(data.url2).then((response) => response.json()).then((response) => {
+                data.schemas[1] = response;
+            });
         }
+        return this.mergeSchemas(data);
+    }
+
+    /**
+     * Merges the Schemas
+     * @const {Object} data
+     * @returns {Object}
+     */
+    mergeSchemas(data) {
+        const result = Utils.clone(data.schemas[0]);
+        if (data.schemas.length === 1) {
+            return result;
+        }
+
+        let hasEmpty = false;
+        for (const [ key, table ] of Object.entries(result)) {
+            if (!table.table) {
+                hasEmpty = true;
+            }
+            if (!table.table && data.schemas[1][key]) {
+                result[key] = Utils.extend(result[key], data.schemas[1][key]);
+            }
+        }
+        if (!hasEmpty) {
+            for (const key of Object.keys(data.schemas[1])) {
+                result[key] = Utils.clone(data.schemas[1][key]);
+            }
+        }
+        return result;
     }
 
     /**
@@ -203,19 +266,18 @@ export default class Storage {
             return;
         }
 
-        localStorage.removeItem(`${schemaID}-name`);
-        localStorage.removeItem(`${schemaID}-schema`);
-        localStorage.removeItem(`${schemaID}-filter`);
-        localStorage.removeItem(`${schemaID}-scroll`);
-        localStorage.removeItem(`${schemaID}-zoom`);
+        this.removeItem(schemaID, "data");
+        this.removeItem(schemaID, "filter");
+        this.removeItem(schemaID, "scroll");
+        this.removeItem(schemaID, "zoom");
 
         for (const elem of Object.values(schema)) {
             if (elem.table) {
-                localStorage.removeItem(`${schemaID}-table-${elem.table}`);
+                this.removeItem(schemaID, "table", elem.table);
             }
         }
         if (this.currentID === schemaID) {
-            localStorage.setItem("currentID", "0");
+            this.setNumber("currentID", 0);
         }
     }
 
@@ -226,7 +288,7 @@ export default class Storage {
      * @returns {String}
      */
     getFilter() {
-        return this.getString("filter");
+        return this.getString(this.currentID, "filter");
     }
 
     /**
@@ -235,7 +297,7 @@ export default class Storage {
      * @returns {Void}
      */
     setFilter(value) {
-        this.setString("filter", value);
+        this.setString(this.currentID, "filter", value);
     }
 
     /**
@@ -243,7 +305,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeFilter() {
-        this.removeItem("filter");
+        this.removeItem(this.currentID, "filter");
     }
 
 
@@ -253,7 +315,7 @@ export default class Storage {
      * @returns {Number}
      */
     getWidth() {
-        return this.getNumber("width");
+        return this.getNumber(this.currentID, "width", 0);
     }
 
     /**
@@ -262,7 +324,7 @@ export default class Storage {
      * @returns {Void}
      */
     setWidth(value) {
-        this.setNumber("width", value);
+        this.setNumber(this.currentID, "width", value);
     }
 
     /**
@@ -270,7 +332,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeWidth() {
-        this.removeItem("width");
+        this.removeItem(this.currentID, "width");
     }
 
 
@@ -280,7 +342,7 @@ export default class Storage {
      * @returns {Object}
      */
     getScroll() {
-        return this.getData("scroll");
+        return this.getData(this.currentID, "scroll");
     }
 
     /**
@@ -289,7 +351,9 @@ export default class Storage {
      * @returns {Void}
      */
     setScroll(value) {
-        this.setData("scroll", value);
+        if (value && this.currentID) {
+            this.setData(this.currentID, "scroll", value);
+        }
     }
 
 
@@ -299,7 +363,7 @@ export default class Storage {
      * @returns {Number}
      */
     getZoom() {
-        return this.getNumber("zoom", 100);
+        return this.getNumber(this.currentID, "zoom", 100);
     }
 
     /**
@@ -308,7 +372,7 @@ export default class Storage {
      * @returns {Void}
      */
     setZoom(value) {
-        this.setNumber("zoom", value);
+        this.setNumber(this.currentID, "zoom", value);
     }
 
     /**
@@ -316,7 +380,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeZoom() {
-        this.removeItem("zoom");
+        this.removeItem(this.currentID, "zoom");
     }
 
 
@@ -327,7 +391,7 @@ export default class Storage {
      * @returns {(Object|null)}
      */
     getTable(table) {
-        return this.getData(`table-${table.name}`);
+        return this.getData(this.currentID, "table", table.name);
     }
 
     /**
@@ -336,7 +400,7 @@ export default class Storage {
      * @returns {Void}
      */
     setTable(table) {
-        this.setData(`table-${table.name}`, {
+        this.setData(this.currentID, "table", table.name, {
             isExpanded : table.isExpanded,
             onCanvas   : table.onCanvas,
             top        : table.top,
@@ -351,6 +415,6 @@ export default class Storage {
      * @returns {Void}
      */
     removeTable(table) {
-        this.removeItem(`table-${table.name}`);
+        this.removeItem(this.currentID, "table", table.name);
     }
 }

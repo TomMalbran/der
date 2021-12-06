@@ -2,8 +2,8 @@ import Table from "./Table.js";
 import Utils from "./Utils.js";
 
 // Constantes
-const INITIAL_WIDTH = 240;
-const MIN_WIDTH     = 180;
+const INITIAL_WIDTH = 300;
+const MIN_WIDTH     = 200;
 const SHRINK_WIDTH  = 60;
 
 
@@ -15,12 +15,11 @@ export default class Schema {
 
     /**
      * The Schema constructor
-     * @param {Number} schemaID
      * @param {Object} data
      */
-    constructor(schemaID, data) {
-        this.schemaID = schemaID;
-        this.data     = data;
+    constructor(data) {
+        this.schemaID = data.schemaID;
+        this.data     = data.schema;
         this.tables   = {};
 
         this.width    = INITIAL_WIDTH;
@@ -32,7 +31,7 @@ export default class Schema {
         this.main     = document.querySelector("main");
 
         /** @type {HTMLElement} */
-        this.list     = document.querySelector(".schema-list ol");
+        this.header   = document.querySelector(".schema-header");
         /** @type {HTMLElement} */
         this.filter   = document.querySelector(".schema-filter");
         /** @type {HTMLInputElement} */
@@ -41,6 +40,11 @@ export default class Schema {
         this.clear    = document.querySelector(".schema-filter .close");
         /** @type {HTMLElement} */
         this.total    = document.querySelector(".schema-total");
+        /** @type {HTMLElement} */
+        this.list     = document.querySelector(".schema-list ol");
+
+        this.header.innerHTML     = data.name;
+        this.header.style.display = "block";
 
         this.createList();
     }

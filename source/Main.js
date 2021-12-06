@@ -15,9 +15,9 @@ let timer     = null;
 
 /**
  * The main Function
- * @returns {Void}
+ * @returns {Promise}
  */
-function main() {
+async function main() {
     selection = new Selection();
     storage   = new Storage();
     canvas    = new Canvas();
@@ -25,20 +25,20 @@ function main() {
     if (!storage.hasSchema) {
         selection.open(storage.getSchemas());
     } else {
-        setSchema(storage.currentID, storage.getCurrentSchema());
+        const data = await storage.getSchema();
+        setSchema(data);
     }
 }
 
 /**
  * Creates the Schema and restores the Tables
- * @param {Number} schemaID
  * @param {Object} data
  * @returns {Void}
  */
-function setSchema(schemaID, data) {
+function setSchema(data) {
     canvas.setInitialZoom(100);
 
-    schema = new Schema(schemaID, data);
+    schema = new Schema(data);
     schema.setInitialFilter(storage.getFilter());
     schema.setInitialWidth(storage.getWidth());
 
@@ -62,10 +62,10 @@ function setSchema(schemaID, data) {
 /**
  * Selects the given Schema
  * @param {Number} schemaID
- * @returns {Boolean}
+ * @returns {Promise}
  */
-function selectSchema(schemaID) {
-    const data = storage.getSchema(schemaID);
+async function selectSchema(schemaID) {
+    const data = await storage.getSchema(schemaID);
     if (!data) {
         return false;
     }
@@ -74,7 +74,7 @@ function selectSchema(schemaID) {
         schema.destroy();
     }
     storage.selectSchema(schemaID);
-    setSchema(schemaID, data);
+    setSchema(data);
     return true;
 }
 
@@ -102,6 +102,7 @@ document.addEventListener("click", (e) => {
     const target   = Utils.getTarget(e);
     const action   = target.dataset.action;
     const schemaID = Number(target.dataset.schema);
+    let   dontStop = false;
     canvas.unselectTable();
 
     switch (action) {
@@ -113,35 +114,45 @@ document.addEventListener("click", (e) => {
         selection.close();
         break;
     case "select-schema":
-        if (selectSchema(schemaID)) {
-            selection.close();
-        }
+        selectSchema(schemaID);
+        selection.close();
         break;
 
     // Schema Dialog
     case "open-add":
-        selection.openSchema();
+        selection.openSchema({});
         break;
     case "open-edit":
         const schemaData = storage.getSchemaData(schemaID);
         if (schemaData) {
-            selection.openSchema(schemaID, schemaData);
+            selection.openSchema(schemaData);
         }
         break;
     case "close-schema":
         selection.closeSchema();
         break;
-    case "main-file":
+    case "upload-main-file":
         selection.selectFile(0);
         break;
-    case "secondary-file":
+    case "upload-sec-file":
         selection.selectFile(1);
         break;
+    case "remove-main-file":
+        selection.removeFile(0);
+        break;
+    case "remove-sec-file":
+        selection.removeFile(1);
+        break;
+    case "schema-urls":
+        // @ts-ignore
+        selection.toggleUrls(target.checked);
+        dontStop = true;
+        break;
     case "import-schema":
-        selection.importSchema((schemaID, name, data) => {
-            storage.setSchema(schemaID, name, data);
+        selection.importSchema((data) => {
+            storage.setSchema(data);
             selection.open(storage.getSchemas());
-            if (schema && data && schema.schemaID === schemaID) {
+            if (schema && data && schema.schemaID === data.schemaID) {
                 selectSchema(schemaID);
             }
         });
@@ -220,7 +231,7 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    if (action) {
+    if (action && !dontStop) {
         e.preventDefault();
     }
 });
