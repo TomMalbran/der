@@ -17,29 +17,29 @@ export default class Canvas {
      */
     constructor() {
         /** @type {Object.<String, Table>} */
-        this.tables        = {};
+        this.tables       = {};
 
         /** @type {Link[]} */
-        this.links         = [];
+        this.links        = [];
+
+        /** @type {Object.<String, Table>} */
+        this.selection    = {};
+
+        /** @type {Table} */
+        this.grabbedTable = null;
 
         /** @type {HTMLElement} */
-        this.container     = document.querySelector("main");
-        this.bounds        = this.container.getBoundingClientRect();
+        this.container    = document.querySelector("main");
+        this.bounds       = this.container.getBoundingClientRect();
 
         /** @type {HTMLElement} */
-        this.canvas        = document.querySelector(".canvas");
+        this.canvas       = document.querySelector(".canvas");
 
         // Zoom
-        this.zoom          = 100;
-        this.percent       = document.querySelector(".zoom-percent");
-        this.zoomInBtn     = document.querySelector(".zoom-in");
-        this.zoomOutBtn    = document.querySelector(".zoom-out");
-
-        /** @type {Table} */
-        this.selectedTable = null;
-
-        /** @type {Table} */
-        this.grabbedTable  = null;
+        this.zoom         = 100;
+        this.percent      = document.querySelector(".zoom-percent");
+        this.zoomInBtn    = document.querySelector(".zoom-in");
+        this.zoomOutBtn   = document.querySelector(".zoom-out");
 
         this.center();
     }
@@ -154,6 +154,7 @@ export default class Canvas {
         this.canvas.style.transform = `scale(${this.zoom / 100})`;
         this.zoomInBtn.classList.toggle("zoom-disabled", this.zoom === 150);
         this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === 50);
+        this.dontUnselect = true;
     }
 
 
@@ -225,43 +226,68 @@ export default class Canvas {
     }
 
     /**
+     * Returns true if the tables should unselect
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    shouldUnselect(event) {
+        if (this.dontUnselect) {
+            this.dontUnselect = false;
+            return false;
+        }
+        const mouse = Utils.getMousePos(event);
+        return Utils.inBounds(mouse, this.bounds);
+    }
+
+    /**
      * Selects the given Table
-     * @param {Table} table
+     * @param {Table}    table
+     * @param {Boolean=} addToSelection
      * @returns {Void}
      */
-    selectTable(table) {
-        if (!this.tables[table.name] || (this.selectedTable !== null && this.selectTable.name === table.name)) {
+    selectTable(table, addToSelection = false) {
+        this.dontUnselect = true;
+        if (!this.tables[table.name] || this.selection[table.name]) {
             return;
         }
-        this.selectedTable = table;
+        if (!addToSelection) {
+            this.unselectTable();
+        }
+        this.selection[table.name] = table;
 
         // Disable all the Tables
         for (const otherTable of Object.values(this.tables)) {
             otherTable.disable();
+            otherTable.removeColors();
         }
 
         // Add colors or disable the Links
         let   lastColor = 0;
         const colors    = {};
         for (const link of this.links) {
-            if (link.isLinkedTo(table)) {
-                const field = link.getFieldName(table);
-                if (!colors[field]) {
-                    colors[field] = lastColor + 1;
-                    lastColor     = (lastColor + 1) % COLOR_AMOUNT;
+            link.disable();
+        }
+        for (const link of this.links) {
+            for (const selectedTable of Object.values(this.selection)) {
+                if (link.isLinkedTo(selectedTable)) {
+                    const field = link.getFieldName(selectedTable);
+                    if (!colors[field]) {
+                        colors[field] = lastColor + 1;
+                        lastColor     = (lastColor + 1) % COLOR_AMOUNT;
+                    }
+                    link.toTable.unselect();
+                    link.fromTable.unselect();
+                    link.fromField.setColor(colors[field]);
+                    link.toField.setColor(colors[field]);
+                    link.setColor(colors[field]);
                 }
-                link.toTable.unselect();
-                link.fromTable.unselect();
-                link.fromField.setColor(colors[field]);
-                link.toField.setColor(colors[field]);
-                link.setColor(colors[field]);
-            } else {
-                link.disable();
             }
         }
 
         // Select the Table
-        table.select();
+        for (const selectedTable of Object.values(this.selection)) {
+            selectedTable.select();
+        }
     }
 
     /**
@@ -269,18 +295,17 @@ export default class Canvas {
      * @returns {Void}
      */
     unselectTable() {
-        if (!this.selectedTable) {
+        if (!Object.keys(this.selection).length) {
             return;
         }
         for (const table of Object.values(this.tables)) {
             table.unselect();
-            for (const field of table.fields) {
-                field.removeColor();
-            }
+            table.removeColors();
         }
         for (const link of this.links) {
             link.unselect();
         }
+        this.selection = {};
     }
 
     /**

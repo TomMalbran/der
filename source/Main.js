@@ -99,11 +99,11 @@ function deleteSchema(schemaID) {
  * The Click Event Handler
  */
 document.addEventListener("click", (e) => {
-    const target   = Utils.getTarget(e);
-    const action   = target.dataset.action;
-    const schemaID = Number(target.dataset.schema);
-    let   dontStop = false;
-    canvas.unselectTable();
+    const target     = Utils.getTarget(e);
+    const action     = target.dataset.action;
+    const schemaID   = Number(target.dataset.schema);
+    const specialKey = e.ctrlKey || e.metaKey || e.shiftKey;
+    let   dontStop   = false;
 
     switch (action) {
     // Selection Dialog
@@ -208,7 +208,8 @@ document.addEventListener("click", (e) => {
                 break;
             case "drag-table":
             case "select-table":
-                canvas.selectTable(table);
+                Utils.unselect();
+                canvas.selectTable(table, specialKey);
                 break;
             case "add-table":
                 canvas.addTable(table);
@@ -223,7 +224,7 @@ document.addEventListener("click", (e) => {
             case "toggle-fields":
                 table.toggleFields();
                 canvas.reconnect(table);
-                canvas.selectTable(table);
+                canvas.selectTable(table, specialKey);
                 storage.setTable(table);
                 break;
             default:
@@ -231,6 +232,9 @@ document.addEventListener("click", (e) => {
         }
     }
 
+    if (canvas.shouldUnselect(e)) {
+        canvas.unselectTable();
+    }
     if (action && !dontStop) {
         e.preventDefault();
     }

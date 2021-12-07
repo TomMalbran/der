@@ -388,6 +388,16 @@ export default class Table {
         this.tableElem.classList.remove("disabled");
     }
 
+    /**
+     * Removes the Table field colors
+     * @returns {Void}
+     */
+    removeColors() {
+        for (const field of this.fields) {
+            field.removeColor();
+        }
+    }
+
 
 
     /**
