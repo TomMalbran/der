@@ -17,29 +17,29 @@ export default class Canvas {
      */
     constructor() {
         /** @type {Object.<String, Table>} */
-        this.tables       = {};
+        this.tables     = {};
 
         /** @type {Link[]} */
-        this.links        = [];
+        this.links      = [];
 
         /** @type {Object.<String, Table>} */
-        this.selection    = {};
+        this.selection  = {};
 
-        /** @type {Table} */
-        this.grabbedTable = null;
-
-        /** @type {HTMLElement} */
-        this.container    = document.querySelector("main");
-        this.bounds       = this.container.getBoundingClientRect();
+        /** @type {Boolean} */
+        this.isDragging = false;
 
         /** @type {HTMLElement} */
-        this.canvas       = document.querySelector(".canvas");
+        this.container  = document.querySelector("main");
+        this.bounds     = this.container.getBoundingClientRect();
+
+        /** @type {HTMLElement} */
+        this.canvas     = document.querySelector(".canvas");
 
         // Zoom
-        this.zoom         = 100;
-        this.percent      = document.querySelector(".zoom-percent");
-        this.zoomInBtn    = document.querySelector(".zoom-in");
-        this.zoomOutBtn   = document.querySelector(".zoom-out");
+        this.zoom       = 100;
+        this.percent    = document.querySelector(".zoom-percent");
+        this.zoomInBtn  = document.querySelector(".zoom-in");
+        this.zoomOutBtn = document.querySelector(".zoom-out");
 
         this.center();
     }
@@ -214,6 +214,14 @@ export default class Canvas {
 
 
     /**
+     * Returns the Selected Tables
+     * @returns {Object[]}
+     */
+    get selectedTables() {
+        return Object.values(this.selection);
+    }
+
+    /**
      * Shows the given Table
      * @param {Table} table
      * @returns {Void}
@@ -251,7 +259,7 @@ export default class Canvas {
             return;
         }
         if (!addToSelection) {
-            this.unselectTable();
+            this.unselectTables();
         }
         this.selection[table.name] = table;
 
@@ -261,14 +269,16 @@ export default class Canvas {
             otherTable.removeColors();
         }
 
-        // Add colors or disable the Links
-        let   lastColor = 0;
-        const colors    = {};
+        // Disable all the Links
         for (const link of this.links) {
             link.disable();
         }
+
+        // Add colors to the Links and Fields
+        let   lastColor = 0;
+        const colors    = {};
         for (const link of this.links) {
-            for (const selectedTable of Object.values(this.selection)) {
+            for (const selectedTable of this.selectedTables) {
                 if (link.isLinkedTo(selectedTable)) {
                     const field = link.getFieldName(selectedTable);
                     if (!colors[field]) {
@@ -291,10 +301,10 @@ export default class Canvas {
     }
 
     /**
-     * Unselects the selected Table
+     * Unselects the selected Tables
      * @returns {Void}
      */
-    unselectTable() {
+    unselectTables() {
         if (!Object.keys(this.selection).length) {
             return;
         }
@@ -330,16 +340,20 @@ export default class Canvas {
      * @returns {Void}
      */
     pickTable(event, table) {
-        if (!this.tables[table.name]) {
+        if (this.isDragging || !this.tables[table.name]) {
             return;
         }
-        this.unselectTable();
-        this.selectTable(table);
+        if (!this.selection[table.name]) {
+            this.selectTable(table);
+        }
 
-        this.grabbedTable = table;
-        this.startMouse   = { top : event.pageY, left : event.pageX };
-        this.startPos     = { top : table.top,   left : table.left  };
-        table.pick();
+        this.isDragging = true;
+        this.startPos   = {};
+        this.startMouse = Utils.getMousePos(event);
+        for (const selectedTable of this.selectedTables) {
+            this.startPos[selectedTable.name] = selectedTable.pos;
+            selectedTable.pick();
+        }
     }
 
     /**
@@ -348,30 +362,35 @@ export default class Canvas {
      * @returns {Boolean}
      */
     dragTable(event) {
-        if (!this.grabbedTable) {
+        if (!this.isDragging) {
             return false;
         }
-        const mult = this.zoom / 100;
-        this.grabbedTable.translate({
-            top  : this.startPos.top + (event.pageY - this.startMouse.top) / mult,
-            left : this.startPos.left + (event.pageX - this.startMouse.left) / mult,
-        });
-        this.reconnect(this.grabbedTable);
+        const mult     = this.zoom / 100;
+        const mousePos = Utils.getMousePos(event);
+        for (const selectedTable of this.selectedTables) {
+            const startPos = this.startPos[selectedTable.name];
+            selectedTable.translate({
+                top  : startPos.top  + (mousePos.top  - this.startMouse.top)  / mult,
+                left : startPos.left + (mousePos.left - this.startMouse.left) / mult,
+            });
+            this.reconnect(selectedTable);
+        }
         return true;
     }
 
     /**
      * Drops the Table
-     * @returns {?Table}
+     * @returns {Boolean}
      */
     dropTable() {
-        if (!this.grabbedTable) {
-            return null;
+        if (!this.isDragging) {
+            return false;
         }
-        let result = this.grabbedTable;
-        this.grabbedTable.drop();
-        this.reconnect(this.grabbedTable);
-        this.grabbedTable = null;
-        return result;
+        for (const selectedTable of this.selectedTables) {
+            selectedTable.drop();
+            this.reconnect(selectedTable);
+        }
+        this.isDragging = false;
+        return true;
     }
 }

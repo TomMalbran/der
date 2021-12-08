@@ -72,6 +72,14 @@ export default class Table {
     }
 
     /**
+     * Returns the Table Position
+     * @returns {{top: Number, left: Number}}
+     */
+    get pos() {
+        return { top : this.top, left : this.left };
+    }
+
+    /**
      * Returns the Field Position
      * @param {String} name
      * @returns {Field}

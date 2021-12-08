@@ -233,7 +233,7 @@ document.addEventListener("click", (e) => {
     }
 
     if (canvas.shouldUnselect(e)) {
-        canvas.unselectTable();
+        canvas.unselectTables();
     }
     if (action && !dontStop) {
         e.preventDefault();
@@ -316,12 +316,11 @@ document.addEventListener("mousemove", (e) => {
  * The Drop Event Handler
  */
 document.addEventListener("mouseup", (e) => {
-    if (canvas) {
-        const table = canvas.dropTable();
-        if (table) {
-            storage.setTable(table);
-            e.preventDefault();
+    if (canvas && canvas.dropTable()) {
+        for (const selectedTable of canvas.selectedTables) {
+            storage.setTable(selectedTable);
         }
+        e.preventDefault();
     }
     if (schema && schema.dropResizer()) {
         storage.setWidth(schema.width);
