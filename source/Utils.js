@@ -26,6 +26,27 @@ function extend(object1, object2) {
 }
 
 /**
+ * Returns the distance between pos and other
+ * @param {{top: Number, left: Number}} pos
+ * @param {{top: Number, left: Number}} other
+ * @returns {Number}
+ */
+function dist(pos, other) {
+    return Math.hypot(pos.top - other.top, pos.left - other.left);
+}
+
+/**
+ * Returns the number with a px suffix
+ * @param {Number} value
+ * @returns {String}
+ */
+ function toPX(value) {
+    return `${Math.round(value)}px`;
+}
+
+
+
+/**
  * Returns an element from the Target with an action
  * @param {MouseEvent} event
  * @returns {HTMLElement}
@@ -67,6 +88,25 @@ function inBounds(pos, bounds, scrollTop = 0, scrollLeft = 0) {
         top  > bounds.top  && top  < bounds.bottom &&
         left > bounds.left && left < bounds.right
     );
+}
+
+/**
+ * Returns true if the given Bounds intersect
+ * @param {Object} bounds
+ * @param {Object} other
+ * @returns {Boolean}
+ */
+function intersectsBounds(bounds, other) {
+    // The first rectangle is under the second or vice versa
+    if (bounds.top > other.bottom || bounds.bottom < other.top) {
+        return false;
+    }
+    // The first rectangle is to the left of the second or vice versa
+    if (bounds.right < other.left || bounds.left > other.right) {
+        return false;
+    }
+    // Rectangles overlap
+    return true;
 }
 
 /**
@@ -126,10 +166,13 @@ function unselect() {
 export default {
     clone,
     extend,
+    dist,
+    toPX,
 
     getTarget,
     removeElement,
     inBounds,
+    intersectsBounds,
     inElement,
     getMousePos,
     unselect,

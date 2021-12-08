@@ -17,29 +17,34 @@ export default class Canvas {
      */
     constructor() {
         /** @type {Object.<String, Table>} */
-        this.tables     = {};
+        this.tables      = {};
 
         /** @type {Link[]} */
-        this.links      = [];
-
-        /** @type {Object.<String, Table>} */
-        this.selection  = {};
-
-        /** @type {Boolean} */
-        this.isDragging = false;
+        this.links       = [];
 
         /** @type {HTMLElement} */
-        this.container  = document.querySelector("main");
-        this.bounds     = this.container.getBoundingClientRect();
+        this.container   = document.querySelector("main");
+        this.bounds      = this.container.getBoundingClientRect();
 
         /** @type {HTMLElement} */
-        this.canvas     = document.querySelector(".canvas");
+        this.canvas      = document.querySelector(".canvas");
+
+
+        // Selection
+        this.selection   = {};
+        this.isSelecting = false;
+        this.isDragging  = false;
+        this.isMoving    = false;
+
+        /** @type {HTMLElement} */
+        this.selector    = document.querySelector(".selector");
+
 
         // Zoom
-        this.zoom       = 100;
-        this.percent    = document.querySelector(".zoom-percent");
-        this.zoomInBtn  = document.querySelector(".zoom-in");
-        this.zoomOutBtn = document.querySelector(".zoom-out");
+        this.zoom        = 100;
+        this.percent     = document.querySelector(".zoom-percent");
+        this.zoomInBtn   = document.querySelector(".zoom-in");
+        this.zoomOutBtn  = document.querySelector(".zoom-out");
 
         this.center();
     }
@@ -211,7 +216,28 @@ export default class Canvas {
         delete this.tables[table.name];
     }
 
+    /**
+     * Re-connects the Links
+     * @param {Table} table
+     * @returns {Void}
+     */
+    reconnect(table) {
+        for (const link of this.links) {
+            if (link.isLinkedTo(table)) {
+                link.connect();
+            }
+        }
+    }
 
+
+
+    /**
+     * Returns true if there are Selected Tables
+     * @returns {Boolean}
+     */
+    get hasSelection() {
+        return Object.values(this.selection).length > 0;
+    }
 
     /**
      * Returns the Selected Tables
@@ -262,7 +288,14 @@ export default class Canvas {
             this.unselectTables();
         }
         this.selection[table.name] = table;
+        this.markSelection();
+    }
 
+    /**
+     * Marks the selected Tables
+     * @returns {Void}
+     */
+    markSelection() {
         // Disable all the Tables
         for (const otherTable of Object.values(this.tables)) {
             otherTable.disable();
@@ -305,7 +338,7 @@ export default class Canvas {
      * @returns {Void}
      */
     unselectTables() {
-        if (!Object.keys(this.selection).length) {
+        if (!this.hasSelection) {
             return;
         }
         for (const table of Object.values(this.tables)) {
@@ -318,17 +351,81 @@ export default class Canvas {
         this.selection = {};
     }
 
+
+
     /**
-     * Re-connects the Links
-     * @param {Table} table
+     * Picks the Selector
+     * @param {MouseEvent} event
      * @returns {Void}
      */
-    reconnect(table) {
-        for (const link of this.links) {
-            if (link.isLinkedTo(table)) {
-                link.connect();
+    pickSelector(event) {
+        if (this.isSelecting || this.isDragging) {
+            return;
+        }
+        this.isSelecting = true;
+        this.isMoving    = false;
+        this.startMouse  = Utils.getMousePos(event);
+    }
+
+    /**
+     * Drags the Selector
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    dragSelector(event) {
+        if (!this.isSelecting) {
+            return false;
+        }
+        const currMouse = Utils.getMousePos(event);
+        if (!this.isMoving) {
+            if (Utils.dist(this.startMouse, currMouse) < 20) {
+                return true;
+            }
+            this.isMoving = true;
+            this.selector.style.display = "block";
+        }
+        this.selector.style.top    = Utils.toPX(Math.min(this.startMouse.top,  currMouse.top));
+        this.selector.style.left   = Utils.toPX(Math.min(this.startMouse.left, currMouse.left));
+        this.selector.style.width  = Utils.toPX(Math.abs(this.startMouse.left - currMouse.left));
+        this.selector.style.height = Utils.toPX(Math.abs(this.startMouse.top  - currMouse.top));
+        return true;
+    }
+
+    /**
+     * Drops the Selector
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    dropSelector(event) {
+        if (!this.isSelecting) {
+            return false;
+        }
+        this.isSelecting = false;
+        if (!this.isMoving) {
+            return false;
+        }
+
+        this.isMoving = false;
+        this.selector.style.display = "none";
+
+        const currMouse = Utils.getMousePos(event);
+        const top       = Math.min(this.startMouse.top,  currMouse.top);
+        const left      = Math.min(this.startMouse.left, currMouse.left);
+        const bottom    = top  + Math.abs(this.startMouse.top  - currMouse.top);
+        const right     = left + Math.abs(this.startMouse.left - currMouse.left);
+        const bounds    = { top, left, bottom, right };
+
+        this.unselectTables();
+        for (const table of Object.values(this.tables)) {
+            if (Utils.intersectsBounds(bounds, table.bounds)) {
+                this.selection[table.name] = table;
             }
         }
+        if (this.hasSelection) {
+            this.dontUnselect = true;
+            this.markSelection();
+        }
+        return true;
     }
 
 
@@ -365,13 +462,13 @@ export default class Canvas {
         if (!this.isDragging) {
             return false;
         }
-        const mult     = this.zoom / 100;
-        const mousePos = Utils.getMousePos(event);
+        const mult      = this.zoom / 100;
+        const currMouse = Utils.getMousePos(event);
         for (const selectedTable of this.selectedTables) {
             const startPos = this.startPos[selectedTable.name];
             selectedTable.translate({
-                top  : startPos.top  + (mousePos.top  - this.startMouse.top)  / mult,
-                left : startPos.left + (mousePos.left - this.startMouse.left) / mult,
+                top  : startPos.top  + (currMouse.top  - this.startMouse.top)  / mult,
+                left : startPos.left + (currMouse.left - this.startMouse.left) / mult,
             });
             this.reconnect(selectedTable);
         }

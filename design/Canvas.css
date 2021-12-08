@@ -280,3 +280,15 @@ main {
     font-weight: normal;
     line-height: 2;
 }
+
+
+
+/**
+ * Selector
+ */
+.selector {
+    position: absolute;
+    display: none;
+    border: 1px dashed black;
+    background-color: rgba(250, 250, 250, 0.3);
+}

@@ -55,8 +55,8 @@ function setSchema(data) {
         }
     }
 
-    canvas.setInitialScroll(storage.getScroll());
     canvas.setInitialZoom(storage.getZoom());
+    canvas.setInitialScroll(storage.getScroll());
 }
 
 /**
@@ -297,6 +297,11 @@ document.addEventListener("mousedown", (e) => {
         schema.pickResizer(e);
         e.preventDefault();
         break;
+    default:
+        // @ts-ignore
+        if (e.target.classList.contains("canvas")) {
+            canvas.pickSelector(e);
+        }
     }
 });
 
@@ -304,6 +309,9 @@ document.addEventListener("mousedown", (e) => {
  * The Drag Event Handler
  */
 document.addEventListener("mousemove", (e) => {
+    if (canvas && canvas.dragSelector(e)) {
+        e.preventDefault();
+    }
     if (canvas && canvas.dragTable(e)) {
         e.preventDefault();
     }
@@ -316,6 +324,9 @@ document.addEventListener("mousemove", (e) => {
  * The Drop Event Handler
  */
 document.addEventListener("mouseup", (e) => {
+    if (canvas && canvas.dropSelector(e)) {
+        e.preventDefault();
+    }
     if (canvas && canvas.dropTable()) {
         for (const selectedTable of canvas.selectedTables) {
             storage.setTable(selectedTable);

@@ -80,7 +80,15 @@ export default class Table {
     }
 
     /**
-     * Returns the Field Position
+     * Returns the Table Bounds
+     * @returns {{top: Number, left: Number, bottom: Number, right: Number}}
+     */
+    get bounds() {
+        return this.tableElem.getBoundingClientRect();
+    }
+
+    /**
+     * Returns the Field with the given Name
      * @param {String} name
      * @returns {Field}
      */
@@ -89,7 +97,7 @@ export default class Table {
     }
 
     /**
-     * Returns the Field Position
+     * Returns the Field index with the given Name
      * @param {String} name
      * @returns {Number}
      */
