@@ -301,7 +301,19 @@ document.addEventListener("mousedown", (e) => {
         // @ts-ignore
         if (e.target.classList.contains("canvas")) {
             canvas.pickSelector(e);
+            e.preventDefault();
         }
+    }
+});
+
+/**
+ * The Context Menu Event Handler
+ */
+document.addEventListener("contextmenu", (e) => {
+    // @ts-ignore
+    if (e.target.classList.contains("canvas")) {
+        canvas.pickScroll(e);
+        e.preventDefault();
     }
 });
 
@@ -309,11 +321,14 @@ document.addEventListener("mousedown", (e) => {
  * The Drag Event Handler
  */
 document.addEventListener("mousemove", (e) => {
-    if (canvas && canvas.dragSelector(e)) {
-        e.preventDefault();
-    }
-    if (canvas && canvas.dragTable(e)) {
-        e.preventDefault();
+    if (canvas) {
+        if (canvas.dragScroll(e)) {
+            e.preventDefault();
+        } else if (canvas.dragSelector(e)) {
+            e.preventDefault();
+        } else if (canvas.dragTable(e)) {
+            e.preventDefault();
+        }
     }
     if (schema && schema.dragResizer(e)) {
         e.preventDefault();
@@ -324,14 +339,17 @@ document.addEventListener("mousemove", (e) => {
  * The Drop Event Handler
  */
 document.addEventListener("mouseup", (e) => {
-    if (canvas && canvas.dropSelector(e)) {
-        e.preventDefault();
-    }
-    if (canvas && canvas.dropTable()) {
-        for (const selectedTable of canvas.selectedTables) {
-            storage.setTable(selectedTable);
+    if (canvas) {
+        if (canvas.dropScroll()) {
+            e.preventDefault();
+        } else if (canvas.dropSelector(e)) {
+            e.preventDefault();
+        } else if (canvas.dropTable()) {
+            for (const selectedTable of canvas.selectedTables) {
+                storage.setTable(selectedTable);
+            }
+            e.preventDefault();
         }
-        e.preventDefault();
     }
     if (schema && schema.dropResizer()) {
         storage.setWidth(schema.width);

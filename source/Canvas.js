@@ -30,6 +30,9 @@ export default class Canvas {
         this.canvas      = document.querySelector(".canvas");
 
 
+        // Scroll
+        this.isScrolling = false;
+
         // Selection
         this.selection   = {};
         this.isSelecting = false;
@@ -38,7 +41,6 @@ export default class Canvas {
 
         /** @type {HTMLElement} */
         this.selector    = document.querySelector(".selector");
-
 
         // Zoom
         this.zoom        = 100;
@@ -101,6 +103,49 @@ export default class Canvas {
         const left   = (bounds.width  - this.bounds.width)  / 2;
         this.container.scrollTo(left, top);
     }
+
+    /**
+     * Picks the Scroll
+     * @param {MouseEvent} event
+     * @returns {Void}
+     */
+    pickScroll(event) {
+        if (this.isScrolling || this.isSelecting || this.isDragging) {
+            return;
+        }
+        this.isScrolling = true;
+        this.startMouse  = Utils.getMousePos(event);
+    }
+
+    /**
+     * Drags the Scroll
+     * @param {MouseEvent} event
+     * @returns {Boolean}
+     */
+    dragScroll(event) {
+        if (!this.isScrolling) {
+            return false;
+        }
+        const currMouse = Utils.getMousePos(event);
+        const top       = this.scroll.top  - (currMouse.top  - this.startMouse.top);
+        const left      = this.scroll.left - (currMouse.left - this.startMouse.left);
+        this.startMouse = Utils.getMousePos(event);
+        this.container.scrollTo(left, top);
+        return true;
+    }
+
+    /**
+     * Drops the Scroll
+     * @returns {Boolean}
+     */
+    dropScroll() {
+        if (!this.isScrolling) {
+            return false;
+        }
+        this.isScrolling = false;
+        return true;
+    }
+
 
 
 
@@ -359,7 +404,7 @@ export default class Canvas {
      * @returns {Void}
      */
     pickSelector(event) {
-        if (this.isSelecting || this.isDragging) {
+        if (this.isScrolling || this.isSelecting || this.isDragging) {
             return;
         }
         this.isSelecting = true;
@@ -437,7 +482,7 @@ export default class Canvas {
      * @returns {Void}
      */
     pickTable(event, table) {
-        if (this.isDragging || !this.tables[table.name]) {
+        if (this.isScrolling || this.isSelecting || this.isDragging || !this.tables[table.name]) {
             return;
         }
         if (!this.selection[table.name]) {
