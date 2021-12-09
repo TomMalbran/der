@@ -429,10 +429,11 @@ export default class Canvas {
             this.isMoving = true;
             this.selector.style.display = "block";
         }
-        this.selector.style.top    = Utils.toPX(Math.min(this.startMouse.top,  currMouse.top));
-        this.selector.style.left   = Utils.toPX(Math.min(this.startMouse.left, currMouse.left));
-        this.selector.style.width  = Utils.toPX(Math.abs(this.startMouse.left - currMouse.left));
-        this.selector.style.height = Utils.toPX(Math.abs(this.startMouse.top  - currMouse.top));
+        const bounds = Utils.createBounds(this.startMouse, currMouse);
+        this.selector.style.top    = Utils.toPX(bounds.top);
+        this.selector.style.left   = Utils.toPX(bounds.left);
+        this.selector.style.width  = Utils.toPX(bounds.width);
+        this.selector.style.height = Utils.toPX(bounds.height);
         return true;
     }
 
@@ -454,11 +455,7 @@ export default class Canvas {
         this.selector.style.display = "none";
 
         const currMouse = Utils.getMousePos(event);
-        const top       = Math.min(this.startMouse.top,  currMouse.top);
-        const left      = Math.min(this.startMouse.left, currMouse.left);
-        const bottom    = top  + Math.abs(this.startMouse.top  - currMouse.top);
-        const right     = left + Math.abs(this.startMouse.left - currMouse.left);
-        const bounds    = { top, left, bottom, right };
+        const bounds    = Utils.createBounds(this.startMouse, currMouse);
 
         this.unselectTables();
         for (const table of Object.values(this.tables)) {

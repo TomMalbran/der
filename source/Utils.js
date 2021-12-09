@@ -74,6 +74,22 @@ function removeElement(element) {
 }
 
 /**
+ * Returns the Bounds using 2 positions
+ * @param {{top: Number, left: Number}} pos
+ * @param {{top: Number, left: Number}} other
+ * @returns {Object}
+ */
+ function createBounds(pos, other) {
+    const top    = Math.min(pos.top,  other.top);
+    const left   = Math.min(pos.left, other.left);
+    const width  = Math.abs(pos.left - other.left);
+    const height = Math.abs(pos.top  - other.top);
+    const bottom = top  + height;
+    const right  = left + width;
+    return { top, left, bottom, right, width, height };
+}
+
+/**
  * Returns true if the given Position is in the Bounds
  * @param {{top: Number, left: Number}} pos
  * @param {Object}                      bounds
@@ -171,6 +187,7 @@ export default {
 
     getTarget,
     removeElement,
+    createBounds,
     inBounds,
     intersectsBounds,
     inElement,
