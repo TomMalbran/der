@@ -35,15 +35,6 @@ function dist(pos, other) {
     return Math.hypot(pos.top - other.top, pos.left - other.left);
 }
 
-/**
- * Returns the number with a px suffix
- * @param {Number} value
- * @returns {String}
- */
- function toPX(value) {
-    return `${Math.round(value)}px`;
-}
-
 
 
 /**
@@ -62,6 +53,25 @@ function getTarget(event) {
 }
 
 /**
+ * Returns an element from the Target with an action
+ * @param {MouseEvent} event
+ * @param {String}     className
+ * @returns {HTMLElement?}
+ */
+function getClosest(event, className) {
+    /** @type {HTMLElement} */
+    // @ts-ignore
+    let element = event.target;
+    while (element.parentElement && !element.classList.contains(className)) {
+        element = element.parentElement;
+    }
+    if (element.classList.contains(className)) {
+        return element;
+    }
+    return null;
+}
+
+/**
  * Removes the Element from the DOM
  * @param {(HTMLElement|SVGSVGElement)} element
  * @returns {Void}
@@ -72,6 +82,8 @@ function removeElement(element) {
         parent.removeChild(element);
     }
 }
+
+
 
 /**
  * Returns the Bounds using 2 positions
@@ -183,10 +195,11 @@ export default {
     clone,
     extend,
     dist,
-    toPX,
 
     getTarget,
+    getClosest,
     removeElement,
+
     createBounds,
     inBounds,
     intersectsBounds,

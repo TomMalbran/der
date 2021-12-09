@@ -1,5 +1,6 @@
 import Table from "./Table.js";
 import Link  from "./Link.js";
+import Group from "./Group.js";
 import Utils from "./Utils.js";
 
 // Constants
@@ -21,6 +22,9 @@ export default class Canvas {
 
         /** @type {Link[]} */
         this.links       = [];
+
+        /** @type {Object.<Number, Group>} */
+        this.groups      = {};
 
         /** @type {HTMLElement} */
         this.container   = document.querySelector("main");
@@ -62,8 +66,12 @@ export default class Canvas {
         for (const link of this.links) {
             Utils.removeElement(link.element);
         }
+        for (const group of Object.values(this.groups)) {
+            Utils.removeElement(group.element);
+        }
         this.tables = {};
         this.links  = [];
+        this.groups = {};
         this.center();
     }
 
@@ -204,7 +212,7 @@ export default class Canvas {
         this.canvas.style.transform = `scale(${this.zoom / 100})`;
         this.zoomInBtn.classList.toggle("zoom-disabled", this.zoom === 150);
         this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === 50);
-        this.dontUnselect = true;
+        this.stopUnselect();
     }
 
 
@@ -262,6 +270,16 @@ export default class Canvas {
     }
 
     /**
+     * Adds a Group to the Canvas
+     * @param {Group} group
+     * @returns {Void}
+     */
+    addGroup(group) {
+        this.groups[group.id] = group;
+        this.canvas.appendChild(group.element);
+    }
+
+    /**
      * Re-connects the Links
      * @param {Table} table
      * @returns {Void}
@@ -293,15 +311,11 @@ export default class Canvas {
     }
 
     /**
-     * Shows the given Table
-     * @param {Table} table
+     * Stops the unselect
      * @returns {Void}
      */
-    showTable(table) {
-        if (this.tables[table.name]) {
-            table.scrollIntoView();
-            this.selectTable(table);
-        }
+    stopUnselect() {
+        this.dontUnselect = true;
     }
 
     /**
@@ -314,8 +328,24 @@ export default class Canvas {
             this.dontUnselect = false;
             return false;
         }
+        const closest = Utils.getClosest(event, "backdrop");
+        if (closest) {
+            return false;
+        }
         const mouse = Utils.getMousePos(event);
         return Utils.inBounds(mouse, this.bounds);
+    }
+
+    /**
+     * Shows the given Table
+     * @param {Table} table
+     * @returns {Void}
+     */
+    showTable(table) {
+        if (this.tables[table.name]) {
+            table.scrollIntoView();
+            this.selectTable(table);
+        }
     }
 
     /**
@@ -325,7 +355,7 @@ export default class Canvas {
      * @returns {Void}
      */
     selectTable(table, addToSelection = false) {
-        this.dontUnselect = true;
+        this.stopUnselect();
         if (!this.tables[table.name] || this.selection[table.name]) {
             return;
         }
@@ -430,10 +460,10 @@ export default class Canvas {
             this.selector.style.display = "block";
         }
         const bounds = Utils.createBounds(this.startMouse, currMouse);
-        this.selector.style.top    = Utils.toPX(bounds.top);
-        this.selector.style.left   = Utils.toPX(bounds.left);
-        this.selector.style.width  = Utils.toPX(bounds.width);
-        this.selector.style.height = Utils.toPX(bounds.height);
+        this.selector.style.top    = `${bounds.top}px`;
+        this.selector.style.left   = `${bounds.left}px`;
+        this.selector.style.width  = `${bounds.width}px`;
+        this.selector.style.height = `${bounds.height}px`;
         return true;
     }
 
@@ -464,7 +494,7 @@ export default class Canvas {
             }
         }
         if (this.hasSelection) {
-            this.dontUnselect = true;
+            this.stopUnselect();
             this.markSelection();
         }
         return true;

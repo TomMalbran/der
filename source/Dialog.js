@@ -10,6 +10,7 @@ export default class Dialog {
     constructor(name) {
         /** @type {HTMLElement} */
         this.container = document.querySelector(`[data-dialog="${name}"]`);
+        this.isOpen    = false;
     }
 
     /**
@@ -17,8 +18,15 @@ export default class Dialog {
      * @returns {Void}
      */
     open() {
+        this.isOpen = true;
         this.container.style.display = "block";
         this.hideErrors();
+
+        /** @type {HTMLInputElement} */
+        const input = this.container.querySelector("[data-field=name] input");
+        if (input) {
+            input.focus();
+        }
     }
 
     /**
@@ -26,6 +34,7 @@ export default class Dialog {
      * @returns {Void}
      */
     close() {
+        this.isOpen = false;
         this.container.style.display = "none";
         this.hideErrors();
     }

@@ -14,6 +14,7 @@ export default class Storage {
     constructor() {
         this.currentID = this.getNumber("currentID", 0);
         this.nextID    = this.getNumber("nextID", 1);
+        this.nextGroup = this.getNumber("nextGroup", 1);
     }
 
     /**

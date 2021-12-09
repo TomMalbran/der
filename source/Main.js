@@ -1,6 +1,7 @@
 import Selection from "./Selection.js";
 import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
+import Grouper   from "./Grouper.js";
 import Schema    from "./Schema.js";
 import Utils     from "./Utils.js";
 
@@ -8,6 +9,7 @@ import Utils     from "./Utils.js";
 let selection = null;
 let storage   = null;
 let canvas    = null;
+let grouper   = null;
 let schema    = null;
 let timer     = null;
 
@@ -21,6 +23,7 @@ async function main() {
     selection = new Selection();
     storage   = new Storage();
     canvas    = new Canvas();
+    grouper   = new Grouper();
 
     if (!storage.hasSchema) {
         selection.open(storage.getSchemas());
@@ -191,6 +194,23 @@ document.addEventListener("click", (e) => {
     case "reset-zoom":
         canvas.resetZoom();
         storage.removeZoom();
+        break;
+
+    // Groups
+    case "open-group":
+        canvas.stopUnselect();
+        if (canvas.hasSelection) {
+            grouper.openDialog(false);
+        }
+        break;
+    case "manage-group":
+        const group = grouper.createGroup(storage.nextGroup, canvas.selectedTables);
+        if (group) {
+            canvas.addGroup(group);
+        }
+        break;
+    case "close-group":
+        grouper.closeDialog();
         break;
     default:
     }
