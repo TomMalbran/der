@@ -3,6 +3,7 @@ import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
 import Grouper   from "./Grouper.js";
 import Schema    from "./Schema.js";
+import Group     from "./Group.js";
 import Utils     from "./Utils.js";
 
 // Variables
@@ -55,6 +56,18 @@ function setSchema(data) {
         }
         if (table.onCanvas) {
             canvas.addTable(table);
+        }
+    }
+
+    const groups = storage.getGroups();
+    for (const groupData of Object.values(groups)) {
+        const tables = canvas.getTables(groupData.tables);
+        if (tables.length) {
+            const group = new Group(groupData.id, groupData.name, tables);
+            storage.setGroup(group);
+            canvas.addGroup(group);
+        } else {
+            storage.removeGroup(groupData.id);
         }
     }
 
@@ -207,6 +220,7 @@ document.addEventListener("click", (e) => {
         const group = grouper.createGroup(storage.nextGroup, canvas.selectedTables);
         if (group) {
             canvas.addGroup(group);
+            storage.setGroup(group, true);
         }
         break;
     case "close-group":

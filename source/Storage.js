@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Group from "./Group.js";
 import Utils from "./Utils.js";
 
 
@@ -14,7 +15,6 @@ export default class Storage {
     constructor() {
         this.currentID = this.getNumber("currentID", 0);
         this.nextID    = this.getNumber("nextID", 1);
-        this.nextGroup = this.getNumber("nextGroup", 1);
     }
 
     /**
@@ -417,5 +417,57 @@ export default class Storage {
      */
     removeTable(table) {
         this.removeItem(this.currentID, "table", table.name);
+    }
+
+
+
+    /**
+     * Returns the next Group ID
+     * @returns {Number}
+     */
+    get nextGroup() {
+        return this.getNumber(this.currentID, "nextGroup", 1);
+    }
+
+    /**
+     * Returns the stored Groups data
+     * @returns {Object[]}
+     */
+    getGroups() {
+        const result = [];
+        const lastID = this.nextGroup;
+        for (let groupID = 1; groupID < lastID; groupID++) {
+            const group = this.getData(this.currentID, "group", groupID);
+            if (group) {
+                result.push(group);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Adds/Edits a Group to the Storage
+     * @param {Group}   group
+     * @param {Boolean} isCreate
+     * @returns {Void}
+     */
+    setGroup(group, isCreate) {
+        if (isCreate) {
+            this.setNumber(this.currentID, "nextGroup", group.id + 1);
+        }
+        this.setData(this.currentID, "group", group.id, {
+            id     : group.id,
+            name   : group.name,
+            tables : group.tableNames,
+        });
+    }
+
+    /**
+     * Removes a Group from the Storage
+     * @param {Number} groupID
+     * @returns {Void}
+     */
+    removeGroup(groupID) {
+        this.removeItem(this.currentID, "group", groupID);
     }
 }

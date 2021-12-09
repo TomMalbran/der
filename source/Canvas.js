@@ -218,6 +218,21 @@ export default class Canvas {
 
 
     /**
+     * Returns all the Tables with the given names
+     * @param {String[]} tableNames
+     * @returns {Object[]}
+     */
+    getTables(tableNames) {
+        const result = [];
+        for (const name of tableNames) {
+            if (this.tables[name]) {
+                result.push(this.tables[name]);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Adds a Table to the Canvas
      * @param {Table} table
      * @returns {Void}

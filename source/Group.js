@@ -24,6 +24,16 @@ import Table from "./Table.js";
     }
 
     /**
+     * Returns a list of table names
+     * @return {String[]}
+     */
+    get tableNames() {
+        return this.tables.map((table) => table.name);
+    }
+
+
+
+    /**
      * Creates the HTML element
      * @returns {Void}
      */
