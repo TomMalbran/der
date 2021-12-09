@@ -35,7 +35,7 @@
         <div class="selector"></div>
 
 
-        <div class="select-dialog backdrop">
+        <div class="select-dialog backdrop" data-dialog="select">
             <dialog open>
                 <h2>Select a Schema</h2>
                 <p class="select-empty">Use the button bellow to add a new Schema.</p>
@@ -46,61 +46,61 @@
         </div>
 
 
-        <div class="schema-dialog backdrop">
+        <div class="schema-dialog backdrop" data-dialog="schema">
             <dialog open>
-                <h2 class="schema-title">Add a Schema</h2>
-                <p>Name the Schema and select the json files.</p>
-                <div class="toggle-input">
-                    <input class="schema-urls" type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
+                <h2 class="dialog-title">Add a Schema</h2>
+                <p>Name the Schema and select the json files or urls.</p>
+                <div class="toggle-input" data-field="urls">
+                    <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
                     <div class="input-tip">Use urls</div>
                 </div>
-                <div class="field">
+                <div class="field" data-field="name">
                     <label>Name</label>
-                    <input type="text" name="name" class="schema-name" />
-                    <div class="error schema-name-error">You must complete de schema name.</div>
+                    <input type="text" name="name" />
+                    <div class="error" data-error="name">You must complete de schema name.</div>
                 </div>
-                <div class="field file-input schema-file">
+                <div class="field file-input schema-file" data-field="file1">
                     <section>
                         <div>
                             <label>Main File</label>
-                            <div class="schema-file-name"></div>
+                            <div class="file-name"></div>
                         </div>
                         <div>
                             <a href="#" class="close" data-action="remove-main-file"></a>
                             <button class="btn" data-action="upload-main-file">Upload File</button>
                         </div>
                     </section>
-                    <div class="error schema-file-error">You must complete the schema main file.</div>
-                    <div class="error schema-json-error">The file must be a valid JSON file.</div>
+                    <div class="error" data-error="file">You must complete the schema main file.</div>
+                    <div class="error" data-error="json0">The file must be a valid JSON file.</div>
                 </div>
-                <div class="field file-input schema-file">
+                <div class="field file-input schema-file" data-field="file2">
                     <section>
                         <div>
                             <label>Secondary File</label>
-                            <div class="schema-file-name"></div>
+                            <div class="file-name"></div>
                         </div>
                         <div>
                             <a href="#" class="close" data-action="remove-sec-file"></a>
                             <button class="btn" data-action="upload-sec-file">Upload File</button>
                         </div>
                     </section>
-                    <div class="error schema-json-error">The file must be a valid JSON file.</div>
+                    <div class="error" data-error="json1">The file must be a valid JSON file.</div>
                 </div>
-                <div class="field schema-url">
+                <div class="field schema-url" data-field="url1">
                     <label>Main Url</label>
                     <input type="text" name="mainUrl" />
-                    <div class="error schema-url-error">You must complete de main url.</div>
+                    <div class="error" data-error="url">You must complete de main url.</div>
                 </div>
-                <div class="field schema-url">
+                <div class="field schema-url" data-field="url2">
                     <label>Secondary Url</label>
                     <input type="text" name="secUrl" />
                 </div>
-                <button class="btn btn-fill schema-btn" data-action="import-schema">Add Schema</button>
+                <button class="btn btn-fill dialog-btn" data-action="import-schema">Add Schema</button>
                 <a href="#" class="close" data-action="close-schema"></a>
             </dialog>
         </div>
 
-        <div class="delete-dialog backdrop">
+        <div class="delete-dialog backdrop" data-dialog="delete">
             <dialog open>
                 <h2>Delete Schema</h2>
                 <p class="select-empty">Do you really want to delete the selected Schema?</p>
