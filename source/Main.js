@@ -118,6 +118,8 @@ document.addEventListener("click", (e) => {
     const target     = Utils.getTarget(e);
     const action     = target.dataset.action;
     const schemaID   = Number(target.dataset.schema);
+    const table      = schema ? schema.getTable(target) : null;
+    const group      = canvas ? canvas.getGroup(target) : null;
     const specialKey = e.ctrlKey || e.metaKey || e.shiftKey;
     let   dontStop   = false;
 
@@ -195,7 +197,7 @@ document.addEventListener("click", (e) => {
         storage.removeFilter();
         break;
 
-    // Zoom
+    // Canvas Zoom
     case "zoom-in":
         const zoomIn = canvas.zoomIn();
         storage.setZoom(zoomIn);
@@ -209,7 +211,7 @@ document.addEventListener("click", (e) => {
         storage.removeZoom();
         break;
 
-    // Groups
+    // Grouper Dialog
     case "open-group":
         canvas.stopUnselect();
         if (canvas.hasSelection) {
@@ -229,40 +231,48 @@ document.addEventListener("click", (e) => {
     default:
     }
 
-    if (schema) {
-        const table = schema.getTable(target);
-        if (table) {
-            switch (action) {
-            case "expand-table":
-                table.toggleExpand();
-                storage.setTable(table);
-                break;
-            case "show-table":
-                canvas.showTable(table);
-                break;
-            case "drag-table":
-            case "select-table":
-                Utils.unselect();
-                canvas.selectTable(table, specialKey);
-                break;
-            case "add-table":
-                canvas.addTable(table);
-                canvas.selectTable(table);
-                storage.setTable(table);
-                break;
-            case "remove-table":
-                canvas.removeTable(table);
-                table.destroy();
-                storage.setTable(table);
-                break;
-            case "toggle-fields":
-                table.toggleFields();
-                canvas.reconnect(table);
-                canvas.selectTable(table, specialKey);
-                storage.setTable(table);
-                break;
-            default:
-            }
+    // Table Actions
+    if (table) {
+        switch (action) {
+        case "expand-table":
+            table.toggleExpand();
+            storage.setTable(table);
+            break;
+        case "show-table":
+            canvas.showTable(table);
+            break;
+        case "drag-table":
+        case "select-table":
+            Utils.unselect();
+            canvas.selectTable(table, specialKey);
+            break;
+        case "add-table":
+            canvas.addTable(table);
+            canvas.selectTable(table);
+            storage.setTable(table);
+            break;
+        case "remove-table":
+            canvas.removeTable(table);
+            table.destroy();
+            storage.setTable(table);
+            break;
+        case "toggle-fields":
+            table.toggleFields();
+            canvas.reconnect(table);
+            canvas.selectTable(table, specialKey);
+            storage.setTable(table);
+            break;
+        default:
+        }
+    }
+
+    // Group Actions
+    if (group) {
+        switch (action) {
+        case "remove-group":
+            canvas.removeGroup(group);
+            storage.removeGroup(group.id);
+            break;
         }
     }
 

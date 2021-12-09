@@ -285,16 +285,6 @@ export default class Canvas {
     }
 
     /**
-     * Adds a Group to the Canvas
-     * @param {Group} group
-     * @returns {Void}
-     */
-    addGroup(group) {
-        this.groups[group.id] = group;
-        this.canvas.appendChild(group.element);
-    }
-
-    /**
      * Re-connects the Links
      * @param {Table} table
      * @returns {Void}
@@ -305,6 +295,41 @@ export default class Canvas {
                 link.connect();
             }
         }
+    }
+
+
+
+    /**
+     * Returns a Group
+     * @param {HTMLElement} element
+     * @returns {Group?}
+     */
+    getGroup(element) {
+        const groupID = element.dataset.group;
+        if (groupID && this.groups[groupID]) {
+            return this.groups[groupID];
+        }
+        return null;
+    }
+
+    /**
+     * Adds a Group to the Canvas
+     * @param {Group} group
+     * @returns {Void}
+     */
+    addGroup(group) {
+        this.groups[group.id] = group;
+        this.canvas.appendChild(group.element);
+    }
+
+    /**
+     * Removes a Group from the Canvas
+     * @param {Group} group
+     * @returns {Void}
+     */
+    removeGroup(group) {
+        Utils.removeElement(group.element);
+        delete this.groups[group.id];
     }
 
 

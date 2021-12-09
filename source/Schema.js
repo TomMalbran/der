@@ -80,9 +80,9 @@ export default class Schema {
 
 
     /**
-     * Picks a Table
+     * Returns a Table
      * @param {HTMLElement} element
-     * @returns {Table}
+     * @returns {Table?}
      */
     getTable(element) {
         const table = element.dataset.table;
