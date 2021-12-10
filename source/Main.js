@@ -253,7 +253,6 @@ document.addEventListener("click", (e) => {
             break;
         case "remove-table":
             canvas.removeTable(table);
-            table.destroy();
             storage.setTable(table);
             break;
         case "toggle-fields":

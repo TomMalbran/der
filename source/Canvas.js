@@ -281,7 +281,7 @@ export default class Canvas {
 
         // Remove the table
         table.removeFromCanvas();
-        Utils.removeElement(table.tableElem);
+        table.destroy();
         delete this.tables[table.name];
     }
 
