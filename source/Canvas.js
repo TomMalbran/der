@@ -68,7 +68,7 @@ export default class Canvas {
             link.destroy();
         }
         for (const group of Object.values(this.groups)) {
-            Utils.removeElement(group.element);
+            group.destroy();
         }
         this.tables = {};
         this.links  = [];
@@ -329,8 +329,11 @@ export default class Canvas {
      * @returns {Void}
      */
     removeGroup(group) {
-        Utils.removeElement(group.element);
+        group.destroy();
         delete this.groups[group.id];
+        if (this.selectedGroup && this.selectedGroup.id === group.id) {
+            this.selectedGroup = null;
+        }
     }
 
 

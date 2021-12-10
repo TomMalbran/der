@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Utils from "./Utils.js";
 
 
 
@@ -55,6 +56,15 @@ import Table from "./Table.js";
         remove.dataset.action = "remove-group";
         remove.dataset.group  = String(this.id);
         this.element.appendChild(remove);
+    }
+
+    /**
+     * Destriys the HTML element
+     * @returns {Void}
+     */
+    destroy() {
+        Utils.removeElement(this.element);
+        this.element = null;
     }
 
     /**
