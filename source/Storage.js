@@ -277,6 +277,15 @@ export default class Storage {
                 this.removeItem(schemaID, "table", elem.table);
             }
         }
+
+        const groupIDs = this.getData(schemaID, "groups");
+        if (groupIDs) {
+            for (const groupID of groupIDs) {
+                this.removeItem(schemaID, "group", groupID);
+            }
+            this.removeItem(schemaID, "groups");
+        }
+
         if (this.currentID === schemaID) {
             this.setNumber("currentID", 0);
         }
