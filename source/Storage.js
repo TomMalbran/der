@@ -430,17 +430,23 @@ export default class Storage {
     }
 
     /**
+     * Returns the next Group ID
+     * @returns {Number[]}
+     */
+    get groupIDs() {
+        const groups = this.getData(this.currentID, "groups");
+        return groups || [];
+    }
+
+    /**
      * Returns the stored Groups data
      * @returns {Object[]}
      */
     getGroups() {
         const result = [];
-        const lastID = this.nextGroup;
-        for (let groupID = 1; groupID < lastID; groupID++) {
+        for (const groupID of this.groupIDs) {
             const group = this.getData(this.currentID, "group", groupID);
-            if (group) {
-                result.push(group);
-            }
+            result.push(group);
         }
         return result;
     }
@@ -453,6 +459,9 @@ export default class Storage {
      */
     setGroup(group, isCreate) {
         if (isCreate) {
+            const groups = this.groupIDs;
+            groups.push(group.id);
+            this.setData(this.currentID, "groups", groups);
             this.setNumber(this.currentID, "nextGroup", group.id + 1);
         }
         this.setData(this.currentID, "group", group.id, {
@@ -468,6 +477,9 @@ export default class Storage {
      * @returns {Void}
      */
     removeGroup(groupID) {
+        const groups = this.groupIDs;
+        groups.splice(groups.indexOf(groupID), 1);
+        this.setData(this.currentID, "groups", groups);
         this.removeItem(this.currentID, "group", groupID);
     }
 }
