@@ -14,8 +14,8 @@ main {
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
 }
 .canvas {
-    width: calc(4 * (100vw - var(--aside-width)));
-    height: 400vh;
+    width: calc(8 * (100vw - var(--aside-width)));
+    height: 800vh;
 }
 
 
