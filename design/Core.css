@@ -26,15 +26,15 @@
     --filter-height: 33px;
     --border-radius: 6px;
 
-    --z-link-disabled: 1;
-    --z-link-normal: 2;
-    --z-table-disabled: 3;
-    --z-table-normal: 4;
-    --z-table-selected: 5;
-    --z-table-dragging: 6;
+    --z-group: 2;
+    --z-link-disabled: 3;
+    --z-link-normal: 4;
+    --z-table-disabled: 5;
+    --z-table-normal: 6;
+    --z-table-selected: 7;
+    --z-table-dragging: 8;
 
     --z-aside: 1;
-    --z-group: 96;
     --z-resizer: 97;
     --z-arrow: 98;
     --z-zoom: 99;

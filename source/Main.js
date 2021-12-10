@@ -222,6 +222,7 @@ document.addEventListener("click", (e) => {
         const group = grouper.createGroup(storage.nextGroup, canvas.selectedTables);
         if (group) {
             canvas.addGroup(group);
+            canvas.selectGroup(group);
             storage.setGroup(group, true);
         }
         break;
@@ -241,7 +242,6 @@ document.addEventListener("click", (e) => {
         case "show-table":
             canvas.showTable(table);
             break;
-        case "drag-table":
         case "select-table":
             Utils.unselect();
             canvas.selectTable(table, specialKey);
@@ -277,7 +277,7 @@ document.addEventListener("click", (e) => {
     }
 
     if (canvas.shouldUnselect(e)) {
-        canvas.unselectTables();
+        canvas.unselect();
     }
     if (action && !dontStop) {
         e.preventDefault();
@@ -321,19 +321,25 @@ document.querySelector("main").addEventListener("scroll", () => {
  * The Pick Event Handler
  */
 document.addEventListener("mousedown", (e) => {
-    const target = Utils.getTarget(e);
-    const action = target.dataset.action;
+    const target     = Utils.getTarget(e);
+    const action     = target.dataset.action;
+    const specialKey = e.ctrlKey || e.metaKey || e.shiftKey;
 
     if (e.button !== 0) {
         return;
     }
     switch (action) {
     case "drag-table":
-        if (!canvas.currTable) {
-            const table = schema.getTable(target);
-            if (table) {
-                canvas.pickTable(e, table);
-            }
+        const table = schema.getTable(target);
+        if (table) {
+            canvas.pickTable(e, table, specialKey);
+            e.preventDefault();
+        }
+        break;
+    case "drag-group":
+        const group = canvas.getGroup(target);
+        if (group) {
+            canvas.pickGroup(e, group);
             e.preventDefault();
         }
         break;

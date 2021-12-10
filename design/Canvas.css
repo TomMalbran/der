@@ -316,6 +316,9 @@ main {
     z-index: var(--z-group);
     opacity: 0.5;
 }
+.group.selected {
+    opacity: 1;
+}
 .group-name {
     position: absolute;
     top: 4px;

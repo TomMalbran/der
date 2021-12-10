@@ -18,39 +18,40 @@ export default class Canvas {
      */
     constructor() {
         /** @type {Object.<String, Table>} */
-        this.tables      = {};
+        this.tables        = {};
 
         /** @type {Link[]} */
-        this.links       = [];
+        this.links         = [];
 
         /** @type {Object.<Number, Group>} */
-        this.groups      = {};
+        this.groups        = {};
 
         /** @type {HTMLElement} */
-        this.container   = document.querySelector("main");
-        this.bounds      = this.container.getBoundingClientRect();
+        this.container     = document.querySelector("main");
+        this.bounds        = this.container.getBoundingClientRect();
 
         /** @type {HTMLElement} */
-        this.canvas      = document.querySelector(".canvas");
+        this.canvas        = document.querySelector(".canvas");
 
 
         // Scroll
-        this.isScrolling = false;
+        this.isScrolling   = false;
 
         // Selection
-        this.selection   = {};
-        this.isSelecting = false;
-        this.isDragging  = false;
-        this.isMoving    = false;
+        this.selection     = {};
+        this.selectedGroup = null;
+        this.isSelecting   = false;
+        this.isDragging    = false;
+        this.isMoving      = false;
 
         /** @type {HTMLElement} */
-        this.selector    = document.querySelector(".selector");
+        this.selector      = document.querySelector(".selector");
 
         // Zoom
-        this.zoom        = 100;
-        this.percent     = document.querySelector(".zoom-percent");
-        this.zoomInBtn   = document.querySelector(".zoom-in");
-        this.zoomOutBtn  = document.querySelector(".zoom-out");
+        this.zoom          = 100;
+        this.percent       = document.querySelector(".zoom-percent");
+        this.zoomInBtn     = document.querySelector(".zoom-in");
+        this.zoomOutBtn    = document.querySelector(".zoom-out");
 
         this.center();
     }
@@ -400,10 +401,26 @@ export default class Canvas {
             return;
         }
         if (!addToSelection) {
-            this.unselectTables();
+            this.unselect();
         }
         this.selection[table.name] = table;
         this.markSelection();
+    }
+
+    /**
+     * Selects the given Group
+     * @param {Group} group
+     * @returns {Void}
+     */
+    selectGroup(group) {
+        this.unselect();
+        group.select();
+        this.selectedGroup = group;
+        for (const table of group.tables) {
+            this.selection[table.name] = table;
+        }
+        this.markSelection();
+        this.stopUnselect();
     }
 
     /**
@@ -449,10 +466,10 @@ export default class Canvas {
     }
 
     /**
-     * Unselects the selected Tables
+     * Unselects the selected Tables/Group
      * @returns {Void}
      */
-    unselectTables() {
+    unselect() {
         if (!this.hasSelection) {
             return;
         }
@@ -462,6 +479,10 @@ export default class Canvas {
         }
         for (const link of this.links) {
             link.unselect();
+        }
+        if (this.selectedGroup) {
+            this.selectedGroup.unselect();
+            this.selectedGroup = null;
         }
         this.selection = {};
     }
@@ -527,7 +548,7 @@ export default class Canvas {
         const currMouse = Utils.getMousePos(event);
         const bounds    = Utils.createBounds(this.startMouse, currMouse);
 
-        this.unselectTables();
+        this.unselect();
         for (const table of Object.values(this.tables)) {
             if (Utils.intersectsBounds(bounds, table.bounds)) {
                 this.selection[table.name] = table;
@@ -546,19 +567,42 @@ export default class Canvas {
      * Picks a Table
      * @param {MouseEvent} event
      * @param {Table}      table
+     * @param {Boolean=}   addToSelection
      * @returns {Void}
      */
-    pickTable(event, table) {
-        if (this.isScrolling || this.isSelecting || this.isDragging || !this.tables[table.name]) {
+    pickTable(event, table, addToSelection = false) {
+        if (this.isScrolling || this.isSelecting || this.isDragging) {
             return;
         }
         if (!this.selection[table.name]) {
-            this.selectTable(table);
+            this.selectTable(table, addToSelection);
         }
+        this.startDrag(event);
+    }
 
+    /**
+     * Picks a Group
+     * @param {MouseEvent} event
+     * @param {Group}      group
+     * @returns {Void}
+     */
+    pickGroup(event, group) {
+        if (this.isScrolling || this.isSelecting || this.isDragging) {
+            return;
+        }
+        this.selectGroup(group);
+        this.startDrag(event);
+    }
+
+    /**
+     * Starts the Drag
+     * @param {MouseEvent} event
+     * @returns {Void}
+     */
+    startDrag(event) {
         this.isDragging = true;
-        this.startPos   = {};
         this.startMouse = Utils.getMousePos(event);
+        this.startPos   = {};
         for (const selectedTable of this.selectedTables) {
             this.startPos[selectedTable.name] = selectedTable.pos;
             selectedTable.pick();
@@ -583,6 +627,9 @@ export default class Canvas {
                 left : startPos.left + (currMouse.left - this.startMouse.left) / mult,
             });
             this.reconnect(selectedTable);
+        }
+        for (const group of Object.values(this.groups)) {
+            group.position();
         }
         return true;
     }

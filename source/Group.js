@@ -44,7 +44,7 @@ import Table from "./Table.js";
         const name = document.createElement("div");
         name.className      = "group-name";
         name.innerHTML      = this.name;
-        name.dataset.action = "select-group";
+        name.dataset.action = "drag-group";
         name.dataset.group  = String(this.id);
 
         this.element.appendChild(name);
@@ -92,5 +92,21 @@ import Table from "./Table.js";
         this.element.style.transform = `translate(${this.left}px, ${this.top}px)`;
         this.element.style.width     = `${this.width}px`;
         this.element.style.height    = `${this.height}px`;
+    }
+
+    /**
+     * Selects the HTML element
+     * @returns {Void}
+     */
+    select() {
+        this.element.classList.add("selected");
+    }
+
+    /**
+     * Unselects the HTML element
+     * @returns {Void}
+     */
+    unselect() {
+        this.element.classList.remove("selected");
     }
 }
