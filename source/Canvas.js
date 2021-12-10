@@ -65,7 +65,7 @@ export default class Canvas {
             table.destroy();
         }
         for (const link of this.links) {
-            Utils.removeElement(link.element);
+            link.destroy();
         }
         for (const group of Object.values(this.groups)) {
             Utils.removeElement(group.element);
@@ -274,7 +274,7 @@ export default class Canvas {
         for (let i = this.links.length - 1; i >= 0; i--) {
             const link = this.links[i];
             if (link.isLinkedTo(table)) {
-                Utils.removeElement(link.element);
+                link.destroy();
                 this.links.splice(i, 1);
             }
         }

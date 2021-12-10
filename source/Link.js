@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Utils from "./Utils.js";
 
 // Constants
 const SELF_WIDTH    = 70;
@@ -56,6 +57,15 @@ export default class Link {
         this.element.appendChild(this.path);
 
         this.connect();
+    }
+
+    /**
+     * Destriys the SVG element
+     * @returns {Void}
+     */
+    destroy() {
+        Utils.removeElement(this.element);
+        this.element = null;
     }
 
 
