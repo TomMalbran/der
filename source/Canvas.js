@@ -398,10 +398,8 @@ export default class Canvas {
      * @returns {Void}
      */
     showTable(table) {
-        if (this.tables[table.name]) {
-            table.scrollIntoView();
-            this.selectTable(table);
-        }
+        table.scrollIntoView();
+        this.selectTable(table);
     }
 
     /**
@@ -412,13 +410,14 @@ export default class Canvas {
      */
     selectTable(table, addToSelection = false) {
         this.stopUnselect();
-        if (!this.tables[table.name] || this.selection[table.name]) {
+        if (this.selection[table.name]) {
             return;
         }
         if (!addToSelection) {
             this.unselect();
         }
         this.selection[table.name] = table;
+        this.trySelectGroup();
         this.markSelection();
     }
 
@@ -436,6 +435,20 @@ export default class Canvas {
         }
         this.markSelection();
         this.stopUnselect();
+    }
+
+    /**
+     * Tries to select a group if all the tables are part of it
+     * @returns {Void}
+     */
+    trySelectGroup() {
+        for (const group of Object.values(this.groups)) {
+            if (group.containsAll(this.selectedTables)) {
+                group.select();
+                this.selectedGroup = group;
+                break;
+            }
+        }
     }
 
     /**
@@ -571,6 +584,7 @@ export default class Canvas {
         }
         if (this.hasSelection) {
             this.stopUnselect();
+            this.trySelectGroup();
             this.markSelection();
         }
         return true;
@@ -605,6 +619,7 @@ export default class Canvas {
         if (this.isScrolling || this.isSelecting || this.isDragging) {
             return;
         }
+        group.pick();
         this.selectGroup(group);
         this.startDrag(event);
     }
@@ -615,6 +630,7 @@ export default class Canvas {
      * @returns {Void}
      */
     startDrag(event) {
+        this.stopUnselect();
         this.isDragging = true;
         this.startMouse = Utils.getMousePos(event);
         this.startPos   = {};
@@ -660,6 +676,9 @@ export default class Canvas {
         for (const selectedTable of this.selectedTables) {
             selectedTable.drop();
             this.reconnect(selectedTable);
+        }
+        if (this.selectedGroup) {
+            this.selectedGroup.drop();
         }
         this.isDragging = false;
         return true;

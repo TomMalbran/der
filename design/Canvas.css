@@ -319,13 +319,16 @@ main {
 .group.selected {
     opacity: 1;
 }
-.group-name {
+.group header {
     position: absolute;
     top: 4px;
     left: 8px;
     font-weight: bold;
     pointer-events: all;
     cursor: grab;
+}
+.group.dragging header {
+    cursor: grabbing;
 }
 .group .close {
     position: absolute;

@@ -41,6 +41,30 @@ import Utils from "./Utils.js";
     }
 
     /**
+     * Returns true if all the given tables appear in the group
+     * @param {Table[]} tables
+     * @returns {Boolean}
+     */
+    containsAll(tables) {
+        if (tables.length !== this.tables.length) {
+            return false;
+        }
+        for (const table of tables) {
+            let found = false;
+            for (const other of this.tables) {
+                if (table.name === other.name) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Removes a table from the group
      * @param {Table} table
      * @returns {Boolean}
@@ -73,13 +97,11 @@ import Utils from "./Utils.js";
         this.element = document.createElement("div");
         this.element.className = "group";
 
-        const name = document.createElement("div");
-        name.className      = "group-name";
-        name.innerHTML      = this.name;
-        name.dataset.action = "drag-group";
-        name.dataset.group  = String(this.id);
-
-        this.element.appendChild(name);
+        const header = document.createElement("header");
+        header.innerHTML      = this.name;
+        header.dataset.action = "drag-group";
+        header.dataset.group  = String(this.id);
+        this.element.appendChild(header);
 
         const remove = document.createElement("a");
         remove.href           = "#";
@@ -149,5 +171,21 @@ import Utils from "./Utils.js";
      */
     unselect() {
         this.element.classList.remove("selected");
+    }
+
+    /**
+     * Picks the Group
+     * @returns {Void}
+     */
+    pick() {
+        this.element.classList.add("dragging");
+    }
+
+    /**
+     * Drops the Group
+     * @returns {Void}
+     */
+    drop() {
+        this.element.classList.remove("dragging");
     }
 }
