@@ -54,12 +54,12 @@
 
         <div class="schema-dialog backdrop" data-dialog="schema">
             <dialog open>
-                <h2 class="dialog-title">Add a Schema</h2>
+                <h2>Add a Schema</h2>
                 <p>Name the Schema and select the json files or urls.</p>
-                <div class="toggle-input" data-field="urls">
+                <label class="toggle-input" data-field="urls">
                     <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
-                    <div class="input-tip">Use urls</div>
-                </div>
+                    <div>Use urls</div>
+                </label>
                 <div class="field" data-field="name">
                     <label>Name</label>
                     <input type="text" name="name" />
@@ -119,12 +119,20 @@
         <div class="backdrop" data-dialog="group">
             <dialog open>
                 <h2>Create Group</h2>
-                <div class="field" data-field="name">
-                    <label>Group Name</label>
-                    <input type="text" name="name" />
-                    <div class="error" data-error="name">You must complete de name of the group.</div>
+                <p class="group-empty">You must first select tables to create a group or a group to edit it.</p>
+                <div class="group-content">
+                    <div class="field" data-field="name">
+                        <label>Group Name</label>
+                        <input type="text" name="name" />
+                        <div class="error" data-error="name">You must complete de name of the group.</div>
+                    </div>
+                    <div class="field" data-field="tables">
+                        <label>Selected Tables</label>
+                        <div class="group-tables checkbox-box"></div>
+                        <div class="error" data-error="table">You must indicate at least one table.</div>
+                    </div>
+                    <button class="btn btn-fill dialog-btn" data-action="manage-group">Create Group</button>
                 </div>
-                <button class="btn btn-fill" data-action="manage-group">Create Group</button>
                 <a href="#" class="close" data-action="close-group"></a>
             </dialog>
         </div>

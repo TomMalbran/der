@@ -59,17 +59,12 @@ function setSchema(data) {
         }
     }
 
-    const groups = storage.getGroups();
-    for (const groupData of Object.values(groups)) {
-        const tables = canvas.getTables(groupData.tables);
-        if (tables.length) {
-            const group = new Group(groupData.id, groupData.name, tables);
-            storage.setGroup(group);
-            canvas.addGroup(group);
-        } else {
-            storage.removeGroup(groupData.id);
-        }
+    const groupsData = storage.getGroups();
+    const groups     = [];
+    for (const groupData of Object.values(groupsData)) {
+        groups.push(canvas.addGroup(groupData));
     }
+    storage.updateGroups(groups);
 
     canvas.setInitialZoom(storage.getZoom());
     canvas.setInitialScroll(storage.getScroll());
@@ -214,16 +209,17 @@ document.addEventListener("click", (e) => {
     // Grouper Dialog
     case "open-group":
         canvas.stopUnselect();
-        if (canvas.hasSelection) {
-            grouper.openDialog(false);
-        }
+        grouper.openDialog(storage.nextGroup, canvas.selectedGroup, canvas.selectedTables);
         break;
     case "manage-group":
-        const group = grouper.createGroup(storage.nextGroup, canvas.selectedTables);
-        if (group) {
-            canvas.addGroup(group);
+        const data = grouper.manageGroup();
+        if (data) {
+            const group = canvas.addGroup(data);
             canvas.selectGroup(group);
-            storage.setGroup(group, true);
+            storage.setGroup(group);
+            if (!data.isEdit) {
+                storage.addGroup(group);
+            }
         }
         break;
     case "close-group":

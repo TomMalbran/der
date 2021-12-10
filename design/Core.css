@@ -25,6 +25,7 @@
     --title-height: 46px;
     --filter-height: 33px;
     --border-radius: 6px;
+    --input-radius: 4px;
 
     --z-group: 2;
     --z-link-disabled: 3;
@@ -135,22 +136,24 @@ input:focus {
 }
 
 .field {
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-height: 48px;
     padding: 6px 12px;
     text-align: left;
     margin-bottom: 16px;
     border: 1px solid var(--input-color);
     border-radius: var(--border-radius);
 }
-.field label {
+.field > label {
     margin: 0;
     font-size: 11px;
     line-height: 1;
     color: var(--light-color);
 }
-.field input {
+.field > input[type="text"] {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -192,6 +195,68 @@ input:focus {
 }
 .file-input section > div:last-child .close {
     margin: 0 6px 8px 0;
+}
+
+
+
+/**
+ * Checkbox Input
+ */
+@keyframes tick {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+.checkbox-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 8px;
+}
+.checkbox-input {
+    display: flex;
+    align-items: center;
+    color: black;
+    font-size: 14px;
+}
+.checkbox-input input[type="checkbox"] {
+    appearance: none;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    padding: 0;
+    outline: 0;
+    cursor: pointer;
+    border: 1px solid var(--input-color);
+    border-radius: var(--input-radius);
+    transition: all ease-in-out 0.2s;
+}
+.checkbox-input input[type="checkbox"]:checked:after {
+    content: "✕";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--primary-color);
+    background-color: var(--main-color);
+    color: white;
+    border-radius: var(--input-radius);
+    animation: tick 0.4s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+.checkbox-input input[type="checkbox"]:disabled {
+    background-color: rgb(245, 245, 245);
+    color: rgb(175, 175, 175);
+}
+
+.checkbox-input input[type="checkbox"]:not(:disabled):hover,
+.checkbox-input input[type="checkbox"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
 }
 
 

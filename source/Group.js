@@ -25,6 +25,19 @@ import Utils from "./Utils.js";
     }
 
     /**
+     * Updates te Group
+     * @param {String}  name
+     * @param {Table[]} tables
+     */
+    update(name, tables) {
+        this.name   = name;
+        this.tables = tables;
+
+        this.header.innerText = this.name;
+        this.position();
+    }
+
+    /**
      * Returns true if the group is empty
      * @return {Boolean}
      */
@@ -41,6 +54,15 @@ import Utils from "./Utils.js";
     }
 
     /**
+     * Returns true if all the given table appear in the group
+     * @param {Table} table
+     * @returns {Boolean}
+     */
+    contains(table) {
+        return this.tables.findIndex((elem) => elem.name === table.name) > -1;
+    }
+
+    /**
      * Returns true if all the given tables appear in the group
      * @param {Table[]} tables
      * @returns {Boolean}
@@ -50,14 +72,7 @@ import Utils from "./Utils.js";
             return false;
         }
         for (const table of tables) {
-            let found = false;
-            for (const other of this.tables) {
-                if (table.name === other.name) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+            if (!this.contains(table)) {
                 return false;
             }
         }
@@ -97,11 +112,11 @@ import Utils from "./Utils.js";
         this.element = document.createElement("div");
         this.element.className = "group";
 
-        const header = document.createElement("header");
-        header.innerHTML      = this.name;
-        header.dataset.action = "drag-group";
-        header.dataset.group  = String(this.id);
-        this.element.appendChild(header);
+        this.header = document.createElement("header");
+        this.header.innerHTML      = this.name;
+        this.header.dataset.action = "drag-group";
+        this.header.dataset.group  = String(this.id);
+        this.element.appendChild(this.header);
 
         const remove = document.createElement("a");
         remove.href           = "#";

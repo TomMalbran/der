@@ -461,23 +461,28 @@ export default class Storage {
     }
 
     /**
-     * Adds/Edits a Group to the Storage
-     * @param {Group}   group
-     * @param {Boolean} isCreate
+     * Stores a Group to the Storage
+     * @param {Group} group
      * @returns {Void}
      */
-    setGroup(group, isCreate) {
-        if (isCreate) {
-            const groups = this.groupIDs;
-            groups.push(group.id);
-            this.setData(this.currentID, "groups", groups);
-            this.setNumber(this.currentID, "nextGroup", group.id + 1);
-        }
+    setGroup(group) {
         this.setData(this.currentID, "group", group.id, {
             id     : group.id,
             name   : group.name,
             tables : group.tableNames,
         });
+    }
+
+    /**
+     * Adds a Group to the Storage
+     * @param {Group} group
+     * @returns {Void}
+     */
+    addGroup(group) {
+        const groups = this.groupIDs;
+        groups.push(group.id);
+        this.setData(this.currentID, "groups", groups);
+        this.setNumber(this.currentID, "nextGroup", group.id + 1);
     }
 
     /**
@@ -502,7 +507,7 @@ export default class Storage {
             if (group.isEmpty) {
                 this.removeGroup(group.id);
             } else {
-                this.setGroup(group, false);
+                this.setGroup(group);
             }
         }
     }

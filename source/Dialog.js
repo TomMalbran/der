@@ -46,7 +46,7 @@ export default class Dialog {
      * @returns {Void}
      */
     setTitle(text) {
-        const element = this.container.querySelector(".dialog-title");
+        const element = this.container.querySelector("h2");
         if (element) {
             element.innerHTML = text;
         }

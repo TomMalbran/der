@@ -327,12 +327,23 @@ export default class Canvas {
 
     /**
      * Adds a Group to the Canvas
-     * @param {Group} group
-     * @returns {Void}
+     * @param {Object} data
+     * @returns {Group}
      */
-    addGroup(group) {
-        this.groups[group.id] = group;
-        this.canvas.appendChild(group.element);
+    addGroup(data) {
+        let group;
+        const tables = this.getTables(data.tables);
+        if (data.isEdit) {
+            group = this.groups[data.id];
+            group.update(data.name, tables);
+        } else {
+            group = new Group(data.id, data.name, tables);
+        }
+        if (!group.isEmpty) {
+            this.groups[group.id] = group;
+            this.canvas.appendChild(group.element);
+        }
+        return group;
     }
 
     /**
