@@ -24,6 +24,7 @@ import Table  from "./Table.js";
     openDialog(isEdit) {
         this.dialog.setTitle(isEdit ? "Edit the Group" : "Create a Group");
         this.dialog.setButton(isEdit ? "Edit Group" : "Create Group");
+        this.dialog.setInput("name", "");
         this.dialog.open();
     }
 

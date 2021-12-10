@@ -482,4 +482,19 @@ export default class Storage {
         this.setData(this.currentID, "groups", groups);
         this.removeItem(this.currentID, "group", groupID);
     }
+
+    /**
+     * Removes a Group from the Storage
+     * @param {Group[]} groups
+     * @returns {Void}
+     */
+    updateGroups(groups) {
+        for (const group of groups) {
+            if (group.isEmpty) {
+                this.removeGroup(group.id);
+            } else {
+                this.setGroup(group, false);
+            }
+        }
+    }
 }

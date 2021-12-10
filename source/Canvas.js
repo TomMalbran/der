@@ -267,7 +267,7 @@ export default class Canvas {
     /**
      * Removes a Table from the Canvas
      * @param {Table} table
-     * @returns {Void}
+     * @returns {Group[]}
      */
     removeTable(table) {
         // Remove the links to/from the table
@@ -279,10 +279,22 @@ export default class Canvas {
             }
         }
 
+        // Remove the table from the groups
+        const groups = [];
+        for (const group of Object.values(this.groups)) {
+            if (group.removeTable(table)) {
+                groups.push(group);
+                if (group.isEmpty) {
+                    this.removeGroup(group);
+                }
+            }
+        }
+
         // Remove the table
         table.removeFromCanvas();
         table.destroy();
         delete this.tables[table.name];
+        return groups;
     }
 
     /**

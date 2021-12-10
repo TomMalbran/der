@@ -25,11 +25,42 @@ import Utils from "./Utils.js";
     }
 
     /**
+     * Returns true if the group is empty
+     * @return {Boolean}
+     */
+    get isEmpty() {
+        return this.tables.length === 0;
+    }
+
+    /**
      * Returns a list of table names
      * @return {String[]}
      */
     get tableNames() {
         return this.tables.map((table) => table.name);
+    }
+
+    /**
+     * Removes a table from the group
+     * @param {Table} table
+     * @returns {Boolean}
+     */
+    removeTable(table) {
+        let found = false;
+        for (let i = this.tables.length - 1; i >= 0; i--) {
+            if (this.tables[i].name === table.name) {
+                this.tables.splice(i, 1);
+                found = true;
+            }
+        }
+        if (!found) {
+            return false;
+        }
+
+        if (this.tables.length > 0) {
+            this.position();
+        }
+        return true;
     }
 
 

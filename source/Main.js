@@ -252,8 +252,9 @@ document.addEventListener("click", (e) => {
             storage.setTable(table);
             break;
         case "remove-table":
-            canvas.removeTable(table);
+            const groups = canvas.removeTable(table);
             storage.setTable(table);
+            storage.updateGroups(groups);
             break;
         case "toggle-fields":
             table.toggleFields();
