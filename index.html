@@ -24,117 +24,125 @@
             <div class="aside-resizer" data-action="resize-aside"></div>
             <div class="aside-arrow arrow" data-action="toggle-aside"></div>
         </aside>
+
+
         <main>
             <section class="canvas"></section>
         </main>
-        <ol class="zoom">
-            <li class="zoom-in" data-action="zoom-in">+</li>
-            <li class="zoom-percent" data-action="reset-zoom">100%</li>
-            <li class="zoom-out" data-action="zoom-out">-</li>
-        </ol>
-        <div class="grouper" data-action="open-group">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                <path d="M10 4H6c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm12 8h4c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2zm0-6h4v4h-4V6zM10 20H6c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zm0 6H6v-4h4v4zm16-6h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
-                <path d="M28 16h-2c-2.671 0-5.182-1.04-7.071-2.929S16 8.671 16 6V4c0-2.2-1.8-4-4-4H4C1.8 0 0 1.8 0 4v8c0 2.2 1.8 4 4 4h2c2.671 0 5.182 1.04 7.071 2.929S16 23.329 16 26v2c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4v-8c0-2.2-1.8-4-4-4zm2 12c0 .53-.209 1.031-.589 1.411S28.53 30 28 30h-8c-.53 0-1.031-.209-1.411-.589S18 28.53 18 28v-2c0-6.627-5.373-12-12-12H4c-.53 0-1.031-.209-1.411-.589S2 12.53 2 12V4c0-.53.209-1.031.589-1.411S3.47 2 4 2h8c.53 0 1.031.209 1.411.589S14 3.47 14 4v2c0 6.627 5.373 12 12 12h2c.53 0 1.031.209 1.411.589S30 19.47 30 20v8z" />
-            </svg>
-        </div>
-        <div class="selector"></div>
+        <section>
+            <ol class="zoom">
+                <li class="zoom-in" data-action="zoom-in">+</li>
+                <li class="zoom-percent" data-action="reset-zoom">100%</li>
+                <li class="zoom-out" data-action="zoom-out">-</li>
+            </ol>
+            <div class="grouper" data-action="open-group">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                    <path d="M10 4H6c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm12 8h4c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2zm0-6h4v4h-4V6zM10 20H6c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zm0 6H6v-4h4v4zm16-6h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
+                    <path d="M28 16h-2c-2.671 0-5.182-1.04-7.071-2.929S16 8.671 16 6V4c0-2.2-1.8-4-4-4H4C1.8 0 0 1.8 0 4v8c0 2.2 1.8 4 4 4h2c2.671 0 5.182 1.04 7.071 2.929S16 23.329 16 26v2c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4v-8c0-2.2-1.8-4-4-4zm2 12c0 .53-.209 1.031-.589 1.411S28.53 30 28 30h-8c-.53 0-1.031-.209-1.411-.589S18 28.53 18 28v-2c0-6.627-5.373-12-12-12H4c-.53 0-1.031-.209-1.411-.589S2 12.53 2 12V4c0-.53.209-1.031.589-1.411S3.47 2 4 2h8c.53 0 1.031.209 1.411.589S14 3.47 14 4v2c0 6.627 5.373 12 12 12h2c.53 0 1.031.209 1.411.589S30 19.47 30 20v8z" />
+                </svg>
+            </div>
+            <div class="selector"></div>
+        </section>
 
 
-        <div class="select-dialog backdrop" data-dialog="select">
-            <dialog open>
-                <h2>Select a Schema</h2>
-                <p class="select-empty">Use the button bellow to add a new Schema.</p>
-                <ol class="select-list"></ol>
-                <button class="btn btn-fill" data-action="open-add">Add Schema</button>
-                <a href="#" class="close" data-action="close-select"></a>
-            </dialog>
-        </div>
+        <section>
+            <div class="select-dialog backdrop" data-dialog="select">
+                <dialog open>
+                    <h2>Select a Schema</h2>
+                    <p class="select-empty">Use the button bellow to add a new Schema.</p>
+                    <ol class="select-list"></ol>
+                    <button class="btn btn-fill" data-action="open-add">Add Schema</button>
+                    <a href="#" class="close" data-action="close-select"></a>
+                </dialog>
+            </div>
 
 
-        <div class="schema-dialog backdrop" data-dialog="schema">
-            <dialog open>
-                <h2>Add a Schema</h2>
-                <p>Name the Schema and select the json files or urls.</p>
-                <label class="toggle-input" data-field="urls">
-                    <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
-                    <div>Use urls</div>
-                </label>
-                <div class="field" data-field="name">
-                    <label>Name</label>
-                    <input type="text" name="name" />
-                    <div class="error" data-error="name">You must complete de schema name.</div>
-                </div>
-                <div class="field file-input schema-file" data-field="file1">
-                    <section>
-                        <div>
-                            <label>Main File</label>
-                            <div class="file-name"></div>
-                        </div>
-                        <div>
-                            <a href="#" class="close" data-action="remove-main-file"></a>
-                            <button class="btn" data-action="upload-main-file">Upload File</button>
-                        </div>
-                    </section>
-                    <div class="error" data-error="file">You must complete the schema main file.</div>
-                    <div class="error" data-error="json0">The file must be a valid JSON file.</div>
-                </div>
-                <div class="field file-input schema-file" data-field="file2">
-                    <section>
-                        <div>
-                            <label>Secondary File</label>
-                            <div class="file-name"></div>
-                        </div>
-                        <div>
-                            <a href="#" class="close" data-action="remove-sec-file"></a>
-                            <button class="btn" data-action="upload-sec-file">Upload File</button>
-                        </div>
-                    </section>
-                    <div class="error" data-error="json1">The file must be a valid JSON file.</div>
-                </div>
-                <div class="field schema-url" data-field="url1">
-                    <label>Main Url</label>
-                    <input type="text" name="mainUrl" />
-                    <div class="error" data-error="url">You must complete de main url.</div>
-                </div>
-                <div class="field schema-url" data-field="url2">
-                    <label>Secondary Url</label>
-                    <input type="text" name="secUrl" />
-                </div>
-                <button class="btn btn-fill dialog-btn" data-action="import-schema">Add Schema</button>
-                <a href="#" class="close" data-action="close-schema"></a>
-            </dialog>
-        </div>
-
-        <div class="backdrop" data-dialog="delete">
-            <dialog open>
-                <h2>Delete Schema</h2>
-                <p class="select-empty">Do you really want to delete the selected Schema?</p>
-                <button class="btn btn-fill" data-action="delete-schema">Delete Schema</button>
-                <button class="btn" data-action="close-delete">Cancel</button>
-                <a href="#" class="close" data-action="close-delete"></a>
-            </dialog>
-        </div>
-
-        <div class="backdrop" data-dialog="group">
-            <dialog open>
-                <h2>Create Group</h2>
-                <p class="group-empty">You must first select tables to create a group or a group to edit it.</p>
-                <div class="group-content">
+            <div class="schema-dialog backdrop" data-dialog="schema">
+                <dialog open>
+                    <h2>Schema</h2>
+                    <p>Name the Schema and select the json files or urls.</p>
+                    <label class="toggle-input" data-field="urls">
+                        <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
+                        <div>Use urls</div>
+                    </label>
                     <div class="field" data-field="name">
-                        <label>Group Name</label>
+                        <label>Name</label>
                         <input type="text" name="name" />
-                        <div class="error" data-error="name">You must complete de name of the group.</div>
+                        <div class="error" data-error="name">You must complete de schema name.</div>
                     </div>
-                    <div class="field" data-field="tables">
-                        <label>Selected Tables</label>
-                        <div class="group-tables checkbox-box"></div>
-                        <div class="error" data-error="table">You must indicate at least one table.</div>
+                    <div class="field file-input schema-file" data-field="file1">
+                        <section>
+                            <div>
+                                <label>Main File</label>
+                                <div class="file-name"></div>
+                            </div>
+                            <div>
+                                <a href="#" class="close" data-action="remove-main-file"></a>
+                                <button class="btn" data-action="upload-main-file">Upload File</button>
+                            </div>
+                        </section>
+                        <div class="error" data-error="file">You must complete the schema main file.</div>
+                        <div class="error" data-error="json0">The file must be a valid JSON file.</div>
                     </div>
-                    <button class="btn btn-fill dialog-btn" data-action="manage-group">Create Group</button>
-                </div>
-                <a href="#" class="close" data-action="close-group"></a>
-            </dialog>
-        </div>
+                    <div class="field file-input schema-file" data-field="file2">
+                        <section>
+                            <div>
+                                <label>Secondary File</label>
+                                <div class="file-name"></div>
+                            </div>
+                            <div>
+                                <a href="#" class="close" data-action="remove-sec-file"></a>
+                                <button class="btn" data-action="upload-sec-file">Upload File</button>
+                            </div>
+                        </section>
+                        <div class="error" data-error="json1">The file must be a valid JSON file.</div>
+                    </div>
+                    <div class="field schema-url" data-field="url1">
+                        <label>Main Url</label>
+                        <input type="text" name="mainUrl" />
+                        <div class="error" data-error="url">You must complete de main url.</div>
+                    </div>
+                    <div class="field schema-url" data-field="url2">
+                        <label>Secondary Url</label>
+                        <input type="text" name="secUrl" />
+                    </div>
+                    <button class="btn btn-fill dialog-btn" data-action="import-schema">Schema</button>
+                    <a href="#" class="close" data-action="close-schema"></a>
+                </dialog>
+            </div>
+
+
+            <div class="backdrop" data-dialog="delete">
+                <dialog open>
+                    <h2>Delete Schema</h2>
+                    <p class="select-empty">Do you really want to delete the selected Schema?</p>
+                    <button class="btn btn-fill" data-action="delete-schema">Delete Schema</button>
+                    <button class="btn" data-action="close-delete">Cancel</button>
+                    <a href="#" class="close" data-action="close-delete"></a>
+                </dialog>
+            </div>
+
+
+            <div class="backdrop" data-dialog="group">
+                <dialog open>
+                    <h2>Group</h2>
+                    <p class="group-empty">You must first select tables to create a group or a group to edit it.</p>
+                    <div class="group-content">
+                        <div class="field" data-field="name">
+                            <label>Group Name</label>
+                            <input type="text" name="name" />
+                            <div class="error" data-error="name">You must complete de name of the group.</div>
+                        </div>
+                        <div class="field" data-field="tables">
+                            <label>Selected Tables</label>
+                            <div class="group-tables checkbox-box"></div>
+                            <div class="error" data-error="table">You must indicate at least one table.</div>
+                        </div>
+                        <button class="btn btn-fill dialog-btn" data-action="update-group">Group</button>
+                    </div>
+                    <a href="#" class="close" data-action="close-group"></a>
+                </dialog>
+            </div>
+        </section>
     </body>
 </html>

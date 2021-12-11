@@ -1,8 +1,7 @@
-
 /**
  * The Table Field
  */
- export default class Field {
+export default class Field {
 
     /**
      * Table Field constructor

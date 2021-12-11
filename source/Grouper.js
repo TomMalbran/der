@@ -65,10 +65,10 @@ import Table  from "./Table.js";
     }
 
     /**
-     * Manages the Group
+     * Updates the Group
      * @returns {Object?}
      */
-    manageGroup() {
+    updateGroup() {
         if (!this.dialog.isOpen) {
             return null;
         }

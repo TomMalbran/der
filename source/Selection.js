@@ -26,7 +26,7 @@ export default class Selection {
         this.urlFields    = document.querySelectorAll(".schema-url");
 
         // Delete
-        this.deleteDialog = new Dialog("dialog");
+        this.deleteDialog = new Dialog("delete");
     }
 
     /**
@@ -165,9 +165,6 @@ export default class Selection {
      * @returns {Void}
      */
     importSchema(onDone) {
-        const isEdit = Boolean(this.data.schemaID);
-        let   count  = 0;
-
         this.data.useUrls = this.schemaDialog.getInput("urls");
         this.data.name    = this.schemaDialog.getInput("name");
         this.data.url1    = this.schemaDialog.getInput("url1");
@@ -191,6 +188,7 @@ export default class Selection {
         }
 
         if (!this.data.useUrls && (this.files[0] || this.files[1])) {
+            let count = 0;
             for (let i = 0; i < this.files.length; i++) {
                 if (!this.files[i]) {
                     count += 1;

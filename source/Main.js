@@ -119,7 +119,7 @@ document.addEventListener("click", (e) => {
     let   dontStop   = false;
 
     switch (action) {
-    // Selection Dialog
+    // Selection Actions
     case "open-select":
         selection.open(storage.getSchemas());
         break;
@@ -131,7 +131,7 @@ document.addEventListener("click", (e) => {
         selection.close();
         break;
 
-    // Schema Dialog
+    // Schema Actions
     case "open-add":
         selection.openSchema({});
         break;
@@ -171,7 +171,7 @@ document.addEventListener("click", (e) => {
         });
         break;
 
-    // Delete Dialog
+    // Delete Actions
     case "open-delete":
         selection.openDelete(schemaID);
         break;
@@ -182,7 +182,7 @@ document.addEventListener("click", (e) => {
         deleteSchema(selection.schemaID);
         break;
 
-    // Aside
+    // Aside Actions
     case "toggle-aside":
         schema.toggleMinimize();
         storage.setWidth(schema.width);
@@ -192,7 +192,7 @@ document.addEventListener("click", (e) => {
         storage.removeFilter();
         break;
 
-    // Canvas Zoom
+    // Zoom Actions
     case "zoom-in":
         const zoomIn = canvas.zoomIn();
         storage.setZoom(zoomIn);
@@ -206,13 +206,16 @@ document.addEventListener("click", (e) => {
         storage.removeZoom();
         break;
 
-    // Grouper Dialog
+    // Group Actions
     case "open-group":
         canvas.stopUnselect();
         grouper.openDialog(storage.nextGroup, canvas.selectedGroup, canvas.selectedTables);
         break;
-    case "manage-group":
-        const data = grouper.manageGroup();
+    case "close-group":
+        grouper.closeDialog();
+        break;
+    case "update-group":
+        const data = grouper.updateGroup();
         if (data) {
             const group = canvas.addGroup(data);
             canvas.selectGroup(group);
@@ -222,8 +225,11 @@ document.addEventListener("click", (e) => {
             }
         }
         break;
-    case "close-group":
-        grouper.closeDialog();
+    case "remove-group":
+        if (group) {
+            canvas.removeGroup(group);
+            storage.removeGroup(group.id);
+        }
         break;
     default:
     }
@@ -259,16 +265,6 @@ document.addEventListener("click", (e) => {
             storage.setTable(table);
             break;
         default:
-        }
-    }
-
-    // Group Actions
-    if (group) {
-        switch (action) {
-        case "remove-group":
-            canvas.removeGroup(group);
-            storage.removeGroup(group.id);
-            break;
         }
     }
 
