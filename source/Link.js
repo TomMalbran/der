@@ -4,8 +4,8 @@ import Utils from "./Utils.js";
 // Constants
 const SELF_WIDTH    = 70;
 const DOWN_WIDTH    = 70;
-const ROW_HEIGHT    = 26;
-const HEADER_HEIGHT = 33;
+const ROW_HEIGHT    = 24;
+const HEADER_HEIGHT = 31;
 const ARROW_SIZE    = 10;
 
 

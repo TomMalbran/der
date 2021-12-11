@@ -24,9 +24,11 @@ main {
  * Table
  */
 .schema-table {
+    --bg-color: white;
     position: absolute;
     top: 0;
     left: 0;
+    font-size: 12px;
     background-color: white;
     box-shadow: var(--box-shadow);
     overflow: hidden;
@@ -71,7 +73,7 @@ main {
 .schema-table ol li span:last-child {
     color: var(--light-color);
     margin-left: 16px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .schema-hide.schema-hide {
@@ -132,6 +134,7 @@ main {
  * Link
  */
 .schema-link {
+    --bg-color: var(--main-color);
     position: absolute;
     top: 0;
     left: 0;
@@ -140,24 +143,19 @@ main {
 }
 .schema-link path {
     fill: none;
-    stroke: var(--main-color);
+    stroke: var(--bg-color);
     stroke-width: 2;
     transition: stroke 0.1s;
 }
 .schema-link polygon {
-    fill: var(--main-color);
+    fill: var(--bg-color);
     stroke: none;
     transition: fill 0.1s;
 }
 
-.schema-link.disabled {
+.schema-link.disabled.disabled {
+    --bg-color: var(--border-color);
     z-index: var(--z-link-disabled);
-}
-.schema-link.disabled path {
-    stroke: var(--border-color);
-}
-.schema-link.disabled polygon {
-    fill: var(--border-color);
 }
 
 
@@ -165,69 +163,37 @@ main {
 /**
  * Colors
  */
-.schema-table li.colored,
+.schema-table li.colored {
+    color: black;
+    background-color: var(--bg-color);
+}
 .schema-table li.colored span:last-child {
     color: black;
 }
 
-.schema-table li.color1 {
-    background-color: var(--selected-color1);
+.color1.color1 {
+    --bg-color: var(--selected-color1);
 }
-.schema-link.color1 path {
-    stroke: var(--selected-color1);
+.color2.color2 {
+    --bg-color: var(--selected-color2);
 }
-.schema-link.color1 polygon {
-    fill: var(--selected-color1);
+.color3.color3 {
+    --bg-color: var(--selected-color3);
 }
-
-.schema-table li.color2 {
-    background-color: var(--selected-color2);
+.color4.color4 {
+    --bg-color: var(--selected-color4);
 }
-.schema-link.color2 path {
-    stroke: var(--selected-color2);
+.color5.color5 {
+    --bg-color: var(--selected-color5);
 }
-.schema-link.color2 polygon {
-    fill: var(--selected-color2);
+.color6.color6 {
+    --bg-color: var(--selected-color6);
 }
-
-.schema-table li.color3 {
-    background-color: var(--selected-color3);
+.color7.color7 {
+    --bg-color: var(--selected-color7);
 }
-.schema-link.color3 path {
-    stroke: var(--selected-color3);
-}
-.schema-link.color3 polygon {
-    fill: var(--selected-color3);
-}
-
-.schema-table li.color4 {
-    background-color: var(--selected-color4);
-}
-.schema-link.color4 path {
-    stroke: var(--selected-color4);
-}
-.schema-link.color4 polygon {
-    fill: var(--selected-color4);
-}
-
-.schema-table li.color5 {
-    background-color: var(--selected-color5);
-}
-.schema-link.color5 path {
-    stroke: var(--selected-color5);
-}
-.schema-link.color5 polygon {
-    fill: var(--selected-color5);
-}
-
-.schema-table li.color6 {
-    background-color: var(--selected-color6);
-}
-.schema-link.color6 path {
-    stroke: var(--selected-color6);
-}
-.schema-link.color6 polygon {
-    fill: var(--selected-color6);
+.color8.color8 {
+    --bg-color: var(--selected-color8);
 }
 
 

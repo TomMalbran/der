@@ -15,7 +15,9 @@
     --selected-color3: rgb(255, 99, 132);
     --selected-color4: rgb(75, 192, 192);
     --selected-color5: rgb(255, 159, 64);
-    --selected-color6: rgb(153, 102, 255);
+    --selected-color6: rgb(100, 112, 255);
+    --selected-color7: rgb(153, 102, 255);
+    --selected-color8: rgb(75, 192, 192);
 
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
     --title-font: Esteban, Georgia, serif;

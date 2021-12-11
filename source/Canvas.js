@@ -4,7 +4,7 @@ import Group from "./Group.js";
 import Utils from "./Utils.js";
 
 // Constants
-const COLOR_AMOUNT = 6;
+const COLOR_AMOUNT = 8;
 
 
 
