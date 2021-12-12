@@ -19,7 +19,7 @@ export default class Field {
     }
 
     /**
-     * Creates a Table Field Elem
+     * Creates the List Element
      * @returns {Void}
      */
     createListElem() {
@@ -35,23 +35,23 @@ export default class Field {
     }
 
     /**
-     * Creates a Table Field Elem
+     * Creates the Canvas Element
      * @param {Boolean} isHidden
      * @returns {Void}
      */
-    createTableElem(isHidden) {
-        this.tableElem = document.createElement("li");
+    createCanvasElem(isHidden) {
+        this.canvasElem = document.createElement("li");
         const name = document.createElement(this.isPrimary ? "b" : "span");
         const type = document.createElement("span");
 
         name.innerHTML = this.name;
         type.innerHTML = this.type;
 
-        this.tableElem.appendChild(name);
-        this.tableElem.appendChild(type);
+        this.canvasElem.appendChild(name);
+        this.canvasElem.appendChild(type);
 
         if (isHidden) {
-            this.tableElem.className = "schema-hide";
+            this.canvasElem.className = "schema-hide";
         }
         this.isHidden = isHidden;
     }
@@ -63,7 +63,7 @@ export default class Field {
      */
     toggleVisibility(isHidden) {
         this.isHidden = isHidden;
-        this.tableElem.classList.toggle("schema-hide", this.isHidden);
+        this.canvasElem.classList.toggle("schema-hide", this.isHidden);
     }
 
     /**
@@ -76,7 +76,7 @@ export default class Field {
             return;
         }
         this.color = color;
-        this.tableElem.classList.add("colored", `color${color}`);
+        this.canvasElem.classList.add("colored", `color${color}`);
     }
 
     /**
@@ -84,7 +84,7 @@ export default class Field {
      * @returns {Void}
      */
     removeColor() {
-        this.tableElem.classList.remove("colored", `color${this.color}`);
+        this.canvasElem.classList.remove("colored", `color${this.color}`);
         this.color = 0;
     }
 }
