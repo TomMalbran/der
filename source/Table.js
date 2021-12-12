@@ -45,7 +45,7 @@ export default class Table {
         this.maxFields = 15;
         this.showAll   = false;
 
-        Utils.removeElement(this.tableElem);
+        Utils.removeElement(this.canvasElem);
     }
 
     /**
@@ -84,7 +84,7 @@ export default class Table {
      * @returns {{top: Number, left: Number, bottom: Number, right: Number}}
      */
     get bounds() {
-        return this.tableElem.getBoundingClientRect();
+        return this.canvasElem.getBoundingClientRect();
     }
 
     /**
@@ -179,7 +179,7 @@ export default class Table {
 
 
     /**
-     * Creates the List element
+     * Creates the List Element
      * @returns {Void}
      */
     createListElem() {
@@ -212,7 +212,7 @@ export default class Table {
     }
 
     /**
-     * Shows the List element
+     * Shows the List Element
      * @returns {Void}
      */
     showInList() {
@@ -220,7 +220,7 @@ export default class Table {
     }
 
     /**
-     * Hides the List element
+     * Hides the List Element
      * @returns {Void}
      */
     hideInList() {
@@ -272,39 +272,49 @@ export default class Table {
 
 
     /**
-     * Adds a Table Element to the Canvas
+     * Adds the Table to the Canvas
+     * @param {HTMLElement} container
      * @returns {Void}
      */
-    addToCanvas() {
+    addToCanvas(container) {
         this.onCanvas = true;
         this.listText.classList.add("selectable");
         this.listButton.style.display = "none";
 
-        if (!this.tableElem) {
-            this.createTableElem();
+        if (!this.canvasElem) {
+            this.createCanvasElem();
+        }
+        container.appendChild(this.canvasElem);
+        this.setBounds();
+        if (!this.top && !this.left) {
+            this.translate({
+                top  : container.scrollTop  + 10,
+                left : container.scrollLeft + 10,
+            });
         }
     }
 
     /**
-     * Removes a Table Element from the Canvas
+     * Removes the Table from the Canvas
      * @returns {Void}
      */
     removeFromCanvas() {
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listButton.style.display = "block";
+        this.destroy();
     }
 
     /**
-     * Creates the Table element
+     * Creates the Canvas Element
      * @returns {Void}
      */
-    createTableElem() {
-        this.tableElem = document.createElement("div");
-        this.tableElem.className       = "schema-table";
-        this.tableElem.dataset.action  = "select-table";
-        this.tableElem.dataset.table   = this.name;
-        this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+    createCanvasElem() {
+        this.canvasElem = document.createElement("div");
+        this.canvasElem.className       = "schema-table";
+        this.canvasElem.dataset.action  = "select-table";
+        this.canvasElem.dataset.table   = this.name;
+        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         const header = document.createElement("header");
         header.innerHTML      = this.name;
@@ -320,8 +330,8 @@ export default class Table {
 
         const list = document.createElement("ol");
         for (const [ index, field ] of this.fields.entries()) {
-            field.createTableElem(!this.showAll && index >= this.maxFields);
-            list.appendChild(field.tableElem);
+            field.createCanvasElem(!this.showAll && index >= this.maxFields);
+            list.appendChild(field.canvasElem);
         }
 
         if (this.fields.length > this.maxFields) {
@@ -336,8 +346,8 @@ export default class Table {
             list.appendChild(this.hiddenElem);
         }
 
-        this.tableElem.appendChild(header);
-        this.tableElem.appendChild(list);
+        this.canvasElem.appendChild(header);
+        this.canvasElem.appendChild(list);
     }
 
     /**
@@ -370,7 +380,7 @@ export default class Table {
      * @returns {Void}
      */
     scrollIntoView() {
-        this.tableElem.scrollIntoView({
+        this.canvasElem.scrollIntoView({
             behavior : "smooth",
             block    : "center",
             inline   : "center",
@@ -383,7 +393,7 @@ export default class Table {
      */
     select() {
         this.unselect();
-        this.tableElem.classList.add("selected");
+        this.canvasElem.classList.add("selected");
     }
 
     /**
@@ -392,7 +402,7 @@ export default class Table {
      */
     disable() {
         this.unselect();
-        this.tableElem.classList.add("disabled");
+        this.canvasElem.classList.add("disabled");
     }
 
     /**
@@ -400,8 +410,8 @@ export default class Table {
      * @returns {Void}
      */
     unselect() {
-        this.tableElem.classList.remove("selected");
-        this.tableElem.classList.remove("disabled");
+        this.canvasElem.classList.remove("selected");
+        this.canvasElem.classList.remove("disabled");
     }
 
     /**
@@ -421,7 +431,7 @@ export default class Table {
      * @returns {Void}
      */
     pick() {
-        this.tableElem.classList.add("dragging");
+        this.canvasElem.classList.add("dragging");
     }
 
     /**
@@ -429,7 +439,7 @@ export default class Table {
      * @returns {Void}
      */
     drop() {
-        this.tableElem.classList.remove("dragging");
+        this.canvasElem.classList.remove("dragging");
     }
 
     /**
@@ -437,8 +447,8 @@ export default class Table {
      * @returns {Void}
      */
     setBounds() {
-        this.width  = this.tableElem.offsetWidth;
-        this.height = this.tableElem.offsetHeight;
+        this.width  = this.canvasElem.offsetWidth;
+        this.height = this.canvasElem.offsetHeight;
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
     }
@@ -453,6 +463,6 @@ export default class Table {
         this.left   = Math.round(pos.left);
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
-        this.tableElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
     }
 }

@@ -240,17 +240,7 @@ export default class Canvas {
      */
     addTable(table) {
         this.tables[table.name] = table;
-
-        // Place and set the Table
-        table.addToCanvas();
-        this.canvas.appendChild(table.tableElem);
-        table.setBounds();
-        if (!table.top && !table.left) {
-            table.translate({
-                top  : this.container.scrollTop  + 10,
-                left : this.container.scrollLeft + 10,
-            });
-        }
+        table.addToCanvas(this.canvas);
 
         // Adds links to/from the given Table
         for (const toTable of Object.values(this.tables)) {
@@ -292,7 +282,6 @@ export default class Canvas {
 
         // Remove the table
         table.removeFromCanvas();
-        table.destroy();
         delete this.tables[table.name];
         return groups;
     }
