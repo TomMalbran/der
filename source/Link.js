@@ -120,7 +120,7 @@ export default class Link {
      * @returns {Void}
      */
     setColor(color) {
-        this.removeColor();
+        this.unselect();
         this.colorClass = `color${color}`;
         this.element.classList.add(this.colorClass);
     }
