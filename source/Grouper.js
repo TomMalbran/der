@@ -66,9 +66,10 @@ import Table  from "./Table.js";
 
     /**
      * Updates the Group
+     * @param {Object.<String, Table>} tables
      * @returns {Object?}
      */
-    updateGroup() {
+    updateGroup(tables) {
         if (!this.dialog.isOpen) {
             return null;
         }
@@ -79,23 +80,33 @@ import Table  from "./Table.js";
             return null;
         }
 
-        const tables = [];
+        const tableNames  = [];
+        const tableErrors = [];
         for (const input of this.inputs) {
-            if (input.checked) {
-                tables.push(input.value);
+            if (input.checked && tables[input.value]) {
+                const table = tables[input.value];
+                if (table.group && table.group.id !== this.groupID) {
+                    tableErrors.push(table.name);
+                } else {
+                    tableNames.push(table.name);
+                }
             }
         }
-        if (!tables.length) {
+        if (tableErrors.length) {
+            const message = tableErrors.length === 1 ? `The table '${tableErrors[0]}' is in another group.` : `The tables '${tableErrors.join("' , '")}' are in another group.`;
+            this.dialog.showError("repeated", message);
+            return null;
+        } else if (!tableNames.length) {
             this.dialog.showError("table");
             return null;
         }
 
         this.dialog.close();
         return {
+            name,
             isEdit : this.isEdit,
             id     : this.groupID,
-            name,
-            tables,
+            tables : tableNames,
         };
     }
 

@@ -257,7 +257,7 @@ export default class Canvas {
     /**
      * Removes a Table from the Canvas
      * @param {Table} table
-     * @returns {Group[]}
+     * @returns {Void}
      */
     removeTable(table) {
         // Remove the links to/from the table
@@ -269,21 +269,14 @@ export default class Canvas {
             }
         }
 
-        // Remove the table from the groups
-        const groups = [];
-        for (const group of Object.values(this.groups)) {
-            if (group.removeTable(table)) {
-                groups.push(group);
-                if (group.isEmpty) {
-                    this.removeGroup(group);
-                }
-            }
-        }
-
         // Remove the table
         table.removeFromCanvas();
         delete this.tables[table.name];
-        return groups;
+
+        // Remove the group if empty
+        if (table.group && table.group.isEmptyInCanvas) {
+            this.removeGroup(table.group);
+        }
     }
 
     /**
@@ -316,23 +309,14 @@ export default class Canvas {
 
     /**
      * Adds a Group to the Canvas
-     * @param {Object} data
-     * @returns {Group}
+     * @param {Group} group
+     * @returns {Void}
      */
-    addGroup(data) {
-        let group;
-        const tables = this.getTables(data.tables);
-        if (data.isEdit) {
-            group = this.groups[data.id];
-            group.update(data.name, tables);
-        } else {
-            group = new Group(data.id, data.name, tables);
-        }
-        if (!group.isEmpty) {
+    addGroup(group) {
+        if (!this.groups[group.id] && !group.isEmpty) {
             this.groups[group.id] = group;
-            this.canvas.appendChild(group.element);
+            group.addToCanvas(this.canvas);
         }
-        return group;
     }
 
     /**
@@ -341,7 +325,7 @@ export default class Canvas {
      * @returns {Void}
      */
     removeGroup(group) {
-        group.destroy();
+        group.removeFromCanvas();
         delete this.groups[group.id];
         if (this.selectedGroup && this.selectedGroup.id === group.id) {
             this.selectedGroup = null;

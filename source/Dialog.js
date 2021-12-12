@@ -121,16 +121,20 @@ export default class Dialog {
 
     /**
      * Hides the Errors
-     * @param {String} error
+     * @param {String}  error
+     * @param {String=} message
      * @returns {Void}
      */
-    showError(error) {
+    showError(error, message = null) {
         this.hasError = true;
 
         /** @type {HTMLElement} */
         const element = this.container.querySelector(`[data-error=${error}]`);
         if (element) {
             element.style.display = "block";
+            if (message) {
+                element.innerText = message;
+            }
         }
     }
 

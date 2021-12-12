@@ -3,7 +3,6 @@ import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
 import Grouper   from "./Grouper.js";
 import Schema    from "./Schema.js";
-import Group     from "./Group.js";
 import Utils     from "./Utils.js";
 
 // Variables
@@ -62,7 +61,9 @@ function setSchema(data) {
     const groupsData = storage.getGroups();
     const groups     = [];
     for (const groupData of Object.values(groupsData)) {
-        groups.push(canvas.addGroup(groupData));
+        const group = schema.setGroup(groupData);
+        canvas.addGroup(group);
+        groups.push(group);
     }
     storage.updateGroups(groups);
 
@@ -215,9 +216,10 @@ document.addEventListener("click", (e) => {
         grouper.closeDialog();
         break;
     case "update-group":
-        const data = grouper.updateGroup();
+        const data = grouper.updateGroup(schema.tables);
         if (data) {
-            const group = canvas.addGroup(data);
+            const group = schema.setGroup(data);
+            canvas.addGroup(group);
             canvas.selectGroup(group);
             storage.setGroup(group);
             if (!data.isEdit) {
@@ -227,6 +229,7 @@ document.addEventListener("click", (e) => {
         break;
     case "remove-group":
         if (group) {
+            schema.removeGroup(group);
             canvas.removeGroup(group);
             storage.removeGroup(group.id);
         }
@@ -254,9 +257,8 @@ document.addEventListener("click", (e) => {
             storage.setTable(table);
             break;
         case "remove-table":
-            const groups = canvas.removeTable(table);
+            canvas.removeTable(table);
             storage.setTable(table);
-            storage.updateGroups(groups);
             break;
         case "toggle-fields":
             table.toggleFields();

@@ -4,9 +4,9 @@ import Utils from "./Utils.js";
 
 
 /**
- * The Group
+ * The Schema Group
  */
- export default class Group {
+export default class Group {
 
     /**
      * Groups constructor
@@ -20,22 +20,40 @@ import Utils from "./Utils.js";
         this.tables  = tables;
         this.padding = 20;
 
-        this.create();
-        this.position();
+        this.setGroup(this);
     }
 
     /**
      * Updates te Group
      * @param {String}  name
      * @param {Table[]} tables
+     * @returns {Void}
      */
     update(name, tables) {
+        this.setGroup(null);
+
         this.name   = name;
         this.tables = tables;
 
-        this.header.innerText = this.name;
-        this.position();
+        this.setGroup(this);
+        if (!this.isEmptyInCanvas) {
+            this.header.innerText = this.name;
+            this.position();
+        }
     }
+
+    /**
+     * Sets the Group of the Tables
+     * @param {Group?} group
+     * @returns {Void}
+     */
+    setGroup(group) {
+        for (const table of this.tables) {
+            table.setGroup(group);
+        }
+    }
+
+
 
     /**
      * Returns true if the group is empty
@@ -46,11 +64,27 @@ import Utils from "./Utils.js";
     }
 
     /**
+     * Returns true if the group is empty in the canvas
+     * @return {Boolean}
+     */
+    get isEmptyInCanvas() {
+        return this.canvasTables.length === 0;
+    }
+
+    /**
      * Returns a list of table names
      * @return {String[]}
      */
     get tableNames() {
         return this.tables.map((table) => table.name);
+    }
+
+    /**
+     * Returns a list of tables
+     * @return {Table[]}
+     */
+    get canvasTables() {
+        return this.tables.filter((table) => table.onCanvas);
     }
 
     /**
@@ -79,27 +113,20 @@ import Utils from "./Utils.js";
         return true;
     }
 
+
+
     /**
-     * Removes a table from the group
-     * @param {Table} table
-     * @returns {Boolean}
+     * @returns {Void}
      */
-    removeTable(table) {
-        let found = false;
-        for (let i = this.tables.length - 1; i >= 0; i--) {
-            if (this.tables[i].name === table.name) {
-                this.tables.splice(i, 1);
-                found = true;
-            }
+    addToCanvas(container) {
+        this.onCanvas = true;
+        if (!this.canvasElem) {
         }
         if (!found) {
             return false;
         }
 
-        if (this.tables.length > 0) {
-            this.position();
-        }
-        return true;
+        container.appendChild(this.canvasElem);
     }
 
 
@@ -110,29 +137,31 @@ import Utils from "./Utils.js";
      */
     create() {
         this.element = document.createElement("div");
-        this.element.className = "group";
+    createCanvasElem() {
+        this.canvasElem = document.createElement("div");
+        this.canvasElem.className = "group";
 
         this.header = document.createElement("header");
         this.header.innerHTML      = this.name;
         this.header.dataset.action = "drag-group";
         this.header.dataset.group  = String(this.id);
-        this.element.appendChild(this.header);
+        this.canvasElem.appendChild(this.header);
 
         const remove = document.createElement("a");
         remove.href           = "#";
         remove.className      = "close";
         remove.dataset.action = "remove-group";
         remove.dataset.group  = String(this.id);
-        this.element.appendChild(remove);
+        this.canvasElem.appendChild(remove);
     }
 
     /**
-     * Destriys the HTML element
+     * Destroys the Canvas Element
      * @returns {Void}
      */
     destroy() {
-        Utils.removeElement(this.element);
-        this.element = null;
+        Utils.removeElement(this.canvasElem);
+        this.canvasElem = null;
     }
 
     /**
@@ -145,7 +174,7 @@ import Utils from "./Utils.js";
         this.right  = 0;
         this.bottom = 0;
 
-        for (const table of this.tables) {
+        for (const table of this.canvasTables) {
             if (!this.top || table.top < this.top) {
                 this.top = table.top;
             }
@@ -167,40 +196,40 @@ import Utils from "./Utils.js";
         this.width   = Math.abs(this.right  - this.left);
         this.height  = Math.abs(this.bottom - this.top);
 
-        this.element.style.transform = `translate(${this.left}px, ${this.top}px)`;
-        this.element.style.width     = `${this.width}px`;
-        this.element.style.height    = `${this.height}px`;
+        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+        this.canvasElem.style.width     = `${this.width}px`;
+        this.canvasElem.style.height    = `${this.height}px`;
     }
 
     /**
-     * Selects the HTML element
+     * Selects the Canvas Element
      * @returns {Void}
      */
     select() {
-        this.element.classList.add("selected");
+        this.canvasElem.classList.add("selected");
     }
 
     /**
-     * Unselects the HTML element
+     * Unselects the Canvas Element
      * @returns {Void}
      */
     unselect() {
-        this.element.classList.remove("selected");
+        this.canvasElem.classList.remove("selected");
     }
 
     /**
-     * Picks the Group
+     * Picks the Canvas Element
      * @returns {Void}
      */
     pick() {
-        this.element.classList.add("dragging");
+        this.canvasElem.classList.add("dragging");
     }
 
     /**
-     * Drops the Group
+     * Drops the Canvas Element
      * @returns {Void}
      */
     drop() {
-        this.element.classList.remove("dragging");
+        this.canvasElem.classList.remove("dragging");
     }
 }

@@ -1,4 +1,5 @@
 import Table from "./Table.js";
+import Group from "./Group.js";
 import Utils from "./Utils.js";
 
 // Constantes
@@ -20,10 +21,14 @@ export default class Schema {
     constructor(data) {
         this.schemaID = data.schemaID;
         this.data     = data.schema;
-        this.tables   = {};
-
         this.width    = INITIAL_WIDTH;
         this.oldWidth = INITIAL_WIDTH;
+
+        /** @type {Object.<String, Table>} */
+        this.tables   = {};
+
+        /** @type {Object.<Number, Group>} */
+        this.groups   = {};
 
         /** @type {HTMLElement} */
         this.aside    = document.querySelector("aside");
@@ -90,6 +95,51 @@ export default class Schema {
             return this.tables[table];
         }
         return null;
+    }
+
+    /**
+     * Returns all the Tables with the given names
+     * @param {String[]} tableNames
+     * @returns {Object[]}
+     */
+    getTables(tableNames) {
+        const result = [];
+        for (const name of tableNames) {
+            if (this.tables[name]) {
+                result.push(this.tables[name]);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Sets a Group
+     * @param {Object} data
+     * @returns {Group}
+     */
+    setGroup(data) {
+        let group;
+        const tables = this.getTables(data.tables);
+        if (data.isEdit) {
+            group = this.groups[data.id];
+            group.update(data.name, tables);
+        } else {
+            group = new Group(data.id, data.name, tables);
+        }
+        if (!group.isEmpty) {
+            this.groups[group.id] = group;
+        }
+        return group;
+    }
+
+    /**
+     * Removes the Group
+     * @param {Group} group
+     * @returns {Void}
+     */
+    removeGroup(group) {
+        group.destroy();
+        delete this.groups[group.id];
     }
 
 

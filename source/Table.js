@@ -1,5 +1,6 @@
 import Field from "./Field.js";
 import Link  from "./Link.js";
+import Group from "./Group.js";
 import Utils from "./Utils.js";
 
 
@@ -31,6 +32,9 @@ export default class Table {
         this.links      = [];
         this.setLinks();
 
+        /** @type {Group} */
+        this.group      = null;
+
         this.createListElem();
     }
 
@@ -59,6 +63,15 @@ export default class Table {
         this.top        = data.top;
         this.left       = data.left;
         this.showAll    = data.showAll;
+    }
+
+    /**
+     * Sets the Table Group
+     * @param {Group} group
+     * @returns {Void}
+     */
+    setGroup(group) {
+        this.group = group;
     }
 
 
