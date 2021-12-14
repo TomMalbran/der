@@ -27,10 +27,10 @@ import Table  from "./Table.js";
      * Opens the Dialog
      * @param {Number}  groupID
      * @param {Group?}  group
-     * @param {Table[]} tables
+     * @param {Table[]} selectedTables
      * @returns {Void}
      */
-    openDialog(groupID, group, tables) {
+    openDialog(groupID, group, selectedTables) {
         this.isEdit  = Boolean(group);
         this.groupID = this.isEdit ? group.id : groupID;
 
@@ -38,30 +38,50 @@ import Table  from "./Table.js";
         this.dialog.setButton(this.isEdit ? "Edit Group" : "Create Group");
         this.dialog.setInput("name", this.isEdit ? group.name : "");
 
-        this.empty.style.display   = tables.length ? "none" : "block";
-        this.content.style.display = !tables.length ? "none" : "block";
+        const showEmpty = !this.isEdit && !selectedTables.length;
+        this.empty.style.display   = showEmpty  ? "block" : "none";
+        this.content.style.display = !showEmpty ? "block" : "none";
 
-        this.inputs = [];
+        const tables = {};
+        this.inputs  = [];
         this.checks.innerHTML = "";
-        for (const table of tables) {
-            const check = document.createElement("label");
-            check.className = "checkbox-input";
-
-            const input = document.createElement("input");
-            input.type    = "checkbox";
-            input.name    = table.name;
-            input.value   = table.name;
-            input.checked = this.isEdit ? group.contains(table) : true;
-            check.appendChild(input);
-            this.inputs.push(input);
-
-            const div = document.createElement("div");
-            div.innerText = table.name;
-            check.appendChild(div);
-
-            this.checks.appendChild(check);
+        if (this.isEdit) {
+            for (const table of group.tables) {
+                this.createCheckbox(table.name, true);
+                tables[table.name] = true;
+            }
         }
+        for (const table of selectedTables) {
+            if (!tables[table.name]) {
+                this.createCheckbox(table.name, !this.isEdit);
+            }
+        }
+
         this.dialog.open();
+    }
+
+    /**
+     * Creates a Checkbox Input
+     * @param {String}  name
+     * @param {Boolean} isChecked
+     * @returns {Void}
+     */
+    createCheckbox(name, isChecked) {
+        const check = document.createElement("label");
+        check.className = "checkbox-input";
+
+        const input = document.createElement("input");
+        input.type    = "checkbox";
+        input.name    = name;
+        input.value   = name;
+        input.checked = isChecked;
+        check.appendChild(input);
+        this.inputs.push(input);
+
+        const div = document.createElement("div");
+        div.innerText = name;
+        check.appendChild(div);
+        this.checks.appendChild(check);
     }
 
     /**

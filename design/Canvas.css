@@ -23,7 +23,7 @@ main {
 /**
  * Table
  */
-.schema-table {
+.canvas-table {
     --bg-color: white;
     position: absolute;
     top: 0;
@@ -34,7 +34,7 @@ main {
     overflow: hidden;
     z-index: var(--z-table-normal);
 }
-.schema-table header {
+.canvas-table header {
     position: relative;
     background-color: var(--main-color);
     padding: 8px 24px;
@@ -46,7 +46,7 @@ main {
     cursor: grab;
     transition: all 0.1s;
 }
-.schema-table ol {
+.canvas-table ol {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -56,7 +56,7 @@ main {
     border-bottom-right-radius: var(--border-radius);
     transition: border-color 0.1s;
 }
-.schema-table ol li {
+.canvas-table ol li {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -64,13 +64,13 @@ main {
     border-bottom: 1px solid var(--border-color);
     color:rgb(50, 50, 50);
 }
-.schema-table ol li:last-child {
+.canvas-table ol li:last-child {
     border-bottom: none;
 }
-.schema-table ol li b {
+.canvas-table ol li b {
     color: black;
 }
-.schema-table ol li span:last-child {
+.canvas-table ol li span:last-child {
     color: var(--light-color);
     margin-left: 16px;
     font-size: 10px;
@@ -84,7 +84,7 @@ main {
     cursor: pointer;
 }
 
-.schema-table .close {
+.canvas-table .close {
     --close-color: white;
     --close-size: 12px;
     --close-width: 12px;
@@ -96,35 +96,35 @@ main {
 }
 
 
-.schema-table.selected {
+.canvas-table.selected {
     z-index: var(--z-table-selected);
 }
-.schema-table.selected ol {
+.canvas-table.selected ol {
     border-color: var(--main-color);
 }
-.schema-table.selected ol li {
+.canvas-table.selected ol li {
     border-color: var(--main-color);
 }
 
-.schema-table.disabled {
+.canvas-table.disabled {
     z-index: var(--z-table-disabled);
 }
-.schema-table.disabled header {
+.canvas-table.disabled header {
     background-color: var(--border-color);
     color: var(--disabled-color);
 }
-.schema-table.disabled ol li,
-.schema-table.disabled ol li b {
+.canvas-table.disabled ol li,
+.canvas-table.disabled ol li b {
     color: var(--disabled-color);
 }
-.schema-table.disabled .close {
+.canvas-table.disabled .close {
     --close-color: var(--disabled-color);
 }
 
-.schema-table.dragging {
+.canvas-table.dragging {
     z-index: var(--z-table-dragging);
 }
-.schema-table.dragging header {
+.canvas-table.dragging header {
     cursor: grabbing;
 }
 
@@ -163,11 +163,11 @@ main {
 /**
  * Colors
  */
-.schema-table li.colored {
+.canvas-table li.colored {
     color: black;
     background-color: var(--bg-color);
 }
-.schema-table li.colored span:last-child {
+.canvas-table li.colored span:last-child {
     color: black;
 }
 

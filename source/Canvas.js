@@ -79,6 +79,120 @@ export default class Canvas {
 
 
     /**
+     * Returns all the Tables with the given names
+     * @param {String[]} tableNames
+     * @returns {Object[]}
+     */
+    getTables(tableNames) {
+        const result = [];
+        for (const name of tableNames) {
+            if (this.tables[name]) {
+                result.push(this.tables[name]);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Adds a Table to the Canvas
+     * @param {Table} table
+     * @returns {Void}
+     */
+    addTable(table) {
+        this.tables[table.name] = table;
+        table.addToCanvas(this.canvas, this.container, this.zoom / 100);
+
+        // Adds links to/from the given Table
+        for (const toTable of Object.values(this.tables)) {
+            for (const link of toTable.links) {
+                if ((toTable.name === table.name && this.tables[link.toTableName]) || link.toTableName === table.name) {
+                    link.create(this.tables[link.fromTableName], this.tables[link.toTableName]);
+                    this.links.push(link);
+                    this.canvas.appendChild(link.element);
+                }
+            }
+        }
+
+        // Add the group or position it
+        if (table.group) {
+            if (!table.group.onCanvas) {
+                this.addGroup(table.group);
+            } else {
+                table.group.position();
+            }
+        }
+    }
+
+    /**
+     * Removes a Table from the Canvas
+     * @param {Table} table
+     * @returns {Void}
+     */
+    removeTable(table) {
+        // Remove the links to/from the table
+        for (let i = this.links.length - 1; i >= 0; i--) {
+            const link = this.links[i];
+            if (link.isLinkedTo(table)) {
+                link.destroy();
+                this.links.splice(i, 1);
+            }
+        }
+
+        // Remove the table
+        table.removeFromCanvas();
+        delete this.tables[table.name];
+
+        // Remove the group if empty, or position it
+        if (table.group) {
+            if (table.group.isEmptyInCanvas) {
+                this.removeGroup(table.group);
+            } else {
+                table.group.position();
+            }
+        }
+    }
+
+    /**
+     * Adds a Group to the Canvas
+     * @param {Group} group
+     * @returns {Void}
+     */
+    addGroup(group) {
+        if (!this.groups[group.id] && !group.isEmpty) {
+            this.groups[group.id] = group;
+            group.addToCanvas(this.canvas);
+        }
+    }
+
+    /**
+     * Removes a Group from the Canvas
+     * @param {Group} group
+     * @returns {Void}
+     */
+    removeGroup(group) {
+        group.removeFromCanvas();
+        delete this.groups[group.id];
+        if (this.selectedGroup && this.selectedGroup.isEqual(group)) {
+            this.selectedGroup = null;
+        }
+    }
+
+    /**
+     * Re-connects the Links
+     * @param {Table} table
+     * @returns {Void}
+     */
+    reconnect(table) {
+        for (const link of this.links) {
+            if (link.isLinkedTo(table)) {
+                link.connect();
+            }
+        }
+    }
+
+
+
+    /**
      * Returns the current scroll
      * @return {{top: Number, left: Number}}
      */
@@ -157,7 +271,6 @@ export default class Canvas {
 
 
 
-
     /**
      * Sets the initial Zoom
      * @param {Number} value
@@ -209,127 +322,11 @@ export default class Canvas {
      * @returns {Void}
      */
     setZoom() {
-        this.percent.innerHTML = `${this.zoom}%`;
+        this.percent.innerHTML      = `${this.zoom}%`;
         this.canvas.style.transform = `scale(${this.zoom / 100})`;
-        this.zoomInBtn.classList.toggle("zoom-disabled", this.zoom === 150);
+        this.zoomInBtn.classList.toggle("zoom-disabled",  this.zoom === 150);
         this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === 50);
         this.stopUnselect();
-    }
-
-
-
-    /**
-     * Returns all the Tables with the given names
-     * @param {String[]} tableNames
-     * @returns {Object[]}
-     */
-    getTables(tableNames) {
-        const result = [];
-        for (const name of tableNames) {
-            if (this.tables[name]) {
-                result.push(this.tables[name]);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Adds a Table to the Canvas
-     * @param {Table} table
-     * @returns {Void}
-     */
-    addTable(table) {
-        this.tables[table.name] = table;
-        table.addToCanvas(this.canvas);
-
-        // Adds links to/from the given Table
-        for (const toTable of Object.values(this.tables)) {
-            for (const link of toTable.links) {
-                if ((toTable.name === table.name && this.tables[link.toTableName]) || link.toTableName === table.name) {
-                    link.create(this.tables[link.fromTableName], this.tables[link.toTableName]);
-                    this.links.push(link);
-                    this.canvas.appendChild(link.element);
-                }
-            }
-        }
-    }
-
-    /**
-     * Removes a Table from the Canvas
-     * @param {Table} table
-     * @returns {Void}
-     */
-    removeTable(table) {
-        // Remove the links to/from the table
-        for (let i = this.links.length - 1; i >= 0; i--) {
-            const link = this.links[i];
-            if (link.isLinkedTo(table)) {
-                link.destroy();
-                this.links.splice(i, 1);
-            }
-        }
-
-        // Remove the table
-        table.removeFromCanvas();
-        delete this.tables[table.name];
-
-        // Remove the group if empty
-        if (table.group && table.group.isEmptyInCanvas) {
-            this.removeGroup(table.group);
-        }
-    }
-
-    /**
-     * Re-connects the Links
-     * @param {Table} table
-     * @returns {Void}
-     */
-    reconnect(table) {
-        for (const link of this.links) {
-            if (link.isLinkedTo(table)) {
-                link.connect();
-            }
-        }
-    }
-
-
-
-    /**
-     * Returns a Group
-     * @param {HTMLElement} element
-     * @returns {Group?}
-     */
-    getGroup(element) {
-        const groupID = element.dataset.group;
-        if (groupID && this.groups[groupID]) {
-            return this.groups[groupID];
-        }
-        return null;
-    }
-
-    /**
-     * Adds a Group to the Canvas
-     * @param {Group} group
-     * @returns {Void}
-     */
-    addGroup(group) {
-        if (!this.groups[group.id] && !group.isEmpty) {
-            this.groups[group.id] = group;
-            group.addToCanvas(this.canvas);
-        }
-    }
-
-    /**
-     * Removes a Group from the Canvas
-     * @param {Group} group
-     * @returns {Void}
-     */
-    removeGroup(group) {
-        group.removeFromCanvas();
-        delete this.groups[group.id];
-        if (this.selectedGroup && this.selectedGroup.id === group.id) {
-            this.selectedGroup = null;
-        }
     }
 
 
@@ -406,14 +403,23 @@ export default class Canvas {
     }
 
     /**
+     * Shows the given Group
+     * @param {Group} group
+     * @returns {Void}
+     */
+    showGroup(group) {
+        group.scrollIntoView();
+        this.selectGroup(group);
+    }
+
+    /**
      * Selects the given Group
      * @param {Group} group
      * @returns {Void}
      */
     selectGroup(group) {
         this.unselect();
-        group.select();
-        this.selectedGroup = group;
+        this.selectedGroup = group.select();
         for (const table of group.tables) {
             this.selection[table.name] = table;
         }
@@ -426,12 +432,20 @@ export default class Canvas {
      * @returns {Void}
      */
     trySelectGroup() {
-        for (const group of Object.values(this.groups)) {
-            if (group.containsAll(this.selectedTables)) {
-                group.select();
-                this.selectedGroup = group;
-                break;
+        this.unselectGroup();
+        let group;
+        for (const selectedTable of this.selectedTables) {
+            if (!selectedTable.group) {
+                return;
             }
+            if (!group) {
+                group = selectedTable.group;
+            } else if (!selectedTable.group.isEqual(group)) {
+                return;
+            }
+        }
+        if (group.canvasTables.length === this.selectedTables.length) {
+            this.selectedGroup = group.select();
         }
     }
 
@@ -492,11 +506,18 @@ export default class Canvas {
         for (const link of this.links) {
             link.unselect();
         }
-        if (this.selectedGroup) {
-            this.selectedGroup.unselect();
-            this.selectedGroup = null;
-        }
         this.selection = {};
+        this.unselectGroup();
+    }
+
+    /**
+     * Unselects the selected Group
+     * @returns {Void}
+     */
+    unselectGroup() {
+        if (this.selectedGroup) {
+            this.selectedGroup = this.selectedGroup.unselect();
+        }
     }
 
 
@@ -642,9 +663,9 @@ export default class Canvas {
                 left : startPos.left + (currMouse.left - this.startMouse.left) / mult,
             });
             this.reconnect(selectedTable);
-        }
-        for (const group of Object.values(this.groups)) {
-            group.position();
+            if (selectedTable.group) {
+                selectedTable.group.position();
+            }
         }
         return true;
     }

@@ -40,8 +40,12 @@ async function main() {
  */
 function setSchema(data) {
     canvas.setInitialZoom(100);
-
     schema = new Schema(data);
+
+    const groups = schema.createGroups(storage.getGroups());
+    storage.updateGroups(groups);
+
+    schema.createList();
     schema.setInitialFilter(storage.getFilter());
     schema.setInitialWidth(storage.getWidth());
 
@@ -50,22 +54,10 @@ function setSchema(data) {
         if (data) {
             table.restore(data);
         }
-        if (table.isExpanded) {
-            table.restoreExpanded();
-        }
         if (table.onCanvas) {
             canvas.addTable(table);
         }
     }
-
-    const groupsData = storage.getGroups();
-    const groups     = [];
-    for (const groupData of Object.values(groupsData)) {
-        const group = schema.setGroup(groupData);
-        canvas.addGroup(group);
-        groups.push(group);
-    }
-    storage.updateGroups(groups);
 
     canvas.setInitialZoom(storage.getZoom());
     canvas.setInitialScroll(storage.getScroll());
@@ -115,7 +107,7 @@ document.addEventListener("click", (e) => {
     const action     = target.dataset.action;
     const schemaID   = Number(target.dataset.schema);
     const table      = schema ? schema.getTable(target) : null;
-    const group      = canvas ? canvas.getGroup(target) : null;
+    const group      = schema ? schema.getGroup(target) : null;
     const specialKey = e.ctrlKey || e.metaKey || e.shiftKey;
     let   dontStop   = false;
 
@@ -197,14 +189,17 @@ document.addEventListener("click", (e) => {
     case "zoom-in":
         const zoomIn = canvas.zoomIn();
         storage.setZoom(zoomIn);
+        Utils.unselect();
         break;
     case "zoom-out":
         const zoomOut = canvas.zoomOut();
         storage.setZoom(zoomOut);
+        Utils.unselect();
         break;
     case "reset-zoom":
         canvas.resetZoom();
         storage.removeZoom();
+        Utils.unselect();
         break;
 
     // Group Actions
@@ -227,14 +222,30 @@ document.addEventListener("click", (e) => {
             }
         }
         break;
-    case "remove-group":
-        if (group) {
+    default:
+    }
+
+    // Group Actions
+    if (group) {
+        switch (action) {
+        case "expand-group":
+            group.toggleExpand();
+            storage.setGroup(group);
+            break;
+        case "show-group":
+            canvas.showGroup(group);
+            break;
+        case "edit-group":
+            canvas.stopUnselect();
+            grouper.openDialog(storage.nextGroup, group, canvas.selectedTables);
+            break;
+        case "remove-group":
             schema.removeGroup(group);
             canvas.removeGroup(group);
             storage.removeGroup(group.id);
+            break;
+        default:
         }
-        break;
-    default:
     }
 
     // Table Actions
@@ -331,7 +342,7 @@ document.addEventListener("mousedown", (e) => {
         }
         break;
     case "drag-group":
-        const group = canvas.getGroup(target);
+        const group = schema.getGroup(target);
         if (group) {
             canvas.pickGroup(e, group);
             e.preventDefault();

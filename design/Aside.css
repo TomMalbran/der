@@ -159,6 +159,9 @@ h1 {
     padding: 0;
     list-style: none;
 }
+.schema-list ol ol {
+    margin-left: 20px;
+}
 .schema-list > ol > li {
     border-bottom: 1px solid var(--border-color);
 }
@@ -189,27 +192,27 @@ h1 {
     transition: all 0.1s;
 }
 
-.schema-expand {
+.schema-group > ol,
+.schema-table > ol {
     display: none;
 }
-.schema-expand li {
+.schema-table > ol > li {
     display: flex;
     justify-content: space-between;
     padding: 4px 8px;
-    margin-left: 22px;
     border-top: 1px solid var(--border-color);
     font-size: 13px;
 }
-.schema-expand li span:last-child {
+.schema-table > ol > li span:last-child {
     color: var(--light-color);
     margin-left: 16px;
     font-size: 12px;
 }
 
-.schema-expanded .schema-expand {
+.expanded > ol {
     display: block;
 }
-.schema-expanded .schema-item .arrow {
+.expanded > .schema-item .arrow {
     transform: translateY(-50%) rotate(90deg);
 }
 

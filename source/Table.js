@@ -16,6 +16,8 @@ export default class Table {
      */
     constructor(data) {
         this.data       = data;
+        this.onList     = false;
+        this.showOnList = false;
         this.isExpanded = false;
 
         this.onCanvas   = false;
@@ -34,8 +36,6 @@ export default class Table {
 
         /** @type {Group} */
         this.group      = null;
-
-        this.createListElem();
     }
 
     /**
@@ -63,6 +63,11 @@ export default class Table {
         this.top        = data.top;
         this.left       = data.left;
         this.showAll    = data.showAll;
+
+        if (this.isExpanded) {
+            this.createExpandElem();
+            this.listElem.classList.add("expanded");
+        }
     }
 
     /**
@@ -192,6 +197,36 @@ export default class Table {
 
 
     /**
+     * Adds the Table to the List
+     * @param {HTMLElement} container
+     * @returns {Void}
+     */
+    addToList(container) {
+        if (this.onList) {
+            return;
+        }
+        this.onList = true;
+        if (!this.listElem) {
+            this.createListElem();
+            this.restoreExpanded();
+        }
+        container.appendChild(this.listElem);
+    }
+
+    /**
+     * Removes the Group from the List
+     * @returns {Void}
+     */
+    removeFromList() {
+        if (!this.onList) {
+            return;
+        }
+        Utils.removeElement(this.listElem);
+        this.onList   = false;
+        this.listElem = null;
+    }
+
+    /**
      * Creates the List Element
      * @returns {Void}
      */
@@ -202,6 +237,7 @@ export default class Table {
         this.listText   = document.createElement("span");
         this.listButton = document.createElement("button");
 
+        this.listElem.className        = "schema-table";
         this.listInner.className       = "schema-item";
 
         this.listArrow.href            = "#";
@@ -218,6 +254,11 @@ export default class Table {
         this.listButton.dataset.action = "add-table";
         this.listButton.dataset.table  = this.data.table;
 
+        if (this.onCanvas) {
+            this.listText.classList.add("selectable");
+            this.listButton.style.display = "none";
+        }
+
         this.listElem.appendChild(this.listInner);
         this.listInner.appendChild(this.listArrow);
         this.listInner.appendChild(this.listText);
@@ -229,6 +270,7 @@ export default class Table {
      * @returns {Void}
      */
     showInList() {
+        this.showOnList = true;
         this.listElem.style.display = "block";
     }
 
@@ -237,6 +279,7 @@ export default class Table {
      * @returns {Void}
      */
     hideInList() {
+        this.showOnList = false;
         this.listElem.style.display = "none";
     }
 
@@ -250,12 +293,8 @@ export default class Table {
         if (!this.expandElem) {
             this.createExpandElem();
         }
-        if (this.isExpanded) {
-            this.listElem.classList.remove("schema-expanded");
-        } else {
-            this.listElem.classList.add("schema-expanded");
-        }
         this.isExpanded = !this.isExpanded;
+        this.listElem.classList.toggle("expanded", this.isExpanded);
     }
 
     /**
@@ -263,8 +302,10 @@ export default class Table {
      * @returns {Void}
      */
     restoreExpanded() {
-        this.createExpandElem();
-        this.listElem.classList.add("schema-expanded");
+        if (this.isExpanded) {
+            this.createExpandElem();
+            this.listElem.classList.add("expanded");
+        }
     }
 
     /**
@@ -273,7 +314,6 @@ export default class Table {
      */
     createExpandElem() {
         this.expandElem = document.createElement("ol");
-        this.expandElem.className = "schema-expand";
 
         for (const field of this.fields) {
             field.createListElem();
@@ -286,10 +326,12 @@ export default class Table {
 
     /**
      * Adds the Table to the Canvas
+     * @param {HTMLElement} canvas
      * @param {HTMLElement} container
+     * @param {Number}      mult
      * @returns {Void}
      */
-    addToCanvas(container) {
+    addToCanvas(canvas, container, mult) {
         this.onCanvas = true;
         this.listText.classList.add("selectable");
         this.listButton.style.display = "none";
@@ -297,13 +339,24 @@ export default class Table {
         if (!this.canvasElem) {
             this.createCanvasElem();
         }
-        container.appendChild(this.canvasElem);
+        canvas.appendChild(this.canvasElem);
         this.setBounds();
+
         if (!this.top && !this.left) {
-            this.translate({
-                top  : container.scrollTop  + 10,
-                left : container.scrollLeft + 10,
-            });
+            if (this.group && this.group.onCanvas) {
+                this.translate({
+                    top  : this.group.top  + this.group.height / 2 - this.height / 2,
+                    left : this.group.left + this.group.width  / 2 - this.width  / 2,
+                });
+                this.scrollIntoView();
+            } else {
+                const canvasBounds = canvas.getBoundingClientRect();
+                const contBounds   = container.getBoundingClientRect();
+                this.translate({
+                    top  : (-canvasBounds.top  + contBounds.height / 2 - this.height / 2) / mult,
+                    left : (-canvasBounds.left + contBounds.width  / 2 - this.width  / 2 + contBounds.left) / mult,
+                });
+            }
         }
     }
 
@@ -324,7 +377,7 @@ export default class Table {
      */
     createCanvasElem() {
         this.canvasElem = document.createElement("div");
-        this.canvasElem.className       = "schema-table";
+        this.canvasElem.className       = "canvas-table";
         this.canvasElem.dataset.action  = "select-table";
         this.canvasElem.dataset.table   = this.name;
         this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;

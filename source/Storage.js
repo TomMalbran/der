@@ -467,9 +467,10 @@ export default class Storage {
      */
     setGroup(group) {
         this.setData(this.currentID, "group", group.id, {
-            id     : group.id,
-            name   : group.name,
-            tables : group.tableNames,
+            id         : group.id,
+            name       : group.name,
+            tables     : group.tableNames,
+            isExpanded : group.isExpanded,
         });
     }
 

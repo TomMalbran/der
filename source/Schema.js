@@ -51,7 +51,38 @@ export default class Schema {
         this.header.innerHTML     = data.name;
         this.header.style.display = "block";
 
-        this.createList();
+        this.createTables();
+    }
+
+    /**
+     * Creates the Table
+     * @returns {Void}
+     */
+    createTables() {
+        for (const elem of Object.values(this.data)) {
+            if (elem.table) {
+                const table = new Table(elem);
+                this.tables[elem.table] = table;
+            }
+        }
+    }
+
+    /**
+     * Creates the Groups
+     * @param {Object[]} data
+     * @returns {Group[]}
+     */
+    createGroups(data) {
+        const groups = [];
+        for (const groupData of data) {
+            const tables = this.getTables(groupData.tables);
+            const group  = new Group(groupData.id, groupData.name, tables, groupData.isExpanded);
+            if (!group.isEmpty) {
+                this.groups[group.id] = group;
+            }
+            groups.push(group);
+        }
+        return groups;
     }
 
     /**
@@ -59,12 +90,18 @@ export default class Schema {
      * @returns {Void}
      */
     createList() {
-        for (const elem of Object.values(this.data)) {
-            if (elem.table) {
-                const table = new Table(elem);
-                this.tables[elem.table] = table;
-                this.list.appendChild(table.listElem);
+        for (const table of Object.values(this.tables)) {
+            if (table.group) {
+                table.group.removeFromList();
             }
+            table.removeFromList();
+        }
+
+        for (const table of Object.values(this.tables)) {
+            if (table.group) {
+                table.group.addToList(this.list);
+            }
+            table.addToList(this.list);
         }
     }
 
@@ -112,6 +149,21 @@ export default class Schema {
         return result;
     }
 
+
+
+    /**
+     * Returns a Group
+     * @param {HTMLElement} element
+     * @returns {Group?}
+     */
+    getGroup(element) {
+        const groupID = element.dataset.group;
+        if (groupID && this.groups[groupID]) {
+            return this.groups[groupID];
+        }
+        return null;
+    }
+
     /**
      * Sets a Group
      * @param {Object} data
@@ -124,11 +176,12 @@ export default class Schema {
             group = this.groups[data.id];
             group.update(data.name, tables);
         } else {
-            group = new Group(data.id, data.name, tables);
+            group = new Group(data.id, data.name, tables, data.isExpanded);
         }
         if (!group.isEmpty) {
             this.groups[group.id] = group;
         }
+        this.createList();
         return group;
     }
 
@@ -138,8 +191,10 @@ export default class Schema {
      * @returns {Void}
      */
     removeGroup(group) {
+        group.removeFromList();
         group.destroy();
         delete this.groups[group.id];
+        this.createList();
     }
 
 
@@ -158,6 +213,9 @@ export default class Schema {
                 table.showInList();
                 count++;
             }
+        }
+        for (const group of Object.values(this.groups)) {
+            group.setListVisibility();
         }
 
         this.clear.style.display = value ? "block" : "none";
