@@ -53,6 +53,8 @@ export default class Group {
      */
     destroy() {
         this.setGroup(null);
+        this.removeFromCanvas();
+        this.removeFromList();
     }
 
     /**
@@ -234,6 +236,9 @@ export default class Group {
      * @returns {Void}
      */
     removeFromCanvas() {
+        if (!this.onCanvas) {
+            return;
+        }
         this.onCanvas = false;
         Utils.removeElement(this.canvasElem);
         this.canvasElem = null;

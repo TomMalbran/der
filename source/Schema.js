@@ -110,12 +110,15 @@ export default class Schema {
      * @returns {Void}
      */
     destroy() {
-        for (const table of Object.values(this.tables)) {
-            if (table.listElem) {
-                Utils.removeElement(table.listElem);
-            }
+        for (const group of Object.values(this.groups)) {
+            group.destroy();
         }
+        for (const table of Object.values(this.tables)) {
+            table.destroy();
+        }
+
         this.tables = {};
+        this.groups = {};
         this.data   = null;
     }
 

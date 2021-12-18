@@ -61,15 +61,10 @@ export default class Canvas {
      * @returns {Void}
      */
     destroy() {
-        for (const table of Object.values(this.tables)) {
-            table.destroy();
-        }
         for (const link of this.links) {
             link.destroy();
         }
-        for (const group of Object.values(this.groups)) {
-            group.destroy();
-        }
+
         this.tables = {};
         this.links  = [];
         this.groups = {};

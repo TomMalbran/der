@@ -74,8 +74,8 @@ async function selectSchema(schemaID) {
         return false;
     }
     if (schema) {
-        canvas.destroy();
         schema.destroy();
+        canvas.destroy();
     }
     storage.selectSchema(schemaID);
     setSchema(data);

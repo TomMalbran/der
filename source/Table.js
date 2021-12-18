@@ -43,17 +43,25 @@ export default class Table {
      * @returns {Void}
      */
     destroy() {
+        this.reset();
+        this.removeFromCanvas();
+        this.removeFromList();
+    }
+
+    /**
+     * Rests the Table data
+     * @returns {Void}
+     */
+    reset() {
         this.onCanvas  = false;
         this.top       = 0;
         this.left      = 0;
         this.maxFields = 15;
         this.showAll   = false;
-
-        Utils.removeElement(this.canvasElem);
     }
 
     /**
-     * Restores the Table
+     * Restores the Table data
      * @param {Object} data
      * @returns {Void}
      */
@@ -365,10 +373,16 @@ export default class Table {
      * @returns {Void}
      */
     removeFromCanvas() {
+        if (!this.onCanvas) {
+            return;
+        }
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listButton.style.display = "block";
-        this.destroy();
+
+        Utils.removeElement(this.canvasElem);
+        this.canvasElem = null;
+        this.reset();
     }
 
     /**
