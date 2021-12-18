@@ -139,8 +139,19 @@
                             <div class="error" data-error="repeated">Some tables are in another group.</div>
                         </div>
                         <button class="btn btn-fill dialog-btn" data-action="update-group">Group</button>
+                        <button class="btn" data-action="open-remove">Remove Group</button>
                     </div>
                     <a href="#" class="close" data-action="close-group"></a>
+                </dialog>
+            </div>
+
+            <div class="backdrop" data-dialog="remove">
+                <dialog open>
+                    <h2>Remove Group</h2>
+                    <p class="select-empty">Do you really want to remove the selected Group?</p>
+                    <button class="btn btn-fill" data-action="remove-group">Remove Group</button>
+                    <button class="btn" data-action="close-remove">Cancel</button>
+                    <a href="#" class="close" data-action="close-remove"></a>
                 </dialog>
             </div>
         </section>

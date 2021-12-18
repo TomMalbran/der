@@ -164,8 +164,6 @@ document.addEventListener("click", (e) => {
             });
         });
         break;
-
-    // Delete Actions
     case "open-delete":
         selection.openDelete(schemaID);
         break;
@@ -174,6 +172,42 @@ document.addEventListener("click", (e) => {
         break;
     case "delete-schema":
         deleteSchema(selection.schemaID);
+        break;
+
+    // Group Actions
+    case "open-group":
+        canvas.stopUnselect();
+        grouper.openDialog(storage.nextGroup, canvas.currentGroup, canvas.selectedTables);
+        break;
+    case "close-group":
+        grouper.closeDialog();
+        break;
+    case "update-group":
+        const data = grouper.updateGroup(schema.tables);
+        if (data) {
+            const group = schema.setGroup(data);
+            canvas.addGroup(group);
+            canvas.selectGroup(group);
+            storage.setGroup(group);
+            if (!data.isEdit) {
+                storage.addGroup(group);
+            }
+        }
+        break;
+    case "open-remove":
+        grouper.openRemove(group || grouper.group);
+        break;
+    case "close-remove":
+        grouper.closeRemove();
+        break;
+    case "remove-group":
+        if (grouper.group) {
+            schema.removeGroup(grouper.group);
+            canvas.removeGroup(grouper.group);
+            storage.removeGroup(grouper.group.id);
+            grouper.closeDialog();
+            grouper.closeRemove();
+        }
         break;
 
     // Aside Actions
@@ -202,27 +236,6 @@ document.addEventListener("click", (e) => {
         storage.removeZoom();
         Utils.unselect();
         break;
-
-    // Group Actions
-    case "open-group":
-        canvas.stopUnselect();
-        grouper.openDialog(storage.nextGroup, canvas.selectedGroup, canvas.selectedTables);
-        break;
-    case "close-group":
-        grouper.closeDialog();
-        break;
-    case "update-group":
-        const data = grouper.updateGroup(schema.tables);
-        if (data) {
-            const group = schema.setGroup(data);
-            canvas.addGroup(group);
-            canvas.selectGroup(group);
-            storage.setGroup(group);
-            if (!data.isEdit) {
-                storage.addGroup(group);
-            }
-        }
-        break;
     default:
     }
 
@@ -239,11 +252,6 @@ document.addEventListener("click", (e) => {
         case "edit-group":
             canvas.stopUnselect();
             grouper.openDialog(storage.nextGroup, group, canvas.selectedTables);
-            break;
-        case "remove-group":
-            schema.removeGroup(group);
-            canvas.removeGroup(group);
-            storage.removeGroup(group.id);
             break;
         default:
         }

@@ -13,14 +13,18 @@ import Table  from "./Table.js";
      * Grouper constructor
      */
     constructor() {
-        this.dialog = new Dialog("group");
+        this.group        = null;
+        this.groupDialog  = new Dialog("group");
 
         /** @type {HTMLElement} */
-        this.empty   = this.dialog.container.querySelector(".group-empty");
+        this.empty        = this.groupDialog.container.querySelector(".group-empty");
         /** @type {HTMLElement} */
-        this.content = this.dialog.container.querySelector(".group-content");
+        this.content      = this.groupDialog.container.querySelector(".group-content");
         /** @type {HTMLElement} */
-        this.checks  = this.dialog.container.querySelector(".group-tables");
+        this.checks       = this.groupDialog.container.querySelector(".group-tables");
+
+        // Remove
+        this.removeDialog = new Dialog("remove");
     }
 
     /**
@@ -32,11 +36,12 @@ import Table  from "./Table.js";
      */
     openDialog(groupID, group, selectedTables) {
         this.isEdit  = Boolean(group);
+        this.group   = this.isEdit ? group    : null;
         this.groupID = this.isEdit ? group.id : groupID;
 
-        this.dialog.setTitle(this.isEdit ? "Edit the Group" : "Create a Group");
-        this.dialog.setButton(this.isEdit ? "Edit Group" : "Create Group");
-        this.dialog.setInput("name", this.isEdit ? group.name : "");
+        this.groupDialog.setTitle(this.isEdit ? "Edit the Group" : "Create a Group");
+        this.groupDialog.setButton(this.isEdit ? "Edit Group" : "Create Group");
+        this.groupDialog.setInput("name", this.isEdit ? group.name : "");
 
         const showEmpty = !this.isEdit && !selectedTables.length;
         this.empty.style.display   = showEmpty  ? "block" : "none";
@@ -57,7 +62,7 @@ import Table  from "./Table.js";
             }
         }
 
-        this.dialog.open();
+        this.groupDialog.open();
     }
 
     /**
@@ -90,13 +95,13 @@ import Table  from "./Table.js";
      * @returns {Object?}
      */
     updateGroup(tables) {
-        if (!this.dialog.isOpen) {
+        if (!this.groupDialog.isOpen) {
             return null;
         }
 
-        const name = this.dialog.getInput("name");
+        const name = this.groupDialog.getInput("name");
         if (!name) {
-            this.dialog.showError("name");
+            this.groupDialog.showError("name");
             return null;
         }
 
@@ -114,14 +119,14 @@ import Table  from "./Table.js";
         }
         if (tableErrors.length) {
             const message = tableErrors.length === 1 ? `The table '${tableErrors[0]}' is in another group.` : `The tables '${tableErrors.join("' , '")}' are in another group.`;
-            this.dialog.showError("repeated", message);
+            this.groupDialog.showError("repeated", message);
             return null;
         } else if (!tableNames.length) {
-            this.dialog.showError("table");
+            this.groupDialog.showError("table");
             return null;
         }
 
-        this.dialog.close();
+        this.groupDialog.close();
         return {
             name,
             isEdit : this.isEdit,
@@ -135,6 +140,30 @@ import Table  from "./Table.js";
      * @returns {Void}
      */
     closeDialog() {
-        this.dialog.close();
+        this.group = null;
+        this.groupDialog.close();
+    }
+
+
+
+    /**
+     * Opens the Remove Dialog
+     * @param {Group} group
+     * @returns {Void}
+     */
+    openRemove(group) {
+        if (group) {
+            this.group = group;
+            this.removeDialog.open();
+        }
+    }
+
+    /**
+     * Closes the Remove Dialog
+     * @returns {Void}
+     */
+    closeRemove() {
+        this.group = null;
+        this.removeDialog.close();
     }
 }

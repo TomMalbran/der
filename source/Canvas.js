@@ -343,6 +343,29 @@ export default class Canvas {
     }
 
     /**
+     * Returns the Selected Group or the Group of the selected Tables
+     * @returns {?Group}
+     */
+    get currentGroup() {
+        let result = null;
+        if (this.selectedGroup) {
+            return this.selectedGroup;
+        }
+        if (this.hasSelection) {
+            for (const table of this.selectedTables) {
+                if (table.group) {
+                    if (!result) {
+                        result = table.group;
+                    } else if (!result.isEqual(table.group)) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Stops the unselect
      * @returns {Void}
      */

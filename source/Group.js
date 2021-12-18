@@ -261,7 +261,7 @@ export default class Group {
         const remove = document.createElement("a");
         remove.href           = "#";
         remove.className      = "close";
-        remove.dataset.action = "remove-group";
+        remove.dataset.action = "open-remove";
         remove.dataset.group  = String(this.id);
         this.canvasElem.appendChild(remove);
     }
