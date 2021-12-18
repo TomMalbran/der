@@ -149,7 +149,8 @@ input:focus {
     border: 1px solid var(--input-color);
     border-radius: var(--border-radius);
 }
-.field > label {
+.field > label,
+.file-input label {
     margin: 0;
     font-size: 11px;
     line-height: 1;

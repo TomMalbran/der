@@ -217,11 +217,11 @@ export default class Storage {
             return this.mergeSchemas(data);
         }
 
-        await fetch(data.url1).then((response) => response.json()).then((response) => {
+        await fetch(data.url0).then((response) => response.json()).then((response) => {
             data.schemas[0] = response;
         });
-        if (data.url2) {
-            await fetch(data.url2).then((response) => response.json()).then((response) => {
+        if (data.url1) {
+            await fetch(data.url1).then((response) => response.json()).then((response) => {
                 data.schemas[1] = response;
             });
         }

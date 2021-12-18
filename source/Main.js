@@ -155,12 +155,13 @@ document.addEventListener("click", (e) => {
         dontStop = true;
         break;
     case "import-schema":
-        selection.importSchema((data) => {
-            storage.setSchema(data);
-            selection.open(storage.getSchemas());
-            if (schema && data && schema.schemaID === data.schemaID) {
-                selectSchema(schemaID);
-            }
+        selection.importSchema().then((data) => {
+            storage.setSchema(data).then(() => {
+                selection.open(storage.getSchemas());
+                if (schema && data && schema.schemaID === data.schemaID) {
+                    selectSchema(schemaID);
+                }
+            });
         });
         break;
 

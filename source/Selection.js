@@ -102,14 +102,14 @@ export default class Selection {
 
         this.schemaDialog.setInput("urls",  useUrls);
         this.schemaDialog.setInput("name",  isEdit ? data.name : "");
+        this.schemaDialog.setInput("file0", isEdit && !useUrls ? this.data.file0 : "");
         this.schemaDialog.setInput("file1", isEdit && !useUrls ? this.data.file1 : "");
-        this.schemaDialog.setInput("file2", isEdit && !useUrls ? this.data.file2 : "");
+        this.schemaDialog.setInput("url0",  isEdit && useUrls  ? this.data.url0  : "");
         this.schemaDialog.setInput("url1",  isEdit && useUrls  ? this.data.url1  : "");
-        this.schemaDialog.setInput("url2",  isEdit && useUrls  ? this.data.url2  : "");
     }
 
     /**
-     * Closes the Schema Dialog
+     * Closes the Add/Edit Dialog
      * @returns {Void}
      */
     closeSchema() {
@@ -122,8 +122,8 @@ export default class Selection {
      * @returns {Void}
      */
     selectFile(index) {
-        const name = `file${index + 1}`;
-        this.selectDialog.selectFile(name, (file) => {
+        const name = `file${index}`;
+        this.schemaDialog.selectFile(name, (file) => {
             this.files[index] = file;
             this.data[name]   = file.name;
         });
@@ -135,7 +135,7 @@ export default class Selection {
      * @returns {Void}
      */
     removeFile(index) {
-        const name = `file${index + 1}`;
+        const name = `file${index}`;
         this.files[index] = null;
         this.data[name]   = "";
         this.schemaDialog.setInput(name, "");
@@ -161,59 +161,61 @@ export default class Selection {
 
     /**
      * Imports a Schema
-     * @param {Function} onDone
-     * @returns {Void}
+     * @returns {Promise}
      */
-    importSchema(onDone) {
-        this.data.useUrls = this.schemaDialog.getInput("urls");
-        this.data.name    = this.schemaDialog.getInput("name");
-        this.data.url1    = this.schemaDialog.getInput("url1");
-        this.data.url2    = this.schemaDialog.getInput("url2");
-        if (!this.data.schemas) {
-            this.data.schemas = [];
-        }
-
-        this.schemaDialog.hideErrors();
-        if (!this.data.name) {
-            this.schemaDialog.showError("name");
-        }
-        if (!this.data.useUrls && !this.files[0]) {
-            this.schemaDialog.showError("file");
-        }
-        if (this.data.useUrls && !this.data.url1) {
-            this.schemaDialog.showError("url");
-        }
-        if (this.schemaDialog.hasError) {
-            return;
-        }
-
-        if (!this.data.useUrls && (this.files[0] || this.files[1])) {
-            let count = 0;
-            for (let i = 0; i < this.files.length; i++) {
-                if (!this.files[i]) {
-                    count += 1;
-                    continue;
-                }
-                const reader = new FileReader();
-                reader.readAsText(this.files[i]);
-                reader.onload = () => {
-                    const text = String(reader.result);
-                    try {
-                        this.data.schemas[i] = JSON.parse(text);
-                        count += 1;
-                        if (!this.schemaDialog.hasError && count === this.files.length) {
-                            onDone(this.data);
-                            this.closeSchema();
-                        }
-                    } catch {
-                        this.schemaDialog.showError(`json${i}`);
-                    }
-                };
+    importSchema() {
+        return new Promise((resolve, reject) => {
+            this.data.useUrls = this.schemaDialog.getInput("urls");
+            this.data.name    = this.schemaDialog.getInput("name");
+            this.data.url0    = this.schemaDialog.getInput("url0");
+            this.data.url1    = this.schemaDialog.getInput("url1");
+            if (!this.data.schemas) {
+                this.data.schemas = [];
             }
-        } else {
-            onDone(this.data);
-            this.closeSchema();
-        }
+
+            this.schemaDialog.hideErrors();
+            if (!this.data.name) {
+                this.schemaDialog.showError("name");
+            }
+            if (!this.data.useUrls && !this.files[0]) {
+                this.schemaDialog.showError("file");
+            }
+            if (this.data.useUrls && !this.data.url0) {
+                this.schemaDialog.showError("url");
+            }
+            if (this.schemaDialog.hasError) {
+                reject();
+                return;
+            }
+
+            if (!this.data.useUrls && (this.files[0] || this.files[1])) {
+                let count = 0;
+                for (let i = 0; i < this.files.length; i++) {
+                    if (!this.files[i]) {
+                        count += 1;
+                        continue;
+                    }
+                    const reader = new FileReader();
+                    reader.readAsText(this.files[i]);
+                    reader.onload = () => {
+                        const text = String(reader.result);
+                        try {
+                            this.data.schemas[i] = JSON.parse(text);
+                            count += 1;
+                            if (!this.schemaDialog.hasError && count === this.files.length) {
+                                this.closeSchema();
+                                resolve(this.data);
+                            }
+                        } catch {
+                            this.schemaDialog.showError(`json${i}`);
+                        }
+                    };
+                }
+            } else {
+                this.closeSchema();
+                resolve(this.data);
+            }
+        });
     }
 
 
