@@ -1,10 +1,8 @@
-import Table from "./Table.js";
-import Link  from "./Link.js";
-import Group from "./Group.js";
-import Utils from "./Utils.js";
-
-// Constants
-const COLOR_AMOUNT = 8;
+import Table   from "./Table.js";
+import Link    from "./Link.js";
+import Group   from "./Group.js";
+import Options from "./Options.js";
+import Utils   from "./Utils.js";
 
 
 
@@ -281,10 +279,10 @@ export default class Canvas {
      * @returns {Number}
      */
     zoomIn() {
-        if (this.zoom >= 150) {
+        if (this.zoom >= Options.MAX_ZOOM) {
             return this.zoom;
         }
-        this.zoom += 10;
+        this.zoom += Options.ZOOM_INTERVAL;
         this.setZoom();
         return this.zoom;
     }
@@ -294,10 +292,10 @@ export default class Canvas {
      * @returns {Number}
      */
     zoomOut() {
-        if (this.zoom <= 50) {
+        if (this.zoom <= Options.MIN_ZOOM) {
             return this.zoom;
         }
-        this.zoom -= 10;
+        this.zoom -= Options.ZOOM_INTERVAL;
         this.setZoom();
         return this.zoom;
     }
@@ -307,7 +305,7 @@ export default class Canvas {
      * @returns {Number}
      */
     resetZoom() {
-        this.zoom = 100;
+        this.zoom = Options.DEFAULT_ZOOM;
         this.setZoom();
         return this.zoom;
     }
@@ -318,9 +316,9 @@ export default class Canvas {
      */
     setZoom() {
         this.percent.innerHTML      = `${this.zoom}%`;
-        this.canvas.style.transform = `scale(${this.zoom / 100})`;
-        this.zoomInBtn.classList.toggle("zoom-disabled",  this.zoom === 150);
-        this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === 50);
+        this.canvas.style.transform = `scale(${this.zoom / Options.DEFAULT_ZOOM})`;
+        this.zoomInBtn.classList.toggle("zoom-disabled",  this.zoom === Options.MAX_ZOOM);
+        this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === Options.MIN_ZOOM);
         this.stopUnselect();
     }
 
@@ -439,7 +437,9 @@ export default class Canvas {
         this.unselect();
         this.selectedGroup = group.select();
         for (const table of group.tables) {
-            this.selection[table.name] = table;
+            if (table.onCanvas) {
+                this.selection[table.name] = table;
+            }
         }
         this.markSelection();
         this.stopUnselect();
@@ -492,7 +492,7 @@ export default class Canvas {
                     const field = link.getFieldName(selectedTable);
                     if (!colors[field]) {
                         colors[field] = lastColor + 1;
-                        lastColor     = (lastColor + 1) % COLOR_AMOUNT;
+                        lastColor     = (lastColor + 1) % Options.COLOR_AMOUNT;
                     }
                     link.toTable.unselect();
                     link.fromTable.unselect();
@@ -672,7 +672,7 @@ export default class Canvas {
         if (!this.isDragging) {
             return false;
         }
-        const mult      = this.zoom / 100;
+        const mult      = this.zoom / Options.DEFAULT_ZOOM;
         const currMouse = Utils.getMousePos(event);
         for (const selectedTable of this.selectedTables) {
             const startPos = this.startPos[selectedTable.name];

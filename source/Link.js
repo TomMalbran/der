@@ -1,12 +1,7 @@
-import Table from "./Table.js";
-import Utils from "./Utils.js";
+import Table   from "./Table.js";
+import Options from "./Options.js";
+import Utils   from "./Utils.js";
 
-// Constants
-const SELF_WIDTH    = 70;
-const DOWN_WIDTH    = 70;
-const ROW_HEIGHT    = 24;
-const HEADER_HEIGHT = 31;
-const ARROW_SIZE    = 10;
 
 
 
@@ -178,8 +173,8 @@ export default class Link {
 
         const top    = Math.min(this.fromTable.top, this.toTable.top);
         const height = Math.max(this.toTable.bottom, this.fromTable.bottom) - top;
-        const startY = leftTable.top  - top + leftPosition  * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
-        const endY   = rightTable.top - top + rightPosition * ROW_HEIGHT + HEADER_HEIGHT + ROW_HEIGHT / 2;
+        const startY = leftTable.top  - top + leftPosition  * Options.ROW_HEIGHT + Options.HEADER_HEIGHT + Options.ROW_HEIGHT / 2;
+        const endY   = rightTable.top - top + rightPosition * Options.ROW_HEIGHT + Options.HEADER_HEIGHT + Options.ROW_HEIGHT / 2;
 
         if (this.fromTable.name === this.toTable.name) {
             this.connectToSelf(top, height, startY, endY);
@@ -206,10 +201,10 @@ export default class Link {
      */
     connectToSelf(top, height, startY, endY) {
         const left   = this.fromTable.right;
-        const width  = SELF_WIDTH;
+        const width  = Options.LINK_SIZE;
 
         const startX = 0;
-        const endX   = ARROW_SIZE;
+        const endX   = Options.ARROW_SIZE;
 
         const BX = width * 0.05 + startX;
         const BY = startY;
@@ -237,19 +232,19 @@ export default class Link {
      * @returns {Void}
      */
     connectLeftToLeft(leftTable, rightTable, top, height, startY, endY, toEnd) {
-        const left   = leftTable.left - DOWN_WIDTH;
+        const left   = leftTable.left - Options.LINK_SIZE;
         const width  = rightTable.left - left;
 
-        const startX = leftTable.left - left - (!toEnd ? ARROW_SIZE : 0);
-        const endX   = width - (toEnd ? ARROW_SIZE : 0);
+        const startX = leftTable.left - left - (!toEnd ? Options.ARROW_SIZE : 0);
+        const endX   = width - (toEnd ? Options.ARROW_SIZE : 0);
 
-        const BX = - DOWN_WIDTH * 0.05 + startX;
+        const BX = - Options.LINK_SIZE * 0.05 + startX;
         const BY = startY;
-        const CX = - DOWN_WIDTH + startX;
+        const CX = - Options.LINK_SIZE + startX;
         const CY = startY;
-        const DX = - DOWN_WIDTH + startX;
+        const DX = - Options.LINK_SIZE + startX;
         const DY = endY;
-        const EX = - DOWN_WIDTH * 0.05 + endX;
+        const EX = - Options.LINK_SIZE * 0.05 + endX;
         const EY = endY;
 
         this.setBounds(left, top, width, height);
@@ -270,18 +265,18 @@ export default class Link {
      */
     connectRightToRight(leftTable, rightTable, top, height, startY, endY, toEnd) {
         const left   = Math.min(leftTable.right, rightTable.right);
-        const width  = Math.abs(leftTable.right - rightTable.right) + DOWN_WIDTH;
+        const width  = Math.abs(leftTable.right - rightTable.right) + Options.LINK_SIZE;
 
-        const startX = leftTable.right - left + (!toEnd ? ARROW_SIZE : 0);
-        const endX   = rightTable.right - left + (toEnd ? ARROW_SIZE : 0);
+        const startX = leftTable.right - left + (!toEnd ? Options.ARROW_SIZE : 0);
+        const endX   = rightTable.right - left + (toEnd ? Options.ARROW_SIZE : 0);
 
-        const BX = DOWN_WIDTH * 0.05 + startX;
+        const BX = Options.LINK_SIZE * 0.05 + startX;
         const BY = startY;
-        const CX = DOWN_WIDTH + endX;
+        const CX = Options.LINK_SIZE + endX;
         const CY = startY;
-        const DX = DOWN_WIDTH + endX;
+        const DX = Options.LINK_SIZE + endX;
         const DY = endY;
-        const EX = DOWN_WIDTH * 0.05 + endX;
+        const EX = Options.LINK_SIZE * 0.05 + endX;
         const EY = endY;
 
         this.setBounds(left, top, width, height);
@@ -304,8 +299,8 @@ export default class Link {
         const left   = leftTable.right;
         const width  = rightTable.left - left;
 
-        const startX = !toEnd ? ARROW_SIZE : 0;
-        const endX   = width - (toEnd ? ARROW_SIZE : 0);
+        const startX = !toEnd ? Options.ARROW_SIZE : 0;
+        const endX   = width - (toEnd ? Options.ARROW_SIZE : 0);
 
         const BX = width * 0.05 + startX;
         const BY = startY;
@@ -380,8 +375,8 @@ export default class Link {
     setArrow(startX, startY, endX, endY, toEnd, toRight) {
         const AX     = toEnd ? endX : startX;
         const AY     = toEnd ? endY : startY;
-        const width  = toRight ? ARROW_SIZE : -ARROW_SIZE;
-        const half   = ARROW_SIZE / 2;
+        const width  = toRight ? Options.ARROW_SIZE : -Options.ARROW_SIZE;
+        const half   = Options.ARROW_SIZE / 2;
         const points = `${AX} ${AY - half}, ${AX + width} ${AY}, ${AX} ${AY + half}`;
         this.arrow.setAttribute("points", points);
     }

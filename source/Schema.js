@@ -1,11 +1,7 @@
-import Table from "./Table.js";
-import Group from "./Group.js";
-import Utils from "./Utils.js";
+import Table   from "./Table.js";
+import Group   from "./Group.js";
+import Options from "./Options.js";
 
-// Constantes
-const INITIAL_WIDTH = 300;
-const MIN_WIDTH     = 200;
-const SHRINK_WIDTH  = 60;
 
 
 
@@ -21,8 +17,8 @@ export default class Schema {
     constructor(data) {
         this.schemaID = data.schemaID;
         this.data     = data.schema;
-        this.width    = INITIAL_WIDTH;
-        this.oldWidth = INITIAL_WIDTH;
+        this.width    = Options.INITIAL_WIDTH;
+        this.oldWidth = Options.INITIAL_WIDTH;
 
         /** @type {Object.<String, Table>} */
         this.tables   = {};
@@ -285,8 +281,8 @@ export default class Schema {
             return false;
         }
         this.isResizing = false;
-        if (this.width < MIN_WIDTH) {
-            this.setWidth(SHRINK_WIDTH);
+        if (this.width < Options.MIN_WIDTH) {
+            this.setWidth(Options.SHRINK_WIDTH);
         }
         window.setTimeout(() => {
             this.aside.classList.remove("aside-dragging");
@@ -300,7 +296,7 @@ export default class Schema {
      * @returns {Void}
      */
     setInitialWidth(width) {
-        const initialWidth = width || INITIAL_WIDTH;
+        const initialWidth = width || Options.INITIAL_WIDTH;
         if (this.width !== initialWidth) {
             this.setWidth(initialWidth);
         }
@@ -311,12 +307,12 @@ export default class Schema {
      * @returns {Void}
      */
     toggleMinimize() {
-        if (this.width === SHRINK_WIDTH) {
-            const newWidth = this.oldWidth === SHRINK_WIDTH ? INITIAL_WIDTH : this.oldWidth;
+        if (this.width === Options.SHRINK_WIDTH) {
+            const newWidth = this.oldWidth === Options.SHRINK_WIDTH ? Options.INITIAL_WIDTH : this.oldWidth;
             this.setWidth(newWidth);
         } else {
             this.oldWidth = this.width;
-            this.setWidth(SHRINK_WIDTH);
+            this.setWidth(Options.SHRINK_WIDTH);
         }
     }
 
@@ -332,7 +328,7 @@ export default class Schema {
         this.aside.style.width = `${width}px`;
         this.main.style.left   = `${width}px`;
 
-        if (width < MIN_WIDTH) {
+        if (width < Options.MIN_WIDTH) {
             this.aside.classList.add("aside-small");
         } else {
             this.aside.classList.remove("aside-small");
