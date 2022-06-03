@@ -254,7 +254,6 @@ export default class Table {
         this.listArrow.dataset.table   = this.data.table;
 
         this.listText.innerHTML        = this.data.table;
-        this.listText.dataset.action   = "show-table";
         this.listText.dataset.table    = this.data.table;
 
         this.listButton.innerHTML      = "Add";
@@ -264,6 +263,7 @@ export default class Table {
 
         if (this.onCanvas) {
             this.listText.classList.add("selectable");
+            this.listText.dataset.action  = "show-table";
             this.listButton.style.display = "none";
         }
 
@@ -342,6 +342,7 @@ export default class Table {
     addToCanvas(canvas, container, mult) {
         this.onCanvas = true;
         this.listText.classList.add("selectable");
+        this.listText.dataset.action  = "show-table";
         this.listButton.style.display = "none";
 
         if (!this.canvasElem) {
@@ -378,6 +379,7 @@ export default class Table {
         }
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
+        this.listText.dataset.action  = "";
         this.listButton.style.display = "block";
 
         Utils.removeElement(this.canvasElem);

@@ -199,16 +199,27 @@ main {
 
 
 /**
- * Zoom
+ * Menu
  */
-.zoom {
+.menu {
     position: absolute;
     top: 24px;
     right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: var(--z-menu);
+}
+
+
+
+/**
+ * Zoom
+ */
+.zoom {
     list-style: none;
     padding: 0;
     margin: 0;
-    z-index: var(--z-zoom);
 }
 .zoom li {
     width: 36px;
@@ -250,13 +261,10 @@ main {
 
 
 /**
- * Group
+ * Icons
  */
-.grouper {
+.icon {
     box-sizing: border-box;
-    position: absolute;
-    top: 124px;
-    right: 24px;
     width: 36px;
     height: 36px;
     padding: 8px;
@@ -267,13 +275,18 @@ main {
     transition: background-color 0.2s;
     cursor: pointer;
 }
-.grouper:hover {
+.icon:hover {
     background-color: var(--grid-color);
 }
-.grouper svg {
+.icon svg {
     width: 100%;
 }
 
+
+
+/**
+ * Group
+ */
 .group {
     position: absolute;
     border: 2px solid var(--main-color);

@@ -179,7 +179,6 @@ export default class Group {
         this.listArrow.dataset.group   = String(this.id);
 
         this.listText.innerHTML        = this.name;
-        this.listText.dataset.action   = "show-group";
         this.listText.dataset.group    = String(this.id);
 
         this.listButton.innerHTML      = "Edit";
@@ -223,6 +222,7 @@ export default class Group {
     addToCanvas(container) {
         this.onCanvas = true;
         this.listText.classList.add("selectable");
+        this.listText.dataset.action = "show-group";
 
         if (!this.canvasElem) {
             this.createCanvasElem();
@@ -240,6 +240,8 @@ export default class Group {
             return;
         }
         this.onCanvas = false;
+        this.listText.classList.remove("selectable");
+        this.listText.dataset.action = "";
         Utils.removeElement(this.canvasElem);
         this.canvasElem = null;
     }
