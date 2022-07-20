@@ -149,7 +149,7 @@ export default class Table {
             index++;
         }
         if (this.data.hasPositions) {
-            this.fields.push(new Field(index, "position", { type : "number" }));
+            this.fields.push(new Field(index, "position", { type : "number" }));
             index++;
         }
         if (this.data.canCreate && this.data.hasTimestamps) {
@@ -193,10 +193,10 @@ export default class Table {
         }
         if (this.data.hasUsers) {
             const data = { table : "credentials", leftKey : "CREDENTIAL_ID" };
-            if (this.data.canCreate && !this.data.joins["createdUser"]) {
+            if (this.data.canCreate && (!this.data.joins || !this.data.joins.createdUser)) {
                 this.links.push(new Link(this.name, "createdUser", data));
             }
-            if (this.data.canEdit && !this.data.joins["modifiedUser"]) {
+            if (this.data.canEdit && (!this.data.joins || !this.data.joins.modifiedUser)) {
                 this.links.push(new Link(this.name, "modifiedUser", data));
             }
         }
