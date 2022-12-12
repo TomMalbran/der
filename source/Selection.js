@@ -25,6 +25,9 @@ export default class Selection {
         /** @type {NodeListOf<HTMLElement>} */
         this.urlFields    = document.querySelectorAll(".schema-url");
 
+        // Error
+        this.errorDialog = new Dialog("error");
+
         // Delete
         this.deleteDialog = new Dialog("delete");
     }
@@ -212,10 +215,32 @@ export default class Selection {
                     };
                 }
             } else {
-                this.closeSchema();
-                resolve(this.data);
+                fetch(this.data.url0).then(() => {
+                    this.closeSchema();
+                    resolve(this.data);
+                }, () => {
+                    reject();
+                });
             }
         });
+    }
+
+
+
+    /**
+     * Opens the Error Dialog
+     * @returns {Void}
+     */
+    openError() {
+        this.errorDialog.open();
+    }
+
+    /**
+     * Closes the Error Dialog
+     * @returns {Void}
+     */
+    closeError() {
+        this.errorDialog.close();
     }
 
 

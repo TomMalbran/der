@@ -172,7 +172,12 @@ document.addEventListener("click", (e) => {
                     selectSchema(schemaID);
                 }
             });
+        }, () => {
+            selection.openError();
         });
+        break;
+    case "close-error":
+        selection.closeError();
         break;
     case "open-delete":
         selection.openDelete(schemaID);
