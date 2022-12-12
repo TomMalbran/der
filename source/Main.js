@@ -6,12 +6,22 @@ import Schema    from "./Schema.js";
 import Utils     from "./Utils.js";
 
 // Variables
-let selection = null;
-let storage   = null;
-let canvas    = null;
-let grouper   = null;
-let schema    = null;
 let timer     = null;
+
+/** @type {Selection} */
+let selection = null;
+
+/** @type {Storage} */
+let storage   = null;
+
+/** @type {Canvas} */
+let canvas    = null;
+
+/** @type {Grouper} */
+let grouper   = null;
+
+/** @type {Schema} */
+let schema    = null;
 
 
 
