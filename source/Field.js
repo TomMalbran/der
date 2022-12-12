@@ -16,6 +16,15 @@ export default class Field {
         this.length    = data.length || 0;
         this.isPrimary = data.type === "id" || data.isPrimary;
         this.isIndex   = data.isIndex
+        this.hasLink   = false;
+    }
+
+    /**
+     * Returns the Element Tag depending on the Properties
+     * @returns {String}
+     */
+    getElementTag() {
+        return this.isPrimary ? "b" : (this.hasLink ? "i" : "span");
     }
 
     /**
@@ -24,7 +33,7 @@ export default class Field {
      */
     createListElem() {
         this.listElem = document.createElement("li");
-        const name = document.createElement(this.isPrimary ? "b" : "span");
+        const name = document.createElement(this.getElementTag());
         const type = document.createElement("span");
 
         name.innerHTML = this.name;
@@ -41,7 +50,7 @@ export default class Field {
      */
     createCanvasElem(isHidden) {
         this.canvasElem = document.createElement("li");
-        const name = document.createElement(this.isPrimary ? "b" : "span");
+        const name = document.createElement(this.getElementTag());
         const type = document.createElement("span");
 
         name.innerHTML = this.name;

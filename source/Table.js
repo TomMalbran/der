@@ -200,6 +200,14 @@ export default class Table {
                 this.links.push(new Link(this.name, "modifiedUser", data));
             }
         }
+
+        for (const link of this.links) {
+            for (const field of this.fields) {
+                if (link.fromFieldName === field.name) {
+                    field.hasLink = true;
+                }
+            }
+        }
     }
 
 
