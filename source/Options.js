@@ -13,7 +13,7 @@ const ARROW_SIZE    = 10;
 const LINK_SIZE     = 70;
 
 // Zoom
-const MIN_ZOOM      = 30;
+const MIN_ZOOM      = 20;
 const DEFAULT_ZOOM  = 100;
 const MAX_ZOOM      = 150;
 const ZOOM_INTERVAL = 10;
