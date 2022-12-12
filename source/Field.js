@@ -15,7 +15,7 @@ export default class Field {
         this.type      = data.type;
         this.length    = data.length || 0;
         this.isPrimary = data.type === "id" || data.isPrimary;
-        this.isIndex   = data.isIndex
+        this.isKey     = data.isKey
         this.hasLink   = false;
     }
 
@@ -36,7 +36,7 @@ export default class Field {
         const name = document.createElement(this.getElementTag());
         const type = document.createElement("span");
 
-        name.innerHTML = this.name;
+        name.innerHTML = this.name + (this.isKey ? "*" : "");
         type.innerHTML = this.type;
 
         this.listElem.appendChild(name);
@@ -53,7 +53,7 @@ export default class Field {
         const name = document.createElement(this.getElementTag());
         const type = document.createElement("span");
 
-        name.innerHTML = this.name;
+        name.innerHTML = this.name + (this.isKey ? "*" : "");
         type.innerHTML = this.type;
 
         this.canvasElem.appendChild(name);
