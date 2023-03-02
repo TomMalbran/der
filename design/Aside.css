@@ -173,10 +173,13 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 6px;
     padding: 6px 12px 6px 30px;
 }
 .schema-item span {
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .schema-item .selectable {
     cursor: pointer;
