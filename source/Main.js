@@ -408,7 +408,7 @@ document.addEventListener("mousedown", (e) => {
  */
 document.addEventListener("contextmenu", (e) => {
     // @ts-ignore
-    if (e.target.classList.contains("canvas")) {
+    if (e.target.classList.contains("main")) {
         canvas.pickScroll(e);
         e.preventDefault();
     }
