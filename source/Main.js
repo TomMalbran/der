@@ -2,6 +2,7 @@ import Selection from "./Selection.js";
 import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
 import Grouper   from "./Grouper.js";
+import Group     from "./Group.js";
 import Schema    from "./Schema.js";
 import Utils     from "./Utils.js";
 
@@ -105,6 +106,18 @@ function deleteSchema(schemaID) {
     storage.removeSchema(schemaID);
     selection.closeDelete();
     selection.open(storage.getSchemas());
+}
+
+/**
+ * Opens the Group Dialog
+ * @param {Group?} group
+ * @returns {Void}
+ */
+function openGroup(group) {
+    if (group) {
+        canvas.stopUnselect();
+        grouper.openDialog(storage.nextGroup, group, canvas.selectedTables);
+    }
 }
 
 
@@ -265,8 +278,7 @@ document.addEventListener("click", (e) => {
             canvas.showGroup(group);
             break;
         case "edit-group":
-            canvas.stopUnselect();
-            grouper.openDialog(storage.nextGroup, group, canvas.selectedTables);
+            openGroup(group);
             break;
         default:
         }
@@ -319,10 +331,16 @@ document.addEventListener("click", (e) => {
 document.addEventListener("dblclick", (e) => {
     const target = Utils.getTarget(e);
     const action = target.dataset.action;
+    const group  = schema ? schema.getGroup(target) : null;
 
-    if (action === "resize-aside") {
+    switch (action) {
+    case "resize-aside":
         schema.toggleMinimize();
         storage.setWidth(schema.width);
+        break;
+    case "drag-group":
+        openGroup(group);
+        break;
     }
 });
 
