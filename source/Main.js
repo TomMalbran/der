@@ -50,7 +50,7 @@ async function main() {
  * @returns {Void}
  */
 function setSchema(data) {
-    canvas.setInitialZoom(100);
+    canvas.zoom.setInitialValue(100);
     schema = new Schema(data);
 
     const groups = schema.createGroups(storage.getGroups());
@@ -70,7 +70,7 @@ function setSchema(data) {
         }
     }
 
-    canvas.setInitialZoom(storage.getZoom());
+    canvas.zoom.setInitialValue(storage.getZoom());
     canvas.setInitialScroll(storage.getScroll());
 }
 
@@ -250,17 +250,17 @@ document.addEventListener("click", (e) => {
 
     // Zoom Actions
     case "zoom-in":
-        const zoomIn = canvas.zoomIn();
+        const zoomIn = canvas.zoom.increase();
         storage.setZoom(zoomIn);
         Utils.unselect();
         break;
     case "zoom-out":
-        const zoomOut = canvas.zoomOut();
+        const zoomOut = canvas.zoom.decrease();
         storage.setZoom(zoomOut);
         Utils.unselect();
         break;
     case "reset-zoom":
-        canvas.resetZoom();
+        canvas.zoom.reset();
         storage.removeZoom();
         Utils.unselect();
         break;

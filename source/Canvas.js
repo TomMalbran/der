@@ -1,6 +1,7 @@
 import Table   from "./Table.js";
 import Link    from "./Link.js";
 import Group   from "./Group.js";
+import Zoom    from "./Zoom.js";
 import Options from "./Options.js";
 import Utils   from "./Utils.js";
 
@@ -26,11 +27,15 @@ export default class Canvas {
 
         /** @type {HTMLElement} */
         this.container     = document.querySelector("main");
+
+        /** @type {DOMRect} */
         this.bounds        = this.container.getBoundingClientRect();
 
         /** @type {HTMLElement} */
         this.canvas        = document.querySelector(".canvas");
 
+        /** @type {Zoom} */
+        this.zoom          = new Zoom(this.canvas);
 
         // Scroll
         this.isScrolling   = false;
@@ -44,12 +49,6 @@ export default class Canvas {
 
         /** @type {HTMLElement} */
         this.selector      = document.querySelector(".selector");
-
-        // Zoom
-        this.zoom          = 100;
-        this.percent       = document.querySelector(".zoom-percent");
-        this.zoomInBtn     = document.querySelector(".zoom-in");
-        this.zoomOutBtn    = document.querySelector(".zoom-out");
 
         this.center();
     }
@@ -93,7 +92,7 @@ export default class Canvas {
      */
     addTable(table) {
         this.tables[table.name] = table;
-        table.addToCanvas(this.canvas, this.container, this.zoom / 100);
+        table.addToCanvas(this.canvas, this.container, this.zoom.value / 100);
 
         // Adds links to/from the given Table
         for (const toTable of Object.values(this.tables)) {
@@ -260,66 +259,6 @@ export default class Canvas {
         }
         this.isScrolling = false;
         return true;
-    }
-
-
-
-    /**
-     * Sets the initial Zoom
-     * @param {Number} value
-     * @returns {Void}
-     */
-    setInitialZoom(value) {
-        this.zoom = value;
-        this.setZoom();
-    }
-
-    /**
-     * Increases the Canvas Zoom
-     * @returns {Number}
-     */
-    zoomIn() {
-        if (this.zoom >= Options.MAX_ZOOM) {
-            return this.zoom;
-        }
-        this.zoom += Options.ZOOM_INTERVAL;
-        this.setZoom();
-        return this.zoom;
-    }
-
-    /**
-     * Decreases the Canvas Zoom
-     * @returns {Number}
-     */
-    zoomOut() {
-        if (this.zoom <= Options.MIN_ZOOM) {
-            return this.zoom;
-        }
-        this.zoom -= Options.ZOOM_INTERVAL;
-        this.setZoom();
-        return this.zoom;
-    }
-
-    /**
-     * Resets the Canvas Zoom
-     * @returns {Number}
-     */
-    resetZoom() {
-        this.zoom = Options.DEFAULT_ZOOM;
-        this.setZoom();
-        return this.zoom;
-    }
-
-    /**
-     * Sets the Canvas Zoom
-     * @returns {Void}
-     */
-    setZoom() {
-        this.percent.innerHTML      = `${this.zoom}%`;
-        this.canvas.style.transform = `scale(${this.zoom / Options.DEFAULT_ZOOM})`;
-        this.zoomInBtn.classList.toggle("zoom-disabled",  this.zoom === Options.MAX_ZOOM);
-        this.zoomOutBtn.classList.toggle("zoom-disabled", this.zoom === Options.MIN_ZOOM);
-        this.stopUnselect();
     }
 
 
@@ -672,13 +611,13 @@ export default class Canvas {
         if (!this.isDragging) {
             return false;
         }
-        const mult      = this.zoom / Options.DEFAULT_ZOOM;
+        const scale     = this.zoom.scale;
         const currMouse = Utils.getMousePos(event);
         for (const selectedTable of this.selectedTables) {
             const startPos = this.startPos[selectedTable.name];
             selectedTable.translate({
-                top  : startPos.top  + (currMouse.top  - this.startMouse.top)  / mult,
-                left : startPos.left + (currMouse.left - this.startMouse.left) / mult,
+                top  : startPos.top  + (currMouse.top  - this.startMouse.top)  / scale,
+                left : startPos.left + (currMouse.left - this.startMouse.left) / scale,
             });
             this.reconnect(selectedTable);
             if (selectedTable.group) {
