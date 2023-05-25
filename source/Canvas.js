@@ -26,13 +26,14 @@ export default class Canvas {
         this.groups        = {};
 
         /** @type {HTMLElement} */
-        this.container     = document.querySelector("main");
+        this.canvas        = document.querySelector(".canvas");
+
+        /** @type {HTMLElement} */
+        this.container     = this.canvas.parentElement;
 
         /** @type {DOMRect} */
         this.bounds        = this.container.getBoundingClientRect();
 
-        /** @type {HTMLElement} */
-        this.canvas        = document.querySelector(".canvas");
 
         /** @type {Zoom} */
         this.zoom          = new Zoom(this.canvas);
@@ -92,7 +93,7 @@ export default class Canvas {
      */
     addTable(table) {
         this.tables[table.name] = table;
-        table.addToCanvas(this.canvas, this.container, this.zoom.value / 100);
+        table.addToCanvas(this.canvas, this.container, this.zoom.percent);
 
         // Adds links to/from the given Table
         for (const toTable of Object.values(this.tables)) {

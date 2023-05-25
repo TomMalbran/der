@@ -12,11 +12,19 @@ export default class Zoom {
      * @param {HTMLElement} canvas
      */
     constructor(canvas) {
-        this.value   = 100;
-        this.canvas  = canvas;
-        this.percent = document.querySelector(".zoom-percent");
-        this.inBtn   = document.querySelector(".zoom-in");
-        this.outBtn  = document.querySelector(".zoom-out");
+        this.value  = 100;
+
+        /** @type {HTMLElement} */
+        this.canvas = canvas;
+
+        /** @type {HTMLElement} */
+        this.text   = document.querySelector(".zoom-percent");
+
+        /** @type {HTMLElement} */
+        this.inBtn  = document.querySelector(".zoom-in");
+
+        /** @type {HTMLElement} */
+        this.outBtn = document.querySelector(".zoom-out");
     }
 
     /**
@@ -28,12 +36,20 @@ export default class Zoom {
     }
 
     /**
+     * Returns the Zoom percent
+     * @returns {Number}
+     */
+    get percent() {
+        return this.value / 100;
+    }
+
+    /**
      * Sets the initial Zoom
      * @param {Number} value
      * @returns {Void}
      */
     setInitialValue(value) {
-        this.zoom = value;
+        this.value = value;
         this.setValue();
     }
 
@@ -42,12 +58,12 @@ export default class Zoom {
      * @returns {Number}
      */
     increase() {
-        if (this.zoom >= Options.MAX_ZOOM) {
-            return this.zoom;
+        if (this.value >= Options.MAX_ZOOM) {
+            return this.value;
         }
-        this.zoom += Options.ZOOM_INTERVAL;
+        this.value += Options.ZOOM_INTERVAL;
         this.setValue();
-        return this.zoom;
+        return this.value;
     }
 
     /**
@@ -55,12 +71,12 @@ export default class Zoom {
      * @returns {Number}
      */
     decrease() {
-        if (this.zoom <= Options.MIN_ZOOM) {
-            return this.zoom;
+        if (this.value <= Options.MIN_ZOOM) {
+            return this.value;
         }
-        this.zoom -= Options.ZOOM_INTERVAL;
+        this.value -= Options.ZOOM_INTERVAL;
         this.setValue();
-        return this.zoom;
+        return this.value;
     }
 
     /**
@@ -68,9 +84,9 @@ export default class Zoom {
      * @returns {Number}
      */
     reset() {
-        this.zoom = Options.DEFAULT_ZOOM;
+        this.value = Options.DEFAULT_ZOOM;
         this.setValue();
-        return this.zoom;
+        return this.value;
     }
 
     /**
@@ -78,10 +94,10 @@ export default class Zoom {
      * @returns {Void}
      */
     setValue() {
-        this.percent.innerHTML      = `${this.zoom}%`;
+        this.text.innerHTML         = `${this.value}%`;
         this.canvas.style.transform = `scale(${this.scale})`;
-        this.inBtn.classList.toggle("zoom-disabled",  this.zoom === Options.MAX_ZOOM);
-        this.outBtn.classList.toggle("zoom-disabled", this.zoom === Options.MIN_ZOOM);
-        // this.stopUnselect();
+
+        this.inBtn.classList.toggle("zoom-disabled",  this.value === Options.MAX_ZOOM);
+        this.outBtn.classList.toggle("zoom-disabled", this.value === Options.MIN_ZOOM);
     }
 }

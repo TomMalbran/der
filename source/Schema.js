@@ -28,8 +28,6 @@ export default class Schema {
 
         /** @type {HTMLElement} */
         this.aside    = document.querySelector("aside");
-        /** @type {HTMLElement} */
-        this.main     = document.querySelector("main");
 
         /** @type {HTMLElement} */
         this.header   = document.querySelector(".schema-header");
@@ -326,7 +324,6 @@ export default class Schema {
         this.oldWidth = width;
 
         this.aside.style.width = `${width}px`;
-        this.main.style.left   = `${width}px`;
 
         if (width < Options.MIN_WIDTH) {
             this.aside.classList.add("aside-small");

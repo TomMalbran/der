@@ -4,7 +4,7 @@
 main {
     position: absolute;
     top: 0;
-    left: var(--aside-width);
+    left: 0;
     right: 0;
     bottom: 0;
     overflow: auto;
@@ -14,7 +14,7 @@ main {
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
 }
 .canvas {
-    width: calc(8 * (100vw - var(--aside-width)));
+    width: 800vw;
     height: 800vh;
 }
 
@@ -31,6 +31,7 @@ main {
     font-size: 12px;
     background-color: white;
     box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
     overflow: hidden;
     z-index: var(--z-table-normal);
 }
@@ -89,9 +90,8 @@ main {
     --close-size: 12px;
     --close-width: 12px;
     --close-height: 1px;
-
     position: absolute;
-    top: calc(33px / 2 - var(--close-size) / 2);
+    top: calc(30px / 2 - var(--close-size) / 2);
     right: 6px;
 }
 
