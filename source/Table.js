@@ -43,9 +43,9 @@ export default class Table {
      * @returns {Void}
      */
     destroy() {
-        this.reset();
         this.removeFromCanvas();
         this.removeFromList();
+        this.reset();
     }
 
     /**
@@ -385,6 +385,7 @@ export default class Table {
         if (!this.onCanvas) {
             return;
         }
+
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listText.dataset.action  = "";

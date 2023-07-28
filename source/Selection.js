@@ -11,7 +11,7 @@ export default class Selection {
      * Selection constructor
      */
     constructor() {
-        // Selecion
+        // Selection
         this.selectDialog = new Dialog("select");
         /** @type {HTMLElement} */
         this.selectEmpty  = document.querySelector(".select-empty");

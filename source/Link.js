@@ -55,7 +55,7 @@ export default class Link {
     }
 
     /**
-     * Destriys the SVG element
+     * Destroys the SVG element
      * @returns {Void}
      */
     destroy() {
@@ -363,7 +363,7 @@ export default class Link {
     }
 
     /**
-     * Sets the Arraw
+     * Sets the Arrow
      * @param {Number}  startX
      * @param {Number}  startY
      * @param {Number}  endX
