@@ -25,9 +25,6 @@ export default class Selection {
         /** @type {NodeListOf<HTMLElement>} */
         this.urlFields    = document.querySelectorAll(".schema-url");
 
-        // Error
-        this.errorDialog = new Dialog("error");
-
         // Delete
         this.deleteDialog = new Dialog("delete");
     }
@@ -91,9 +88,10 @@ export default class Selection {
      * @param {Object} data
      * @returns {Void}
      */
-    openSchema(data) {
+    openEdit(data) {
         const isEdit  = Boolean(data.schemaID);
         const useUrls = Boolean(data.useUrls);
+        this.schemaID = data.schemaID || 0;
         this.data     = data;
         this.files    = [];
 
@@ -101,21 +99,22 @@ export default class Selection {
 
         this.schemaDialog.open();
         this.schemaDialog.setTitle(isEdit ? "Edit the Schema" : "Add a Schema");
-        this.schemaDialog.setButton(isEdit ? "Edit Schema" : "Add Schema");
+        this.schemaDialog.setButton(isEdit ? "Edit" : "Add");
 
-        this.schemaDialog.setInput("urls",  useUrls);
-        this.schemaDialog.setInput("name",  isEdit ? data.name : "");
-        this.schemaDialog.setInput("file0", isEdit && !useUrls ? this.data.file0 : "");
-        this.schemaDialog.setInput("file1", isEdit && !useUrls ? this.data.file1 : "");
-        this.schemaDialog.setInput("url0",  isEdit && useUrls  ? this.data.url0  : "");
-        this.schemaDialog.setInput("url1",  isEdit && useUrls  ? this.data.url1  : "");
+        this.schemaDialog.setInput("urls",     useUrls);
+        this.schemaDialog.setInput("name",     isEdit ? data.name : "");
+        this.schemaDialog.setInput("file0",    isEdit && !useUrls ? data.file0 || "" : "");
+        this.schemaDialog.setInput("file1",    isEdit && !useUrls ? data.file1 || "" : "");
+        this.schemaDialog.setInput("url0",     isEdit && useUrls  ? data.url0  || "" : "");
+        this.schemaDialog.setInput("url1",     isEdit && useUrls  ? data.url1  || "" : "");
+        this.schemaDialog.setInput("position", isEdit ? data.position : "");
     }
 
     /**
      * Closes the Add/Edit Dialog
      * @returns {Void}
      */
-    closeSchema() {
+    closeEdit() {
         this.schemaDialog.close();
     }
 
@@ -163,15 +162,18 @@ export default class Selection {
     }
 
     /**
-     * Imports a Schema
+     * Edit/Add a Schema
      * @returns {Promise}
      */
-    importSchema() {
-        return new Promise((resolve, reject) => {
-            this.data.useUrls = this.schemaDialog.getInput("urls");
-            this.data.name    = this.schemaDialog.getInput("name");
-            this.data.url0    = this.schemaDialog.getInput("url0");
-            this.data.url1    = this.schemaDialog.getInput("url1");
+    editSchema() {
+        return new Promise((resolve) => {
+            const isEdit = Boolean(this.schemaID);
+            this.data.useUrls  = this.schemaDialog.getInput("urls");
+            this.data.name     = this.schemaDialog.getInput("name");
+            this.data.url0     = this.schemaDialog.getInput("url0");
+            this.data.url1     = this.schemaDialog.getInput("url1");
+            this.data.position = this.schemaDialog.getInput("position");
+
             if (!this.data.schemas) {
                 this.data.schemas = [];
             }
@@ -180,15 +182,15 @@ export default class Selection {
             if (!this.data.name) {
                 this.schemaDialog.showError("name");
             }
-            if (!this.data.useUrls && !this.files[0]) {
+            if (!isEdit && !this.data.useUrls && !this.files[0]) {
                 this.schemaDialog.showError("file");
             }
             if (this.data.useUrls && !this.data.url0) {
                 this.schemaDialog.showError("url");
             }
             if (this.schemaDialog.hasError) {
-                reject();
-                return;
+                resolve();
+                return null;
             }
 
             if (!this.data.useUrls && (this.files[0] || this.files[1])) {
@@ -198,6 +200,7 @@ export default class Selection {
                         count += 1;
                         continue;
                     }
+
                     const reader = new FileReader();
                     reader.readAsText(this.files[i]);
                     reader.onload = () => {
@@ -206,7 +209,6 @@ export default class Selection {
                             this.data.schemas[i] = JSON.parse(text);
                             count += 1;
                             if (!this.schemaDialog.hasError && count === this.files.length) {
-                                this.closeSchema();
                                 resolve(this.data);
                             }
                         } catch {
@@ -214,33 +216,16 @@ export default class Selection {
                         }
                     };
                 }
-            } else {
+            } else if (this.data.useUrls) {
                 fetch(this.data.url0).then(() => {
-                    this.closeSchema();
                     resolve(this.data);
                 }, () => {
-                    reject();
+                    resolve();
                 });
+            } else {
+                resolve(this.data);
             }
         });
-    }
-
-
-
-    /**
-     * Opens the Error Dialog
-     * @returns {Void}
-     */
-    openError() {
-        this.errorDialog.open();
-    }
-
-    /**
-     * Closes the Error Dialog
-     * @returns {Void}
-     */
-    closeError() {
-        this.errorDialog.close();
     }
 
 

@@ -111,19 +111,16 @@
                         <label>Secondary Url</label>
                         <input type="text" name="secUrl" />
                     </div>
-                    <button class="btn btn-fill dialog-btn" data-action="import-schema">Schema</button>
+                    <div class="field schema-position" data-field="position">
+                        <label>Position</label>
+                        <input type="number" name="position" />
+                    </div>
+                    <button class="btn btn-fill dialog-btn" data-action="edit-schema">Schema</button>
+                    <button class="btn" data-action="close-schema">Cancel</button>
                     <a href="#" class="close" data-action="close-schema"></a>
                 </dialog>
             </div>
 
-            <div class="backdrop" data-dialog="error">
-                <dialog open>
-                    <h2>Schema Error</h2>
-                    <p class="select-empty">It was not possible to import the Schema. Make sure that the files/urls are correct and accesible.</p>
-                    <button class="btn" data-action="close-error">Accept</button>
-                    <a href="#" class="close" data-action="close-error"></a>
-                </dialog>
-            </div>
 
             <div class="backdrop" data-dialog="delete">
                 <dialog open>
@@ -158,6 +155,7 @@
                     <a href="#" class="close" data-action="close-group"></a>
                 </dialog>
             </div>
+
 
             <div class="backdrop" data-dialog="remove">
                 <dialog open>

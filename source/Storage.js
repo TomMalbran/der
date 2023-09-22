@@ -15,6 +15,7 @@ export default class Storage {
     constructor() {
         this.currentID = this.getNumber("currentID", 0);
         this.nextID    = this.getNumber("nextID", 1);
+        this.schemas   = this.getData("schemas") || [];
     }
 
     /**
@@ -97,7 +98,7 @@ export default class Storage {
 
 
     /**
-     * Returns true if there is at least one Schema
+     * Returns true if there a Schema selected
      * @returns {Boolean}
      */
     get hasSchema() {
@@ -110,15 +111,18 @@ export default class Storage {
      */
     getSchemas() {
         const result = [];
-        for (let schemaID = 1; schemaID < this.nextID; schemaID++) {
+        if (!this.schemas.length) {
+            return result;
+        }
+
+        for (const [ index, schemaID ] of this.schemas.entries()) {
             const data = this.getData(schemaID, "data");
-            if (data) {
-                result.push({
-                    schemaID,
-                    name       : data.name,
-                    isSelected : schemaID === this.currentID,
-                });
-            }
+            result.push({
+                schemaID,
+                name       : data.name,
+                position   : index + 1,
+                isSelected : schemaID === this.currentID,
+            });
         }
         return result;
     }
@@ -129,7 +133,13 @@ export default class Storage {
      * @returns {Object}
      */
     getSchemaData(schemaID) {
-        return this.getData(schemaID, "data");
+        const position = this.schemas.findIndex((id) => id === schemaID) + 1;
+        if (position <= 0) {
+            return {};
+        }
+        const data = this.getData(schemaID, "data");
+        data.position = position;
+        return data;
     }
 
     /**
@@ -139,17 +149,19 @@ export default class Storage {
      * @returns {Promise}
      */
     async getSchema(schemaID = this.currentID, fetchNew = true) {
-        const data   = this.getSchemaData(schemaID);
-        const result = { schemaID };
-        if (!data) {
-            return;
+        const position = this.schemas.findIndex((id) => id === schemaID) + 1;
+        if (position <= 0) {
+            return {};
         }
-        result.name = data.name;
-        if (!fetchNew) {
-            result.schema = this.mergeSchemas(data);
-        } else {
+
+        const data   = this.getSchemaData(schemaID);
+        const result = { schemaID, position, name : data.name };
+
+        if (fetchNew) {
             result.schema = await this.fetchSchemas(data);
             this.setData(data.schemaID, "data", data);
+        } else {
+            result.schema = this.mergeSchemas(data);
         }
         return result;
     }
@@ -181,30 +193,45 @@ export default class Storage {
             this.setNumber("nextID", this.nextID);
         }
 
-        // Fetch the Schemas
-        const newSchema = await this.fetchSchemas(data);
+        if (data.schemas) {
+            // Fetch the Schemas
+            const newSchema = await this.fetchSchemas(data);
 
-        // Remove the deleted Tables
-        if (isEdit) {
-            const oldSchema = this.getSchema(data.schemaID, false);
-            for (const oldElem of Object.values(oldSchema)) {
-                if (oldElem.table) {
-                    let found = false;
-                    for (const newElem of Object.values(newSchema)) {
-                        if (newElem.table === oldElem.table) {
-                            found = true;
-                            break;
+            // Remove the deleted Tables
+            if (isEdit) {
+                const oldSchema = this.getSchema(data.schemaID, false);
+                for (const oldElem of Object.values(oldSchema)) {
+                    if (oldElem.table) {
+                        let found = false;
+                        for (const newElem of Object.values(newSchema)) {
+                            if (newElem.table === oldElem.table) {
+                                found = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!found) {
-                        this.removeItem(data.schemaID, "table", oldElem.table);
+                        if (!found) {
+                            this.removeItem(data.schemaID, "table", oldElem.table);
+                        }
                     }
                 }
             }
+        } else {
+            const schemaData = this.getSchemaData(data.schemaID);
+            data.schemas = schemaData;
         }
 
         // Save the Schema data
         this.setData(data.schemaID, "data", data);
+
+        // Save the order
+        const index = Math.min(Math.max(data.position - 1, 0), this.schemas.length);
+        if (!isEdit) {
+            this.schemas.push(data.schemaID);
+        } else if (this.schemas[index] !== data.schemaID) {
+            this.schemas = this.schemas.filter((id) => id !== data.schemaID);
+            this.schemas.splice(index, 0, data.schemaID);
+        }
+        this.setData("schemas", this.schemas);
     }
 
     /**
@@ -267,17 +294,20 @@ export default class Storage {
             return;
         }
 
+        // Remove the Data
         this.removeItem(schemaID, "data");
         this.removeItem(schemaID, "filter");
         this.removeItem(schemaID, "scroll");
         this.removeItem(schemaID, "zoom");
 
+        // Remove the Tables
         for (const elem of Object.values(schema)) {
             if (elem.table) {
                 this.removeItem(schemaID, "table", elem.table);
             }
         }
 
+        // Remove the Groups
         const groupIDs = this.getData(schemaID, "groups");
         if (groupIDs) {
             for (const groupID of groupIDs) {
@@ -286,6 +316,11 @@ export default class Storage {
             this.removeItem(schemaID, "groups");
         }
 
+        // Save the order
+        this.projects = this.projects.filter((id) => id !== schemaID);
+        this.setData("projects", this.projects);
+
+        // Remove as the current Project
         if (this.currentID === schemaID) {
             this.setNumber("currentID", 0);
         }

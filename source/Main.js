@@ -36,11 +36,11 @@ async function main() {
     canvas    = new Canvas();
     grouper   = new Grouper();
 
-    if (!storage.hasSchema) {
-        selection.open(storage.getSchemas());
-    } else {
+    if (storage.hasSchema) {
         const data = await storage.getSchema();
         setSchema(data);
+    } else {
+        selection.open(storage.getSchemas());
     }
 }
 
@@ -94,12 +94,30 @@ async function selectSchema(schemaID) {
 }
 
 /**
+ * Edits/Adds a Schema
+ * @returns {Promise}
+ */
+async function editSchema() {
+    const data = await selection.editSchema();
+    if (!data) {
+        return;
+    }
+
+    await storage.setSchema(data);
+    selection.open(storage.getSchemas());
+    if (schema && data && schema.schemaID === data.schemaID) {
+        selectSchema(data.schemaID);
+    }
+    selection.closeEdit();
+}
+
+/**
  * Deletes the given Schema
  * @param {Number} schemaID
  * @returns {Void}
  */
 function deleteSchema(schemaID) {
-    if (schema.schemaID === schemaID) {
+    if (schema && schema.schemaID === schemaID) {
         canvas.destroy();
         schema.destroy();
     }
@@ -149,16 +167,16 @@ document.addEventListener("click", (e) => {
 
     // Schema Actions
     case "open-add":
-        selection.openSchema({});
+        selection.openEdit({});
         break;
     case "open-edit":
         const schemaData = storage.getSchemaData(schemaID);
         if (schemaData) {
-            selection.openSchema(schemaData);
+            selection.openEdit(schemaData);
         }
         break;
     case "close-schema":
-        selection.closeSchema();
+        selection.closeEdit();
         break;
     case "upload-main-file":
         selection.selectFile(0);
@@ -177,20 +195,8 @@ document.addEventListener("click", (e) => {
         selection.toggleUrls(target.checked);
         dontStop = true;
         break;
-    case "import-schema":
-        selection.importSchema().then((data) => {
-            storage.setSchema(data).then(() => {
-                selection.open(storage.getSchemas());
-                if (schema && data && schema.schemaID === data.schemaID) {
-                    selectSchema(schemaID);
-                }
-            });
-        }, () => {
-            selection.openError();
-        });
-        break;
-    case "close-error":
-        selection.closeError();
+    case "edit-schema":
+        editSchema();
         break;
     case "open-delete":
         selection.openDelete(schemaID);
