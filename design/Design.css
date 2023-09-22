@@ -16,11 +16,12 @@ dialog {
     top: 50%;
     left: 50%;
     width: 400px;
+    max-width: calc(100% - 24px);
     margin: 0;
     padding: 32px;
     transform: translate(-50%, -50%);
     background-color: white;
-    border-radius: 12px;
+    border-radius: var(--dialog-radius);
     border: none;
     box-shadow: 0 11px 34px rgba(0, 0, 0, 0.2);
     font-size: 16px;
@@ -39,8 +40,8 @@ dialog > .close {
     --close-height: 2px;
 
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 24px;
+    right: 24px;
 }
 
 

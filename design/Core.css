@@ -20,13 +20,15 @@
     --selected-color8: rgb(75, 192, 192);
 
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
-    --title-font: Esteban, Georgia, serif;
+    --title-font: Means, Esteban, Georgia, serif;
 
     --aside-width: 300px;
     --header-height: 62px;
     --title-height: 46px;
     --filter-height: 33px;
+
     --border-radius: 12px;
+    --dialog-radius: 24px;
     --input-radius: 4px;
 
     --z-group: 2;
@@ -67,6 +69,12 @@
     font-weight: normal;
     src: local("Esteban"), url("../fonts/esteban.ttf") format("truetype");
 }
+@font-face {
+    font-family: "Means";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Means"), url("../fonts/means-regular.woff2") format("woff2");
+}
 
 
 
@@ -95,7 +103,7 @@ html, body, input {
  */
 .btn {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 8px 16px;
     background-color: white;
     border: 1px solid var(--main-color);
     border-radius: 9999px;
@@ -111,6 +119,10 @@ html, body, input {
     background-color: var(--main-color);
 }
 
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+}
 .btn-fill {
     color: white;
     background-color: var(--main-color);
@@ -156,7 +168,8 @@ input:focus {
     line-height: 1;
     color: var(--light-color);
 }
-.field > input[type="text"] {
+.field > input[type="text"],
+.field > input[type="number"] {
     display: block;
     width: 100%;
     box-sizing: border-box;

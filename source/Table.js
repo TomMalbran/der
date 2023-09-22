@@ -265,7 +265,7 @@ export default class Table {
         this.listText.dataset.table    = this.data.table;
 
         this.listButton.innerHTML      = "Add";
-        this.listButton.className      = "btn";
+        this.listButton.className      = "btn btn-small";
         this.listButton.dataset.action = "add-table";
         this.listButton.dataset.table  = this.data.table;
 
