@@ -10,6 +10,27 @@ import Options from "./Options.js";
  */
 export default class Schema {
 
+    /** @type {HTMLElement} */
+    #aside;
+    /** @type {HTMLElement} */
+    #header;
+    /** @type {HTMLElement} */
+    #filter;
+    /** @type {HTMLInputElement} */
+    #input;
+    /** @type {HTMLElement} */
+    #clear;
+    /** @type {HTMLElement} */
+    #total;
+    /** @type {HTMLElement} */
+    #list;
+
+    /** @type {Object.<String, Table>} */
+    tables = {};
+    /** @type {Object.<Number, Group>} */
+    groups = {};
+
+
     /**
      * The Schema constructor
      * @param {Object} data
@@ -20,30 +41,19 @@ export default class Schema {
         this.width    = Options.INITIAL_WIDTH;
         this.oldWidth = Options.INITIAL_WIDTH;
 
-        /** @type {Object.<String, Table>} */
         this.tables   = {};
-
-        /** @type {Object.<Number, Group>} */
         this.groups   = {};
 
-        /** @type {HTMLElement} */
-        this.aside    = document.querySelector("aside");
+        this.#aside    = document.querySelector("aside");
+        this.#header   = document.querySelector(".schema-header");
+        this.#filter   = document.querySelector(".schema-filter");
+        this.#input    = document.querySelector(".schema-filter input");
+        this.#clear    = document.querySelector(".schema-filter .close");
+        this.#total    = document.querySelector(".schema-total");
+        this.#list     = document.querySelector(".schema-list ol");
 
-        /** @type {HTMLElement} */
-        this.header   = document.querySelector(".schema-header");
-        /** @type {HTMLElement} */
-        this.filter   = document.querySelector(".schema-filter");
-        /** @type {HTMLInputElement} */
-        this.input    = document.querySelector(".schema-filter input");
-        /** @type {HTMLElement} */
-        this.clear    = document.querySelector(".schema-filter .close");
-        /** @type {HTMLElement} */
-        this.total    = document.querySelector(".schema-total");
-        /** @type {HTMLElement} */
-        this.list     = document.querySelector(".schema-list ol");
-
-        this.header.innerHTML     = data.name;
-        this.header.style.display = "block";
+        this.#header.innerHTML     = data.name;
+        this.#header.style.display = "block";
 
         this.createTables();
     }
@@ -93,9 +103,9 @@ export default class Schema {
 
         for (const table of Object.values(this.tables)) {
             if (table.group) {
-                table.group.addToList(this.list);
+                table.group.addToList(this.#list);
             }
-            table.addToList(this.list);
+            table.addToList(this.#list);
         }
     }
 
@@ -201,7 +211,7 @@ export default class Schema {
      * @returns {String}
      */
     filterList() {
-        const value = String(this.input.value).toLocaleLowerCase();
+        const value = String(this.#input.value).toLocaleLowerCase();
         let   count = 0;
         for (const table of Object.values(this.tables)) {
             if (value && !table.name.includes(value)) {
@@ -215,8 +225,8 @@ export default class Schema {
             group.setListVisibility();
         }
 
-        this.clear.style.display = value ? "block" : "none";
-        this.total.innerHTML     = `${count} table${count !== 1 ? "s" : ""}`;
+        this.#clear.style.display = value ? "block" : "none";
+        this.#total.innerHTML     = `${count} table${count !== 1 ? "s" : ""}`;
 
         return value;
     }
@@ -227,9 +237,9 @@ export default class Schema {
      * @returns {Void}
      */
     setInitialFilter(value) {
-        this.filter.style.display = "flex";
+        this.#filter.style.display = "flex";
         if (value) {
-            this.input.value = value;
+            this.#input.value = value;
         }
         this.filterList();
     }
@@ -239,7 +249,7 @@ export default class Schema {
      * @returns {Void}
      */
     clearFilter() {
-        this.input.value = "";
+        this.#input.value = "";
         this.filterList();
     }
 
@@ -254,7 +264,7 @@ export default class Schema {
         this.isResizing = true;
         this.startLeft  = event.pageX;
         this.startWidth = this.width;
-        this.aside.classList.add("aside-dragging");
+        this.#aside.classList.add("aside-dragging");
     }
 
     /**
@@ -283,7 +293,7 @@ export default class Schema {
             this.setWidth(Options.SHRINK_WIDTH);
         }
         window.setTimeout(() => {
-            this.aside.classList.remove("aside-dragging");
+            this.#aside.classList.remove("aside-dragging");
         }, 50);
         return true;
     }
@@ -323,12 +333,12 @@ export default class Schema {
         this.width    = width;
         this.oldWidth = width;
 
-        this.aside.style.width = `${width}px`;
+        this.#aside.style.width = `${width}px`;
 
         if (width < Options.MIN_WIDTH) {
-            this.aside.classList.add("aside-small");
+            this.#aside.classList.add("aside-small");
         } else {
-            this.aside.classList.remove("aside-small");
+            this.#aside.classList.remove("aside-small");
         }
     }
 }

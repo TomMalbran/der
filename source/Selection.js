@@ -7,26 +7,40 @@ import Dialog from "./Dialog.js";
  */
 export default class Selection {
 
+    /** @type {Dialog} */
+    #selectDialog;
+    /** @type {HTMLElement} */
+    #selectEmpty;
+    /** @type {HTMLElement} */
+    #selectList;
+
+    /** @type {Dialog} */
+    #schemaDialog;
+    /** @type {NodeListOf<HTMLElement>} */
+    #fileFields;
+    /** @type {NodeListOf<HTMLElement>} */
+    #urlFields;
+
+    /** @type {Dialog} */
+    #deleteDialog;
+
+
     /**
      * Selection constructor
      */
     constructor() {
         // Selection
-        this.selectDialog = new Dialog("select");
-        /** @type {HTMLElement} */
-        this.selectEmpty  = document.querySelector(".select-empty");
-        /** @type {HTMLElement} */
-        this.selectList   = document.querySelector(".select-list");
+        this.#selectDialog = new Dialog("select");
+        this.#selectEmpty  = document.querySelector(".select-empty");
+        this.#selectList   = document.querySelector(".select-list");
 
         // Add/Edit
-        this.schemaDialog = new Dialog("schema");
-        /** @type {NodeListOf<HTMLElement>} */
-        this.fileFields   = document.querySelectorAll(".schema-file");
-        /** @type {NodeListOf<HTMLElement>} */
-        this.urlFields    = document.querySelectorAll(".schema-url");
+        this.#schemaDialog = new Dialog("schema");
+        this.#fileFields   = document.querySelectorAll(".schema-file");
+        this.#urlFields    = document.querySelectorAll(".schema-url");
 
         // Delete
-        this.deleteDialog = new Dialog("delete");
+        this.#deleteDialog = new Dialog("delete");
     }
 
     /**
@@ -35,9 +49,9 @@ export default class Selection {
      * @returns {Void}
      */
     open(schemas) {
-        this.selectDialog.open();
-        this.selectEmpty.style.display = schemas.length ? "none" : "block";
-        this.selectList.innerHTML = "";
+        this.#selectDialog.open();
+        this.#selectEmpty.style.display = schemas.length ? "none" : "block";
+        this.#selectList.innerHTML = "";
 
         for (const schema of schemas) {
             const li = document.createElement("li");
@@ -69,7 +83,7 @@ export default class Selection {
             deleteBtn.dataset.schema = schema.schemaID;
             buttons.appendChild(deleteBtn);
 
-            this.selectList.appendChild(li);
+            this.#selectList.appendChild(li);
         }
     }
 
@@ -78,7 +92,7 @@ export default class Selection {
      * @returns {Void}
      */
     close() {
-        this.selectDialog.close();
+        this.#selectDialog.close();
     }
 
 
@@ -97,17 +111,17 @@ export default class Selection {
 
         this.toggleUrls(useUrls);
 
-        this.schemaDialog.open();
-        this.schemaDialog.setTitle(isEdit ? "Edit the Schema" : "Add a Schema");
-        this.schemaDialog.setButton(isEdit ? "Edit" : "Add");
+        this.#schemaDialog.open();
+        this.#schemaDialog.setTitle(isEdit ? "Edit the Schema" : "Add a Schema");
+        this.#schemaDialog.setButton(isEdit ? "Edit" : "Add");
 
-        this.schemaDialog.setInput("urls",     useUrls);
-        this.schemaDialog.setInput("name",     isEdit ? data.name : "");
-        this.schemaDialog.setInput("file0",    isEdit && !useUrls ? data.file0 || "" : "");
-        this.schemaDialog.setInput("file1",    isEdit && !useUrls ? data.file1 || "" : "");
-        this.schemaDialog.setInput("url0",     isEdit && useUrls  ? data.url0  || "" : "");
-        this.schemaDialog.setInput("url1",     isEdit && useUrls  ? data.url1  || "" : "");
-        this.schemaDialog.setInput("position", isEdit ? data.position : "");
+        this.#schemaDialog.setInput("urls",     useUrls);
+        this.#schemaDialog.setInput("name",     isEdit ? data.name : "");
+        this.#schemaDialog.setInput("file0",    isEdit && !useUrls ? data.file0 || "" : "");
+        this.#schemaDialog.setInput("file1",    isEdit && !useUrls ? data.file1 || "" : "");
+        this.#schemaDialog.setInput("url0",     isEdit && useUrls  ? data.url0  || "" : "");
+        this.#schemaDialog.setInput("url1",     isEdit && useUrls  ? data.url1  || "" : "");
+        this.#schemaDialog.setInput("position", isEdit ? data.position : "");
     }
 
     /**
@@ -115,7 +129,7 @@ export default class Selection {
      * @returns {Void}
      */
     closeEdit() {
-        this.schemaDialog.close();
+        this.#schemaDialog.close();
     }
 
     /**
@@ -125,7 +139,7 @@ export default class Selection {
      */
     selectFile(index) {
         const name = `file${index}`;
-        this.schemaDialog.selectFile(name, (file) => {
+        this.#schemaDialog.selectFile(name, (file) => {
             this.files[index] = file;
             this.data[name]   = file.name;
         });
@@ -140,7 +154,7 @@ export default class Selection {
         const name = `file${index}`;
         this.files[index] = null;
         this.data[name]   = "";
-        this.schemaDialog.setInput(name, "");
+        this.#schemaDialog.setInput(name, "");
 
         if (index === 1) {
             this.data.schemas.pop();
@@ -155,10 +169,10 @@ export default class Selection {
      */
     toggleUrls(isChecked) {
         this.useUrls = isChecked;
-        this.fileFields[0].style.display = !this.useUrls ? "flex" : "none";
-        this.fileFields[1].style.display = !this.useUrls ? "flex" : "none";
-        this.urlFields[0].style.display  = this.useUrls  ? "flex" : "none";
-        this.urlFields[1].style.display  = this.useUrls  ? "flex" : "none";
+        this.#fileFields[0].style.display = !this.useUrls ? "flex" : "none";
+        this.#fileFields[1].style.display = !this.useUrls ? "flex" : "none";
+        this.#urlFields[0].style.display  = this.useUrls  ? "flex" : "none";
+        this.#urlFields[1].style.display  = this.useUrls  ? "flex" : "none";
     }
 
     /**
@@ -168,27 +182,27 @@ export default class Selection {
     editSchema() {
         return new Promise((resolve) => {
             const isEdit = Boolean(this.schemaID);
-            this.data.useUrls  = this.schemaDialog.getInput("urls");
-            this.data.name     = this.schemaDialog.getInput("name");
-            this.data.url0     = this.schemaDialog.getInput("url0");
-            this.data.url1     = this.schemaDialog.getInput("url1");
-            this.data.position = this.schemaDialog.getInput("position");
+            this.data.useUrls  = this.#schemaDialog.getInput("urls");
+            this.data.name     = this.#schemaDialog.getInput("name");
+            this.data.url0     = this.#schemaDialog.getInput("url0");
+            this.data.url1     = this.#schemaDialog.getInput("url1");
+            this.data.position = this.#schemaDialog.getInput("position");
 
             if (!this.data.schemas) {
                 this.data.schemas = [];
             }
 
-            this.schemaDialog.hideErrors();
+            this.#schemaDialog.hideErrors();
             if (!this.data.name) {
-                this.schemaDialog.showError("name");
+                this.#schemaDialog.showError("name");
             }
             if (!isEdit && !this.data.useUrls && !this.files[0]) {
-                this.schemaDialog.showError("file");
+                this.#schemaDialog.showError("file");
             }
             if (this.data.useUrls && !this.data.url0) {
-                this.schemaDialog.showError("url");
+                this.#schemaDialog.showError("url");
             }
-            if (this.schemaDialog.hasError) {
+            if (this.#schemaDialog.hasError) {
                 resolve();
                 return null;
             }
@@ -208,11 +222,11 @@ export default class Selection {
                         try {
                             this.data.schemas[i] = JSON.parse(text);
                             count += 1;
-                            if (!this.schemaDialog.hasError && count === this.files.length) {
+                            if (!this.#schemaDialog.hasError && count === this.files.length) {
                                 resolve(this.data);
                             }
                         } catch {
-                            this.schemaDialog.showError(`json${i}`);
+                            this.#schemaDialog.showError(`json${i}`);
                         }
                     };
                 }
@@ -237,7 +251,7 @@ export default class Selection {
      */
     openDelete(schemaID) {
         this.schemaID = schemaID;
-        this.deleteDialog.open();
+        this.#deleteDialog.open();
     }
 
     /**
@@ -246,6 +260,6 @@ export default class Selection {
      */
     closeDelete() {
         this.schemaID = 0;
-        this.deleteDialog.close();
+        this.#deleteDialog.close();
     }
 }

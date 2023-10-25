@@ -9,6 +9,17 @@ import Table  from "./Table.js";
  */
  export default class Grouper {
 
+    /** @type {HTMLElement} */
+    #empty;
+    /** @type {HTMLElement} */
+    #content;
+    /** @type {HTMLElement} */
+    #checks;
+
+    /** @type {Dialog} */
+    #removeDialog;
+
+
     /**
      * Grouper constructor
      */
@@ -16,15 +27,12 @@ import Table  from "./Table.js";
         this.group        = null;
         this.groupDialog  = new Dialog("group");
 
-        /** @type {HTMLElement} */
-        this.empty        = this.groupDialog.container.querySelector(".group-empty");
-        /** @type {HTMLElement} */
-        this.content      = this.groupDialog.container.querySelector(".group-content");
-        /** @type {HTMLElement} */
-        this.checks       = this.groupDialog.container.querySelector(".group-tables");
+        this.#empty        = this.groupDialog.getElement(".group-empty");
+        this.#content      = this.groupDialog.getElement(".group-content");
+        this.#checks       = this.groupDialog.getElement(".group-tables");
 
         // Remove
-        this.removeDialog = new Dialog("remove");
+        this.#removeDialog = new Dialog("remove");
     }
 
     /**
@@ -44,12 +52,12 @@ import Table  from "./Table.js";
         this.groupDialog.setInput("name", this.isEdit ? group.name : "");
 
         const showEmpty = !this.isEdit && !selectedTables.length;
-        this.empty.style.display   = showEmpty  ? "block" : "none";
-        this.content.style.display = !showEmpty ? "block" : "none";
+        this.#empty.style.display   = showEmpty  ? "block" : "none";
+        this.#content.style.display = !showEmpty ? "block" : "none";
 
         const tables = {};
         this.inputs  = [];
-        this.checks.innerHTML = "";
+        this.#checks.innerHTML = "";
         if (this.isEdit) {
             for (const table of group.tables) {
                 this.createCheckbox(table.name, true);
@@ -86,7 +94,7 @@ import Table  from "./Table.js";
         const div = document.createElement("div");
         div.innerText = name;
         check.appendChild(div);
-        this.checks.appendChild(check);
+        this.#checks.appendChild(check);
     }
 
     /**
@@ -154,7 +162,7 @@ import Table  from "./Table.js";
     openRemove(group) {
         if (group) {
             this.group = group;
-            this.removeDialog.open();
+            this.#removeDialog.open();
         }
     }
 
@@ -164,6 +172,6 @@ import Table  from "./Table.js";
      */
     closeRemove() {
         this.group = null;
-        this.removeDialog.close();
+        this.#removeDialog.close();
     }
 }

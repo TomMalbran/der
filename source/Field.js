@@ -3,6 +3,14 @@
  */
 export default class Field {
 
+    #color = 0;
+
+    /** @type {HTMLElement} */
+    #canvasElem;
+    /** @type {HTMLElement} */
+    #listElem;
+
+
     /**
      * Table Field constructor
      * @param {Number} index
@@ -20,27 +28,46 @@ export default class Field {
     }
 
     /**
+     * Returns the Canvas Element
+     * @returns {HTMLElement}
+     */
+    get canvasElem() {
+        return this.#canvasElem;
+    }
+
+    /**
+     * Returns the List Element
+     * @returns {HTMLElement}
+     */
+    get listElem() {
+        return this.#listElem;
+    }
+
+
+
+    /**
      * Returns the Element Tag depending on the Properties
      * @returns {String}
      */
-    getElementTag() {
+    get elementTag() {
         return this.isPrimary ? "b" : (this.hasLink ? "i" : "span");
     }
 
     /**
      * Creates the List Element
-     * @returns {Void}
+     * @returns {HTMLElement}
      */
     createListElem() {
-        this.listElem = document.createElement("li");
-        const name = document.createElement(this.getElementTag());
+        this.#listElem = document.createElement("li");
+        const name = document.createElement(this.elementTag);
         const type = document.createElement("span");
 
         name.innerHTML = this.name + (this.isKey ? "*" : "");
         type.innerHTML = this.type;
 
-        this.listElem.appendChild(name);
-        this.listElem.appendChild(type);
+        this.#listElem.appendChild(name);
+        this.#listElem.appendChild(type);
+        return this.#listElem;
     }
 
     /**
@@ -49,18 +76,18 @@ export default class Field {
      * @returns {Void}
      */
     createCanvasElem(isHidden) {
-        this.canvasElem = document.createElement("li");
-        const name = document.createElement(this.getElementTag());
+        this.#canvasElem = document.createElement("li");
+        const name = document.createElement(this.elementTag);
         const type = document.createElement("span");
 
         name.innerHTML = this.name + (this.isKey ? "*" : "");
         type.innerHTML = this.type;
 
-        this.canvasElem.appendChild(name);
-        this.canvasElem.appendChild(type);
+        this.#canvasElem.appendChild(name);
+        this.#canvasElem.appendChild(type);
 
         if (isHidden) {
-            this.canvasElem.className = "schema-hide";
+            this.#canvasElem.className = "schema-hide";
         }
         this.isHidden = isHidden;
     }
@@ -72,7 +99,7 @@ export default class Field {
      */
     toggleVisibility(isHidden) {
         this.isHidden = isHidden;
-        this.canvasElem.classList.toggle("schema-hide", this.isHidden);
+        this.#canvasElem.classList.toggle("schema-hide", this.isHidden);
     }
 
     /**
@@ -81,11 +108,11 @@ export default class Field {
      * @returns {Void}
      */
     setColor(color) {
-        if (this.color) {
+        if (this.#color) {
             return;
         }
-        this.color = color;
-        this.canvasElem.classList.add("colored", `color${color}`);
+        this.#color = color;
+        this.#canvasElem.classList.add("colored", `color${color}`);
     }
 
     /**
@@ -93,7 +120,7 @@ export default class Field {
      * @returns {Void}
      */
     removeColor() {
-        this.canvasElem.classList.remove("colored", `color${this.color}`);
-        this.color = 0;
+        this.#canvasElem.classList.remove("colored", `color${this.#color}`);
+        this.#color = 0;
     }
 }

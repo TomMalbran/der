@@ -10,6 +10,19 @@ import Utils from "./Utils.js";
  */
 export default class Table {
 
+    /** @type {Field[]} */
+    #fields = [];
+
+    /** @type {Link[]} */
+    #links = [];
+
+    /** @type {Group} */
+    group = null;
+
+    /** @type {HTMLElement} */
+    #canvasElem;
+
+
     /**
      * Schema Table constructor
      * @param {Object} data
@@ -26,16 +39,8 @@ export default class Table {
         this.maxFields  = 15;
         this.showAll    = false;
 
-        /** @type {Field[]} */
-        this.fields     = [];
         this.setFields();
-
-        /** @type {Link[]} */
-        this.links      = [];
         this.setLinks();
-
-        /** @type {Group} */
-        this.group      = null;
     }
 
     /**
@@ -78,15 +83,6 @@ export default class Table {
         }
     }
 
-    /**
-     * Sets the Table Group
-     * @param {Group} group
-     * @returns {Void}
-     */
-    setGroup(group) {
-        this.group = group;
-    }
-
 
 
     /**
@@ -110,7 +106,7 @@ export default class Table {
      * @returns {{top: Number, left: Number, bottom: Number, right: Number}}
      */
     get bounds() {
-        return this.canvasElem.getBoundingClientRect();
+        return this.#canvasElem.getBoundingClientRect();
     }
 
     /**
@@ -119,7 +115,7 @@ export default class Table {
      * @returns {Field}
      */
     getField(name) {
-        return this.fields.find((field) => field.name === name);
+        return this.#fields.find((field) => field.name === name);
     }
 
     /**
@@ -128,7 +124,7 @@ export default class Table {
      * @returns {Number}
      */
     getFieldIndex(name) {
-        const index = this.fields.findIndex((field) => field.name === name);
+        const index = this.#fields.findIndex((field) => field.name === name);
         return (index > this.maxFields && !this.showAll) ? this.maxFields : index;
     }
 
@@ -145,31 +141,31 @@ export default class Table {
 
         let index = 0;
         for (const [ name, data ] of Object.entries(this.data.fields)) {
-            this.fields.push(new Field(index, name, data));
+            this.#fields.push(new Field(index, name, data));
             index++;
         }
         if (this.data.hasPositions) {
-            this.fields.push(new Field(index, "position", { type : "number" }));
+            this.#fields.push(new Field(index, "position", { type : "number" }));
             index++;
         }
         if (this.data.canCreate && this.data.hasTimestamps) {
-            this.fields.push(new Field(index, "createdTime", { type : "date" }));
+            this.#fields.push(new Field(index, "createdTime", { type : "date" }));
             index++;
         }
         if (this.data.canCreate && this.data.hasUsers) {
-            this.fields.push(new Field(index, "createdUser", { type : "number" }));
+            this.#fields.push(new Field(index, "createdUser", { type : "number" }));
             index++;
         }
         if (this.data.canEdit && this.data.hasTimestamps) {
-            this.fields.push(new Field(index, "modifiedTime", { type : "date" }));
+            this.#fields.push(new Field(index, "modifiedTime", { type : "date" }));
             index++;
         }
         if (this.data.canEdit && this.data.hasUsers) {
-            this.fields.push(new Field(index, "modifiedUser", { type : "number" }));
+            this.#fields.push(new Field(index, "modifiedUser", { type : "number" }));
             index++;
         }
         if (this.data.canDelete) {
-            this.fields.push(new Field(index, "isDeleted", { type : "boolean" }));
+            this.#fields.push(new Field(index, "isDeleted", { type : "boolean" }));
             index++;
         }
     }
@@ -182,27 +178,27 @@ export default class Table {
         if (this.data.joins) {
             for (const [ key, data ] of Object.entries(this.data.joins)) {
                 if (!data.onTable) {
-                    this.links.push(new Link(this.name, key, data));
+                    this.#links.push(new Link(this.name, key, data));
                 }
             }
         }
         if (this.data.foreigns) {
             for (const [ key, data ] of Object.entries(this.data.foreigns)) {
-                this.links.push(new Link(this.name, key, data));
+                this.#links.push(new Link(this.name, key, data));
             }
         }
         if (this.data.hasUsers) {
             const data = { table : "credentials", leftKey : "CREDENTIAL_ID" };
             if (this.data.canCreate && (!this.data.joins || !this.data.joins.createdUser)) {
-                this.links.push(new Link(this.name, "createdUser", data));
+                this.#links.push(new Link(this.name, "createdUser", data));
             }
             if (this.data.canEdit && (!this.data.joins || !this.data.joins.modifiedUser)) {
-                this.links.push(new Link(this.name, "modifiedUser", data));
+                this.#links.push(new Link(this.name, "modifiedUser", data));
             }
         }
 
-        for (const link of this.links) {
-            for (const field of this.fields) {
+        for (const link of this.#links) {
+            for (const field of this.#fields) {
                 if (link.fromFieldName === field.name) {
                     field.hasLink = true;
                 }
@@ -331,9 +327,8 @@ export default class Table {
     createExpandElem() {
         this.expandElem = document.createElement("ol");
 
-        for (const field of this.fields) {
-            field.createListElem();
-            this.expandElem.appendChild(field.listElem);
+        for (const field of this.#fields) {
+            this.expandElem.appendChild(field.createListElem());
         }
         this.listElem.appendChild(this.expandElem);
     }
@@ -353,10 +348,10 @@ export default class Table {
         this.listText.dataset.action  = "show-table";
         this.listButton.style.display = "none";
 
-        if (!this.canvasElem) {
+        if (!this.#canvasElem) {
             this.createCanvasElem();
         }
-        canvas.appendChild(this.canvasElem);
+        canvas.appendChild(this.#canvasElem);
         this.setBounds();
 
         if (!this.top && !this.left) {
@@ -391,8 +386,8 @@ export default class Table {
         this.listText.dataset.action  = "";
         this.listButton.style.display = "block";
 
-        Utils.removeElement(this.canvasElem);
-        this.canvasElem = null;
+        Utils.removeElement(this.#canvasElem);
+        this.#canvasElem = null;
         this.reset();
     }
 
@@ -401,11 +396,11 @@ export default class Table {
      * @returns {Void}
      */
     createCanvasElem() {
-        this.canvasElem = document.createElement("div");
-        this.canvasElem.className       = "canvas-table";
-        this.canvasElem.dataset.action  = "select-table";
-        this.canvasElem.dataset.table   = this.name;
-        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+        this.#canvasElem = document.createElement("div");
+        this.#canvasElem.className       = "canvas-table";
+        this.#canvasElem.dataset.action  = "select-table";
+        this.#canvasElem.dataset.table   = this.name;
+        this.#canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         const header = document.createElement("header");
         header.innerHTML      = this.name;
@@ -420,13 +415,13 @@ export default class Table {
         header.appendChild(remove);
 
         const list = document.createElement("ol");
-        for (const [ index, field ] of this.fields.entries()) {
+        for (const [ index, field ] of this.#fields.entries()) {
             field.createCanvasElem(!this.showAll && index >= this.maxFields);
             list.appendChild(field.canvasElem);
         }
 
-        if (this.fields.length > this.maxFields) {
-            this.hiddenFields = this.fields.length - this.maxFields;
+        if (this.#fields.length > this.maxFields) {
+            this.hiddenFields = this.#fields.length - this.maxFields;
 
             this.hiddenElem = document.createElement("li");
             this.hiddenElem.className      = "schema-hidden";
@@ -437,8 +432,8 @@ export default class Table {
             list.appendChild(this.hiddenElem);
         }
 
-        this.canvasElem.appendChild(header);
-        this.canvasElem.appendChild(list);
+        this.#canvasElem.appendChild(header);
+        this.#canvasElem.appendChild(list);
     }
 
     /**
@@ -447,13 +442,13 @@ export default class Table {
      */
     toggleFields() {
         if (!this.showAll) {
-            for (const field of this.fields) {
+            for (const field of this.#fields) {
                 field.toggleVisibility(false);
             }
             this.hiddenElem.innerHTML = "Hide fields";
             this.showAll = true;
         } else {
-            for (const [ index, field ] of this.fields.entries()) {
+            for (const [ index, field ] of this.#fields.entries()) {
                 if (index >= this.maxFields) {
                     field.toggleVisibility(true);
                 }
@@ -471,7 +466,7 @@ export default class Table {
      * @returns {Void}
      */
     scrollIntoView() {
-        this.canvasElem.scrollIntoView({
+        this.#canvasElem.scrollIntoView({
             behavior : "smooth",
             block    : "center",
             inline   : "center",
@@ -484,7 +479,7 @@ export default class Table {
      */
     select() {
         this.unselect();
-        this.canvasElem.classList.add("selected");
+        this.#canvasElem.classList.add("selected");
     }
 
     /**
@@ -493,7 +488,7 @@ export default class Table {
      */
     disable() {
         this.unselect();
-        this.canvasElem.classList.add("disabled");
+        this.#canvasElem.classList.add("disabled");
     }
 
     /**
@@ -501,8 +496,8 @@ export default class Table {
      * @returns {Void}
      */
     unselect() {
-        this.canvasElem.classList.remove("selected");
-        this.canvasElem.classList.remove("disabled");
+        this.#canvasElem.classList.remove("selected");
+        this.#canvasElem.classList.remove("disabled");
     }
 
     /**
@@ -510,7 +505,7 @@ export default class Table {
      * @returns {Void}
      */
     removeColors() {
-        for (const field of this.fields) {
+        for (const field of this.#fields) {
             field.removeColor();
         }
     }
@@ -522,7 +517,7 @@ export default class Table {
      * @returns {Void}
      */
     pick() {
-        this.canvasElem.classList.add("dragging");
+        this.#canvasElem.classList.add("dragging");
     }
 
     /**
@@ -530,7 +525,7 @@ export default class Table {
      * @returns {Void}
      */
     drop() {
-        this.canvasElem.classList.remove("dragging");
+        this.#canvasElem.classList.remove("dragging");
     }
 
     /**
@@ -538,8 +533,8 @@ export default class Table {
      * @returns {Void}
      */
     setBounds() {
-        this.width  = this.canvasElem.offsetWidth;
-        this.height = this.canvasElem.offsetHeight;
+        this.width  = this.#canvasElem.offsetWidth;
+        this.height = this.#canvasElem.offsetHeight;
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
     }
@@ -554,6 +549,6 @@ export default class Table {
         this.left   = Math.round(pos.left);
         this.right  = this.left + this.width;
         this.bottom = this.top  + this.height;
-        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+        this.#canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
     }
 }

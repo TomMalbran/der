@@ -12,31 +12,42 @@ import Utils   from "./Utils.js";
  */
 export default class Canvas {
 
+    /** @type {Object.<String, Table>} */
+    #tables = {};
+
+    /** @type {Link[]} */
+    #links = [];
+
+    /** @type {Object.<Number, Group>} */
+    #groups = {};
+
+    /** @type {Zoom} */
+    zoom;
+
+    /** @type {HTMLElement} */
+    #canvas;
+
+    /** @type {HTMLElement} */
+    #container;
+
+    /** @type {DOMRect} */
+    #bounds;
+
+    /** @type {HTMLElement} */
+    #selector
+
+
     /**
      * Canvas constructor
      */
     constructor() {
-        /** @type {Object.<String, Table>} */
-        this.tables        = {};
+        this.#canvas       = document.querySelector(".canvas");
+        this.#container    = this.#canvas.parentElement;
+        this.#bounds       = this.#container.getBoundingClientRect();
+        this.#selector     = document.querySelector(".selector");
 
-        /** @type {Link[]} */
-        this.links         = [];
-
-        /** @type {Object.<Number, Group>} */
-        this.groups        = {};
-
-        /** @type {HTMLElement} */
-        this.canvas        = document.querySelector(".canvas");
-
-        /** @type {HTMLElement} */
-        this.container     = this.canvas.parentElement;
-
-        /** @type {DOMRect} */
-        this.bounds        = this.container.getBoundingClientRect();
-
-
-        /** @type {Zoom} */
-        this.zoom          = new Zoom(this.canvas);
+        // Zoom
+        this.zoom          = new Zoom(this.#canvas);
 
         // Scroll
         this.isScrolling   = false;
@@ -48,9 +59,6 @@ export default class Canvas {
         this.isDragging    = false;
         this.isMoving      = false;
 
-        /** @type {HTMLElement} */
-        this.selector      = document.querySelector(".selector");
-
         this.center();
     }
 
@@ -59,13 +67,13 @@ export default class Canvas {
      * @returns {Void}
      */
     destroy() {
-        for (const link of this.links) {
+        for (const link of this.#links) {
             link.destroy();
         }
 
-        this.tables = {};
-        this.links  = [];
-        this.groups = {};
+        this.#tables = {};
+        this.#links  = [];
+        this.#groups = {};
         this.center();
     }
 
@@ -79,8 +87,8 @@ export default class Canvas {
     getTables(tableNames) {
         const result = [];
         for (const name of tableNames) {
-            if (this.tables[name]) {
-                result.push(this.tables[name]);
+            if (this.#tables[name]) {
+                result.push(this.#tables[name]);
             }
         }
         return result;
@@ -92,16 +100,16 @@ export default class Canvas {
      * @returns {Void}
      */
     addTable(table) {
-        this.tables[table.name] = table;
-        table.addToCanvas(this.canvas, this.container, this.zoom.percent);
+        this.#tables[table.name] = table;
+        table.addToCanvas(this.#canvas, this.#container, this.zoom.percent);
 
         // Adds links to/from the given Table
-        for (const toTable of Object.values(this.tables)) {
+        for (const toTable of Object.values(this.#tables)) {
             for (const link of toTable.links) {
-                if ((toTable.name === table.name && this.tables[link.toTableName]) || link.toTableName === table.name) {
-                    link.create(this.tables[link.fromTableName], this.tables[link.toTableName]);
-                    this.links.push(link);
-                    this.canvas.appendChild(link.element);
+                if ((toTable.name === table.name && this.#tables[link.toTableName]) || link.toTableName === table.name) {
+                    link.create(this.#tables[link.fromTableName], this.#tables[link.toTableName]);
+                    this.#links.push(link);
+                    this.#canvas.appendChild(link.element);
                 }
             }
         }
@@ -123,17 +131,17 @@ export default class Canvas {
      */
     removeTable(table) {
         // Remove the links to/from the table
-        for (let i = this.links.length - 1; i >= 0; i--) {
-            const link = this.links[i];
+        for (let i = this.#links.length - 1; i >= 0; i--) {
+            const link = this.#links[i];
             if (link.isLinkedTo(table)) {
                 link.destroy();
-                this.links.splice(i, 1);
+                this.#links.splice(i, 1);
             }
         }
 
         // Remove the table
         table.removeFromCanvas();
-        delete this.tables[table.name];
+        delete this.#tables[table.name];
 
         // Remove the group if empty, or position it
         if (table.group) {
@@ -151,9 +159,9 @@ export default class Canvas {
      * @returns {Void}
      */
     addGroup(group) {
-        if (!this.groups[group.id] && !group.isEmpty) {
-            this.groups[group.id] = group;
-            group.addToCanvas(this.canvas);
+        if (!this.#groups[group.id] && !group.isEmpty) {
+            this.#groups[group.id] = group;
+            group.addToCanvas(this.#canvas);
         }
     }
 
@@ -164,7 +172,7 @@ export default class Canvas {
      */
     removeGroup(group) {
         group.removeFromCanvas();
-        delete this.groups[group.id];
+        delete this.#groups[group.id];
         if (this.selectedGroup && this.selectedGroup.isEqual(group)) {
             this.selectedGroup = null;
         }
@@ -176,7 +184,7 @@ export default class Canvas {
      * @returns {Void}
      */
     reconnect(table) {
-        for (const link of this.links) {
+        for (const link of this.#links) {
             if (link.isLinkedTo(table)) {
                 link.connect();
             }
@@ -191,8 +199,8 @@ export default class Canvas {
      */
     get scroll() {
         return {
-            top  : this.container.scrollTop,
-            left : this.container.scrollLeft,
+            top  : this.#container.scrollTop,
+            left : this.#container.scrollLeft,
         };
     }
 
@@ -203,7 +211,7 @@ export default class Canvas {
      */
     setInitialScroll(scroll) {
         if (scroll) {
-            this.container.scrollTo(scroll.left, scroll.top);
+            this.#container.scrollTo(scroll.left, scroll.top);
         } else {
             this.center();
         }
@@ -214,10 +222,10 @@ export default class Canvas {
      * @returns {Void}
      */
     center() {
-        const bounds = this.canvas.getBoundingClientRect();
-        const top    = (bounds.height - this.bounds.height) / 2;
-        const left   = (bounds.width  - this.bounds.width)  / 2;
-        this.container.scrollTo(left, top);
+        const bounds = this.#canvas.getBoundingClientRect();
+        const top    = (bounds.height - this.#bounds.height) / 2;
+        const left   = (bounds.width  - this.#bounds.width)  / 2;
+        this.#container.scrollTo(left, top);
     }
 
     /**
@@ -246,7 +254,7 @@ export default class Canvas {
         const top       = this.scroll.top  - (currMouse.top  - this.startMouse.top);
         const left      = this.scroll.left - (currMouse.left - this.startMouse.left);
         this.startMouse = Utils.getMousePos(event);
-        this.container.scrollTo(left, top);
+        this.#container.scrollTo(left, top);
         return true;
     }
 
@@ -326,7 +334,7 @@ export default class Canvas {
             return false;
         }
         const mouse = Utils.getMousePos(event);
-        return Utils.inBounds(mouse, this.bounds);
+        return Utils.inBounds(mouse, this.#bounds);
     }
 
     /**
@@ -413,20 +421,20 @@ export default class Canvas {
      */
     markSelection() {
         // Disable all the Tables
-        for (const otherTable of Object.values(this.tables)) {
+        for (const otherTable of Object.values(this.#tables)) {
             otherTable.disable();
             otherTable.removeColors();
         }
 
         // Disable all the Links
-        for (const link of this.links) {
+        for (const link of this.#links) {
             link.disable();
         }
 
         // Add colors to the Links and Fields
         let   lastColor = 0;
         const colors    = {};
-        for (const link of this.links) {
+        for (const link of this.#links) {
             for (const selectedTable of this.selectedTables) {
                 if (link.isLinkedTo(selectedTable)) {
                     const field = link.getFieldName(selectedTable);
@@ -457,11 +465,11 @@ export default class Canvas {
         if (!this.hasSelection) {
             return;
         }
-        for (const table of Object.values(this.tables)) {
+        for (const table of Object.values(this.#tables)) {
             table.unselect();
             table.removeColors();
         }
-        for (const link of this.links) {
+        for (const link of this.#links) {
             link.unselect();
         }
         this.selection = {};
@@ -509,13 +517,13 @@ export default class Canvas {
                 return true;
             }
             this.isMoving = true;
-            this.selector.style.display = "block";
+            this.#selector.style.display = "block";
         }
         const bounds = Utils.createBounds(this.startMouse, currMouse);
-        this.selector.style.top    = `${bounds.top}px`;
-        this.selector.style.left   = `${bounds.left}px`;
-        this.selector.style.width  = `${bounds.width}px`;
-        this.selector.style.height = `${bounds.height}px`;
+        this.#selector.style.top    = `${bounds.top}px`;
+        this.#selector.style.left   = `${bounds.left}px`;
+        this.#selector.style.width  = `${bounds.width}px`;
+        this.#selector.style.height = `${bounds.height}px`;
         return true;
     }
 
@@ -534,13 +542,13 @@ export default class Canvas {
         }
 
         this.isMoving = false;
-        this.selector.style.display = "none";
+        this.#selector.style.display = "none";
 
         const currMouse = Utils.getMousePos(event);
         const bounds    = Utils.createBounds(this.startMouse, currMouse);
 
         this.unselect();
-        for (const table of Object.values(this.tables)) {
+        for (const table of Object.values(this.#tables)) {
             if (Utils.intersectsBounds(bounds, table.bounds)) {
                 this.selection[table.name] = table;
             }

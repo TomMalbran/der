@@ -9,13 +9,18 @@ import Utils from "./Utils.js";
  */
 export default class Storage {
 
+    #currentID = 0;
+    #nextID    = 1;
+    #schemas   = [];
+
+
     /**
      * Storage constructor
      */
     constructor() {
-        this.currentID = this.getNumber("currentID", 0);
-        this.nextID    = this.getNumber("nextID", 1);
-        this.schemas   = this.getData("schemas") || [];
+        this.#currentID = this.getNumber("currentID", 0);
+        this.#nextID    = this.getNumber("nextID", 1);
+        this.#schemas   = this.getData("schemas") || [];
     }
 
     /**
@@ -102,7 +107,7 @@ export default class Storage {
      * @returns {Boolean}
      */
     get hasSchema() {
-        return this.currentID > 0 && this.hasItem(this.currentID, "data");
+        return this.#currentID > 0 && this.hasItem(this.#currentID, "data");
     }
 
     /**
@@ -111,17 +116,17 @@ export default class Storage {
      */
     getSchemas() {
         const result = [];
-        if (!this.schemas.length) {
+        if (!this.#schemas.length) {
             return result;
         }
 
-        for (const [ index, schemaID ] of this.schemas.entries()) {
+        for (const [ index, schemaID ] of this.#schemas.entries()) {
             const data = this.getData(schemaID, "data");
             result.push({
                 schemaID,
                 name       : data.name,
                 position   : index + 1,
-                isSelected : schemaID === this.currentID,
+                isSelected : schemaID === this.#currentID,
             });
         }
         return result;
@@ -133,7 +138,7 @@ export default class Storage {
      * @returns {Object}
      */
     getSchemaData(schemaID) {
-        const position = this.schemas.findIndex((id) => id === schemaID) + 1;
+        const position = this.#schemas.findIndex((id) => id === schemaID) + 1;
         if (position <= 0) {
             return {};
         }
@@ -148,8 +153,8 @@ export default class Storage {
      * @param {Boolean=} fetchNew
      * @returns {Promise}
      */
-    async getSchema(schemaID = this.currentID, fetchNew = true) {
-        const position = this.schemas.findIndex((id) => id === schemaID) + 1;
+    async getSchema(schemaID = this.#currentID, fetchNew = true) {
+        const position = this.#schemas.findIndex((id) => id === schemaID) + 1;
         if (position <= 0) {
             return {};
         }
@@ -174,8 +179,8 @@ export default class Storage {
      * @returns {Void}
      */
     selectSchema(schemaID) {
-        this.currentID = schemaID;
-        this.setNumber("currentID", this.currentID);
+        this.#currentID = schemaID;
+        this.setNumber("currentID", this.#currentID);
     }
 
     /**
@@ -188,9 +193,9 @@ export default class Storage {
 
         // Update the next ID if this is a new Schema
         if (!isEdit) {
-            data.schemaID = this.nextID;
-            this.nextID += 1;
-            this.setNumber("nextID", this.nextID);
+            data.schemaID = this.#nextID;
+            this.#nextID += 1;
+            this.setNumber("nextID", this.#nextID);
         }
 
         if (data.schemas) {
@@ -224,14 +229,14 @@ export default class Storage {
         this.setData(data.schemaID, "data", data);
 
         // Save the order
-        const index = Math.min(Math.max(data.position - 1, 0), this.schemas.length);
+        const index = Math.min(Math.max(data.position - 1, 0), this.#schemas.length);
         if (!isEdit) {
-            this.schemas.push(data.schemaID);
-        } else if (this.schemas[index] !== data.schemaID) {
-            this.schemas = this.schemas.filter((id) => id !== data.schemaID);
-            this.schemas.splice(index, 0, data.schemaID);
+            this.#schemas.push(data.schemaID);
+        } else if (this.#schemas[index] !== data.schemaID) {
+            this.#schemas = this.#schemas.filter((id) => id !== data.schemaID);
+            this.#schemas.splice(index, 0, data.schemaID);
         }
-        this.setData("schemas", this.schemas);
+        this.setData("schemas", this.#schemas);
     }
 
     /**
@@ -321,7 +326,7 @@ export default class Storage {
         this.setData("projects", this.projects);
 
         // Remove as the current Project
-        if (this.currentID === schemaID) {
+        if (this.#currentID === schemaID) {
             this.setNumber("currentID", 0);
         }
     }
@@ -333,7 +338,7 @@ export default class Storage {
      * @returns {String}
      */
     getFilter() {
-        return this.getString(this.currentID, "filter");
+        return this.getString(this.#currentID, "filter");
     }
 
     /**
@@ -342,7 +347,7 @@ export default class Storage {
      * @returns {Void}
      */
     setFilter(value) {
-        this.setString(this.currentID, "filter", value);
+        this.setString(this.#currentID, "filter", value);
     }
 
     /**
@@ -350,7 +355,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeFilter() {
-        this.removeItem(this.currentID, "filter");
+        this.removeItem(this.#currentID, "filter");
     }
 
 
@@ -360,7 +365,7 @@ export default class Storage {
      * @returns {Number}
      */
     getWidth() {
-        return this.getNumber(this.currentID, "width", 0);
+        return this.getNumber(this.#currentID, "width", 0);
     }
 
     /**
@@ -369,7 +374,7 @@ export default class Storage {
      * @returns {Void}
      */
     setWidth(value) {
-        this.setNumber(this.currentID, "width", value);
+        this.setNumber(this.#currentID, "width", value);
     }
 
     /**
@@ -377,7 +382,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeWidth() {
-        this.removeItem(this.currentID, "width");
+        this.removeItem(this.#currentID, "width");
     }
 
 
@@ -387,7 +392,7 @@ export default class Storage {
      * @returns {Object}
      */
     getScroll() {
-        return this.getData(this.currentID, "scroll");
+        return this.getData(this.#currentID, "scroll");
     }
 
     /**
@@ -396,8 +401,8 @@ export default class Storage {
      * @returns {Void}
      */
     setScroll(value) {
-        if (value && this.currentID) {
-            this.setData(this.currentID, "scroll", value);
+        if (value && this.#currentID) {
+            this.setData(this.#currentID, "scroll", value);
         }
     }
 
@@ -408,7 +413,7 @@ export default class Storage {
      * @returns {Number}
      */
     getZoom() {
-        return this.getNumber(this.currentID, "zoom", 100);
+        return this.getNumber(this.#currentID, "zoom", 100);
     }
 
     /**
@@ -417,7 +422,7 @@ export default class Storage {
      * @returns {Void}
      */
     setZoom(value) {
-        this.setNumber(this.currentID, "zoom", value);
+        this.setNumber(this.#currentID, "zoom", value);
     }
 
     /**
@@ -425,7 +430,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeZoom() {
-        this.removeItem(this.currentID, "zoom");
+        this.removeItem(this.#currentID, "zoom");
     }
 
 
@@ -436,7 +441,7 @@ export default class Storage {
      * @returns {(Object|null)}
      */
     getTable(table) {
-        return this.getData(this.currentID, "table", table.name);
+        return this.getData(this.#currentID, "table", table.name);
     }
 
     /**
@@ -445,7 +450,7 @@ export default class Storage {
      * @returns {Void}
      */
     setTable(table) {
-        this.setData(this.currentID, "table", table.name, {
+        this.setData(this.#currentID, "table", table.name, {
             isExpanded : table.isExpanded,
             onCanvas   : table.onCanvas,
             top        : table.top,
@@ -460,7 +465,7 @@ export default class Storage {
      * @returns {Void}
      */
     removeTable(table) {
-        this.removeItem(this.currentID, "table", table.name);
+        this.removeItem(this.#currentID, "table", table.name);
     }
 
 
@@ -470,15 +475,15 @@ export default class Storage {
      * @returns {Number}
      */
     get nextGroup() {
-        return this.getNumber(this.currentID, "nextGroup", 1);
+        return this.getNumber(this.#currentID, "nextGroup", 1);
     }
 
     /**
-     * Returns the next Group ID
+     * Returns the Group IDs
      * @returns {Number[]}
      */
     get groupIDs() {
-        const groups = this.getData(this.currentID, "groups");
+        const groups = this.getData(this.#currentID, "groups");
         return groups || [];
     }
 
@@ -489,7 +494,7 @@ export default class Storage {
     getGroups() {
         const result = [];
         for (const groupID of this.groupIDs) {
-            const group = this.getData(this.currentID, "group", groupID);
+            const group = this.getData(this.#currentID, "group", groupID);
             result.push(group);
         }
         return result;
@@ -501,7 +506,7 @@ export default class Storage {
      * @returns {Void}
      */
     setGroup(group) {
-        this.setData(this.currentID, "group", group.id, {
+        this.setData(this.#currentID, "group", group.id, {
             id         : group.id,
             name       : group.name,
             tables     : group.tableNames,
@@ -517,8 +522,8 @@ export default class Storage {
     addGroup(group) {
         const groups = this.groupIDs;
         groups.push(group.id);
-        this.setData(this.currentID, "groups", groups);
-        this.setNumber(this.currentID, "nextGroup", group.id + 1);
+        this.setData(this.#currentID, "groups", groups);
+        this.setNumber(this.#currentID, "nextGroup", group.id + 1);
     }
 
     /**
@@ -529,8 +534,8 @@ export default class Storage {
     removeGroup(groupID) {
         const groups = this.groupIDs;
         groups.splice(groups.indexOf(groupID), 1);
-        this.setData(this.currentID, "groups", groups);
-        this.removeItem(this.currentID, "group", groupID);
+        this.setData(this.#currentID, "groups", groups);
+        this.removeItem(this.#currentID, "group", groupID);
     }
 
     /**

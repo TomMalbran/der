@@ -8,6 +8,10 @@ import Utils from "./Utils.js";
  */
 export default class Group {
 
+    /** @type {HTMLElement} */
+    #canvasElem;
+
+
     /**
      * Groups constructor
      * @param {Number}   id
@@ -64,7 +68,7 @@ export default class Group {
      */
     setGroup(group) {
         for (const table of this.tables) {
-            table.setGroup(group);
+            table.group = group;
         }
     }
 
@@ -224,10 +228,10 @@ export default class Group {
         this.listText.classList.add("selectable");
         this.listText.dataset.action = "show-group";
 
-        if (!this.canvasElem) {
+        if (!this.#canvasElem) {
             this.createCanvasElem();
         }
-        container.appendChild(this.canvasElem);
+        container.appendChild(this.#canvasElem);
         this.position();
     }
 
@@ -242,8 +246,8 @@ export default class Group {
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listText.dataset.action = "";
-        Utils.removeElement(this.canvasElem);
-        this.canvasElem = null;
+        Utils.removeElement(this.#canvasElem);
+        this.#canvasElem = null;
     }
 
     /**
@@ -251,21 +255,21 @@ export default class Group {
      * @returns {Void}
      */
     createCanvasElem() {
-        this.canvasElem = document.createElement("div");
-        this.canvasElem.className = "group";
+        this.#canvasElem = document.createElement("div");
+        this.#canvasElem.className = "group";
 
         this.header = document.createElement("header");
         this.header.innerHTML      = this.name;
         this.header.dataset.action = "drag-group";
         this.header.dataset.group  = String(this.id);
-        this.canvasElem.appendChild(this.header);
+        this.#canvasElem.appendChild(this.header);
 
         const remove = document.createElement("a");
         remove.href           = "#";
         remove.className      = "close";
         remove.dataset.action = "open-remove";
         remove.dataset.group  = String(this.id);
-        this.canvasElem.appendChild(remove);
+        this.#canvasElem.appendChild(remove);
     }
 
     /**
@@ -300,9 +304,9 @@ export default class Group {
         this.width   = Math.abs(this.right  - this.left);
         this.height  = Math.abs(this.bottom - this.top);
 
-        this.canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
-        this.canvasElem.style.width     = `${this.width}px`;
-        this.canvasElem.style.height    = `${this.height}px`;
+        this.#canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
+        this.#canvasElem.style.width     = `${this.width}px`;
+        this.#canvasElem.style.height    = `${this.height}px`;
     }
 
 
@@ -312,7 +316,7 @@ export default class Group {
      * @returns {Void}
      */
     scrollIntoView() {
-        this.canvasElem.scrollIntoView({
+        this.#canvasElem.scrollIntoView({
             behavior : "smooth",
             block    : "center",
             inline   : "center",
@@ -324,7 +328,7 @@ export default class Group {
      * @returns {Group}
      */
     select() {
-        this.canvasElem.classList.add("selected");
+        this.#canvasElem.classList.add("selected");
         return this;
     }
 
@@ -333,7 +337,7 @@ export default class Group {
      * @returns {Null}
      */
     unselect() {
-        this.canvasElem.classList.remove("selected");
+        this.#canvasElem.classList.remove("selected");
         return null;
     }
 
@@ -342,7 +346,7 @@ export default class Group {
      * @returns {Void}
      */
     pick() {
-        this.canvasElem.classList.add("dragging");
+        this.#canvasElem.classList.add("dragging");
     }
 
     /**
@@ -350,6 +354,6 @@ export default class Group {
      * @returns {Void}
      */
     drop() {
-        this.canvasElem.classList.remove("dragging");
+        this.#canvasElem.classList.remove("dragging");
     }
 }
