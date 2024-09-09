@@ -14,7 +14,7 @@ export default class Table {
     #fields = [];
 
     /** @type {Link[]} */
-    #links = [];
+    links = [];
 
     /** @type {Group} */
     group = null;
@@ -178,26 +178,26 @@ export default class Table {
         if (this.data.joins) {
             for (const [ key, data ] of Object.entries(this.data.joins)) {
                 if (!data.onTable) {
-                    this.#links.push(new Link(this.name, key, data));
+                    this.links.push(new Link(this.name, key, data));
                 }
             }
         }
         if (this.data.foreigns) {
             for (const [ key, data ] of Object.entries(this.data.foreigns)) {
-                this.#links.push(new Link(this.name, key, data));
+                this.links.push(new Link(this.name, key, data));
             }
         }
         if (this.data.hasUsers) {
             const data = { table : "credentials", leftKey : "CREDENTIAL_ID" };
             if (this.data.canCreate && (!this.data.joins || !this.data.joins.createdUser)) {
-                this.#links.push(new Link(this.name, "createdUser", data));
+                this.links.push(new Link(this.name, "createdUser", data));
             }
             if (this.data.canEdit && (!this.data.joins || !this.data.joins.modifiedUser)) {
-                this.#links.push(new Link(this.name, "modifiedUser", data));
+                this.links.push(new Link(this.name, "modifiedUser", data));
             }
         }
 
-        for (const link of this.#links) {
+        for (const link of this.links) {
             for (const field of this.#fields) {
                 if (link.fromFieldName === field.name) {
                     field.hasLink = true;
