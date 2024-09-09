@@ -320,8 +320,8 @@ export default class Storage {
         }
 
         // Save the order
-        this.projects = this.projects.filter((id) => id !== schemaID);
-        this.setData("projects", this.projects);
+        this.#schemas = this.#schemas.filter((id) => id !== schemaID);
+        this.setData("schemas", this.#schemas);
 
         // Remove as the current Project
         if (this.#currentID === schemaID) {
