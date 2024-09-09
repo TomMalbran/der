@@ -111,6 +111,7 @@ html, body, input {
     font-family: var(--main-font);
     font-size: 14px;
     text-align: center;
+    text-decoration: none;
     cursor: pointer;
     transition: all 0.2s;
 }

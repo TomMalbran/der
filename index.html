@@ -66,57 +66,59 @@
                 <dialog open>
                     <h2>Schema</h2>
                     <p>Name the Schema and select the json files or urls.</p>
-                    <label class="toggle-input" data-field="urls">
-                        <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
-                        <div>Use urls</div>
-                    </label>
-                    <div class="field" data-field="name">
-                        <label>Name</label>
-                        <input type="text" name="name" />
-                        <div class="error" data-error="name">You must complete de schema name.</div>
-                    </div>
-                    <div class="field file-input schema-file" data-field="file0">
-                        <section>
-                            <div>
-                                <label>Main File</label>
-                                <div class="file-name"></div>
-                            </div>
-                            <div>
-                                <a href="#" class="close" data-action="remove-main-file"></a>
-                                <button class="btn" data-action="upload-main-file">Upload File</button>
-                            </div>
-                        </section>
-                        <div class="error" data-error="file">You must complete the schema main file.</div>
-                        <div class="error" data-error="json0">The file must be a valid JSON file.</div>
-                    </div>
-                    <div class="field file-input schema-file" data-field="file1">
-                        <section>
-                            <div>
-                                <label>Secondary File</label>
-                                <div class="file-name"></div>
-                            </div>
-                            <div>
-                                <a href="#" class="close" data-action="remove-sec-file"></a>
-                                <button class="btn" data-action="upload-sec-file">Upload File</button>
-                            </div>
-                        </section>
-                        <div class="error" data-error="json1">The file must be a valid JSON file.</div>
-                    </div>
-                    <div class="field schema-url" data-field="url0">
-                        <label>Main Url</label>
-                        <input type="text" name="mainUrl" />
-                        <div class="error" data-error="url">You must complete de main url.</div>
-                    </div>
-                    <div class="field schema-url" data-field="url1">
-                        <label>Secondary Url</label>
-                        <input type="text" name="secUrl" />
-                    </div>
-                    <div class="field schema-position" data-field="position">
-                        <label>Position</label>
-                        <input type="number" name="position" />
-                    </div>
-                    <button class="btn btn-fill dialog-btn" data-action="edit-schema">Schema</button>
-                    <button class="btn" data-action="close-schema">Cancel</button>
+                    <form>
+                        <label class="toggle-input" data-field="urls">
+                            <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
+                            <div>Use urls</div>
+                        </label>
+                        <div class="field" data-field="name">
+                            <label>Name</label>
+                            <input type="text" name="name" />
+                            <div class="error" data-error="name">You must complete de schema name.</div>
+                        </div>
+                        <div class="field file-input schema-file" data-field="file0">
+                            <section>
+                                <div>
+                                    <label>Main File</label>
+                                    <div class="file-name"></div>
+                                </div>
+                                <div>
+                                    <a href="#" class="close" data-action="remove-main-file"></a>
+                                    <a href="#" class="btn" data-action="upload-main-file">Upload File</a>
+                                </div>
+                            </section>
+                            <div class="error" data-error="file">You must complete the schema main file.</div>
+                            <div class="error" data-error="json0">The file must be a valid JSON file.</div>
+                        </div>
+                        <div class="field file-input schema-file" data-field="file1">
+                            <section>
+                                <div>
+                                    <label>Secondary File</label>
+                                    <div class="file-name"></div>
+                                </div>
+                                <div>
+                                    <a href="#" class="close" data-action="remove-sec-file"></a>
+                                    <a href="#" class="btn" data-action="upload-sec-file">Upload File</a>
+                                </div>
+                            </section>
+                            <div class="error" data-error="json1">The file must be a valid JSON file.</div>
+                        </div>
+                        <div class="field schema-url" data-field="url0">
+                            <label>Main Url</label>
+                            <input type="text" name="mainUrl" />
+                            <div class="error" data-error="url">You must complete de main url.</div>
+                        </div>
+                        <div class="field schema-url" data-field="url1">
+                            <label>Secondary Url</label>
+                            <input type="text" name="secUrl" />
+                        </div>
+                        <div class="field schema-position" data-field="position">
+                            <label>Position</label>
+                            <input type="number" name="position" />
+                        </div>
+                        <button class="btn btn-fill dialog-btn" data-action="edit-schema">Schema</button>
+                        <button class="btn" data-action="close-schema">Cancel</button>
+                    </form>
                     <a href="#" class="close" data-action="close-schema"></a>
                 </dialog>
             </div>
@@ -137,7 +139,7 @@
                 <dialog open>
                     <h2>Group</h2>
                     <p class="group-empty">You must first select tables to create a group or a group to edit it.</p>
-                    <div class="group-content">
+                    <form class="group-content">
                         <div class="field" data-field="name">
                             <label>Group Name</label>
                             <input type="text" name="name" />
@@ -151,7 +153,7 @@
                         </div>
                         <button class="btn btn-fill dialog-btn" data-action="update-group">Group</button>
                         <button class="btn" data-action="open-remove">Remove Group</button>
-                    </div>
+                    </form>
                     <a href="#" class="close" data-action="close-group"></a>
                 </dialog>
             </div>
