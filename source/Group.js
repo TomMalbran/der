@@ -186,7 +186,7 @@ export default class Group {
         this.listText.dataset.group    = String(this.id);
 
         this.listButton.innerHTML      = "Edit";
-        this.listButton.className      = "btn";
+        this.listButton.className      = "btn btn-small";
         this.listButton.dataset.action = "edit-group";
         this.listButton.dataset.group  = String(this.id);
 
