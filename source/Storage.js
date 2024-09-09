@@ -228,14 +228,12 @@ export default class Storage {
         // Save the Schema data
         this.setData(data.schemaID, "data", data);
 
-        // Save the order
+        // Save the Schema ID in the correct order
         const index = Math.min(Math.max(data.position - 1, 0), this.#schemas.length);
-        if (!isEdit) {
-            this.#schemas.push(data.schemaID);
-        } else if (this.#schemas[index] !== data.schemaID) {
+        if (isEdit) {
             this.#schemas = this.#schemas.filter((id) => id !== data.schemaID);
-            this.#schemas.splice(index, 0, data.schemaID);
         }
+        this.#schemas.splice(index, 0, data.schemaID);
         this.setData("schemas", this.#schemas);
     }
 
