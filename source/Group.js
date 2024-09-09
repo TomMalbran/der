@@ -190,6 +190,11 @@ export default class Group {
         this.listButton.dataset.action = "edit-group";
         this.listButton.dataset.group  = String(this.id);
 
+        if (this.onCanvas) {
+            this.listText.classList.add("selectable");
+            this.listText.dataset.action = "show-group";
+        }
+
         this.listElem.appendChild(this.listInner);
         this.listElem.appendChild(this.listTables);
 
@@ -246,6 +251,7 @@ export default class Group {
         this.onCanvas = false;
         this.listText.classList.remove("selectable");
         this.listText.dataset.action = "";
+
         Utils.removeElement(this.#canvasElem);
         this.#canvasElem = null;
     }
