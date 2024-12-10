@@ -6,9 +6,11 @@
     --light-color: rgb(118, 130, 139);
     --border-color: rgb(224, 224, 224);
     --disabled-color: rgb(94, 109, 120);
-    --grid-color: rgb(242, 242, 242);
     --input-color: rgb(189, 189, 189);
-    --box-shadow: 2px 2px 9px rgb(209, 209, 209);
+    --box-shadow: 0 14px 28px rgba(132, 139, 144, 0.28);
+
+    --grid-size: 8px;
+    --grid-color: rgb(242, 242, 242);
 
     --selected-color1: rgb(54, 162, 235);
     --selected-color2: rgb(255, 205, 86);
@@ -20,7 +22,7 @@
     --selected-color8: rgb(75, 192, 192);
 
     --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
-    --title-font: Means, Esteban, Georgia, serif;
+    --title-font: Means, Georgia, serif;
 
     --aside-width: 300px;
     --header-height: 62px;
@@ -62,12 +64,6 @@
     font-style: normal;
     font-weight: bold;
     src: local("Lato"), url("../fonts/lato-bold.ttf") format("truetype");
-}
-@font-face {
-    font-family: "Esteban";
-    font-style: normal;
-    font-weight: normal;
-    src: local("Esteban"), url("../fonts/esteban.ttf") format("truetype");
 }
 @font-face {
     font-family: "Means";

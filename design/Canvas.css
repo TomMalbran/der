@@ -8,7 +8,7 @@ main {
     right: 0;
     bottom: 0;
     overflow: auto;
-    background-size: 10px 10px;
+    background-size: var(--grid-size) var(--grid-size);
     background-image:
         linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);

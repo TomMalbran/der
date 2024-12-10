@@ -4,19 +4,21 @@
 .aside {
     box-sizing: border-box;
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 12px;
+    left: 12px;
     width: var(--aside-width);
-    bottom: 0;
-    border-right: 1px solid var(--border-color);
+    bottom: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--dialog-radius);
     background-color: white;
+    box-shadow: var(--box-shadow);
     z-index: var(--z-aside);
 }
 .aside header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 6px 16px;
+    padding: 24px 20px 6px 24px;
 }
 h1 {
     margin: 0;
@@ -35,8 +37,8 @@ h1 {
  */
 .aside-resizer {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: 16px;
+    bottom: 16px;
     right: -4px;
     width: 4px;
     cursor: ew-resize;
@@ -83,7 +85,7 @@ h1 {
     color: var(--main-color);
     font-family: var(--title-font);
     font-size: 20px;
-    padding: 0 20px 20px 16px;
+    padding: 0 16px 20px 24px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -149,8 +151,10 @@ h1 {
  * List
  */
 .schema-list {
+    height: calc(100vh - var(--header-height) - var(--title-height) - var(--filter-height) - 24px);
     border-top: 1px solid var(--border-color);
-    height: calc(100vh - var(--header-height) - var(--title-height) - var(--filter-height));
+    border-bottom-left-radius: var(--dialog-radius);
+    border-bottom-right-radius: var(--dialog-radius);
     overflow: auto;
     transition: opacity 0.2s;
 }
@@ -165,6 +169,10 @@ h1 {
 .schema-list > ol > li {
     border-bottom: 1px solid var(--border-color);
 }
+.schema-list > ol > li:last-child {
+    border-bottom: none;
+}
+
 .schema-item {
     position: relative;
     box-sizing: border-box;
@@ -224,6 +232,10 @@ h1 {
 /**
  * Small
  */
+.aside-small header {
+    padding: 24px 0 6px 17px;
+}
+
 .aside-small h1 {
     transform: translateX(32px) rotate(90deg);
     margin-right: 16px;
@@ -251,6 +263,9 @@ h1 {
 
 .aside-small:not(.aside-dragging):hover {
     width: var(--aside-width) !important;
+}
+.aside-small:not(.aside-dragging):hover header {
+    padding: 24px 20px 6px 24px;
 }
 .aside-small:not(.aside-dragging):hover h1 {
     transform: none;
