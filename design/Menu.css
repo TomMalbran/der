@@ -1,30 +1,15 @@
 /**
- * Menu
- */
-.menu {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    z-index: var(--z-menu);
-}
-
-
-
-/**
  * Mode
  */
 .mode {
-    position: relative;
-    list-style: none;
-    padding: 0;
-    margin: 0;
     box-sizing: border-box;
+    position: absolute;
     display: flex;
-    padding: 6px;
+    top: var(--menu-position);
+    right: var(--menu-position);
+    list-style: none;
+    margin: 0;
+    padding: var(--menu-padding);
     background-color: var(--card-color);
     border: 1px solid var(--border-color);
     border-radius: 9999px;
@@ -38,9 +23,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 6px;
+    width: var(--menu-size);
+    height: var(--menu-size);
+    padding: var(--menu-padding);
     border-radius: 50%;
     cursor: pointer;
     transition: all 300ms ease;
@@ -61,48 +46,60 @@
 
 
 /**
+ * Menu
+ */
+.menu {
+    position: absolute;
+    top: calc(var(--menu-position) + var(--mode-height) + 8px);
+    right: var(--menu-position);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    z-index: var(--z-menu);
+}
+
+
+
+/**
  * Zoom
  */
 .zoom {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: var(--menu-padding);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-color);
+    box-shadow: var(--box-shadow);
+    border-radius: 9999px;
 }
 .zoom li {
-    width: 36px;
-    height: 32px;
-    font-size: 24px;
-    line-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--menu-size);
+    height: var(--menu-size);
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--box-shadow);
-    transition: background-color 0.2s;
+    border-radius: 50%;
+    transition: all 300ms ease;
     cursor: pointer;
 }
 .zoom li:hover {
     background-color: var(--hover-color);
 }
-.zoom li:first-child {
-    border-bottom: none;
-    border-top-left-radius: 50%;
-    border-top-right-radius: 50%;
-}
-.zoom li:last-child {
-    border-top: none;
-    border-bottom-left-radius: 50%;
-    border-bottom-right-radius: 50%;
-}
 .zoom-disabled.zoom-disabled {
     color: rgb(200, 200, 200);
     cursor: not-allowed;
 }
+
 .zoom-percent.zoom-percent {
     height: auto;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: normal;
     line-height: 2;
+    border-radius: 6px;
 }
 
 
@@ -112,17 +109,25 @@
  */
 .icon {
     box-sizing: border-box;
-    width: 36px;
-    height: 36px;
-    padding: 8px;
+    padding: var(--menu-padding);
     background-color: var(--card-color);
     border: 1px solid var(--border-color);
     box-shadow: var(--box-shadow);
     border-radius: 50%;
-    transition: background-color 0.2s;
     cursor: pointer;
 }
-.icon:hover {
+.icon div {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--menu-size);
+    height: var(--menu-size);
+    padding: var(--menu-padding);
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+.icon div:hover {
     background-color: var(--hover-color);
 }
 .icon svg {

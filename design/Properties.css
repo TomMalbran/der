@@ -22,6 +22,11 @@
     --title-height: 46px;
     --filter-height: 33px;
 
+    --menu-position: 24px;
+    --menu-size: 28px;
+    --menu-padding: 5px;
+    --mode-height: 42px;
+
     --border-radius: 12px;
     --dialog-radius: 24px;
     --input-radius: 4px;
