@@ -24,13 +24,13 @@ main {
  * Table
  */
 .canvas-table {
-    --bg-color: white;
+    --bg-color: var(--white-color);
     position: absolute;
     top: 0;
     left: 0;
     min-width: 200px;
     font-size: 12px;
-    background-color: white;
+    background-color: var(--card-color);
     box-shadow: var(--box-shadow);
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -38,7 +38,7 @@ main {
 }
 .canvas-table header {
     position: relative;
-    background-color: var(--main-color);
+    background-color: black;
     padding: 8px 24px;
     text-align: center;
     color: white;
@@ -64,16 +64,16 @@ main {
     align-items: baseline;
     padding: 4px 8px;
     border-bottom: 1px solid var(--border-color);
-    color:rgb(50, 50, 50);
+    color: var(--dark-color);
 }
 .canvas-table ol li:last-child {
     border-bottom: none;
 }
 .canvas-table ol li b {
-    color: black;
+    color: var(--black-color);
 }
 .canvas-table ol li span:last-child {
-    color: var(--light-color);
+    color: var(--lighter-color);
     margin-left: 16px;
     font-size: 10px;
 }
@@ -82,7 +82,7 @@ main {
     display: none;
 }
 .schema-hidden.schema-hidden {
-    color: var(--light-color);
+    color: var(--lighter-color);
     cursor: pointer;
 }
 
@@ -135,7 +135,7 @@ main {
  * Link
  */
 .schema-link {
-    --bg-color: var(--main-color);
+    --bg-color: var(--lighter-color);
     position: absolute;
     top: 0;
     left: 0;
@@ -167,6 +167,9 @@ main {
 .canvas-table li.colored {
     color: black;
     background-color: var(--bg-color);
+}
+.canvas-table li.colored b {
+    color: black;
 }
 .canvas-table li.colored span:last-child {
     color: black;
@@ -208,8 +211,55 @@ main {
     right: 24px;
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 8px;
     z-index: var(--z-menu);
+}
+
+
+
+/**
+ * Mode
+ */
+.mode {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    display: flex;
+    padding: 6px;
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    box-shadow: var(--box-shadow);
+    font-size: 16px;
+    z-index: var(--z-mode);
+}
+.mode li {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+.mode li:hover {
+    background-color: var(--hover-color);
+}
+.mode li svg {
+    width: 100%;
+}
+.mode li.selected {
+    background-color: var(--black-color);
+}
+.mode li.selected svg {
+    fill: var(--white-color);
 }
 
 
@@ -229,14 +279,14 @@ main {
     line-height: 32px;
     font-weight: bold;
     text-align: center;
-    background-color: white;
+    background-color: var(--card-color);
     border: 1px solid var(--border-color);
     box-shadow: var(--box-shadow);
     transition: background-color 0.2s;
     cursor: pointer;
 }
 .zoom li:hover {
-    background-color: var(--grid-color);
+    background-color: var(--hover-color);
 }
 .zoom li:first-child {
     border-bottom: none;
@@ -269,7 +319,7 @@ main {
     width: 36px;
     height: 36px;
     padding: 8px;
-    background-color: white;
+    background-color: var(--card-color);
     border: 1px solid var(--border-color);
     box-shadow: var(--box-shadow);
     border-radius: 50%;
@@ -277,7 +327,7 @@ main {
     cursor: pointer;
 }
 .icon:hover {
-    background-color: var(--grid-color);
+    background-color: var(--hover-color);
 }
 .icon svg {
     width: 100%;

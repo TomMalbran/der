@@ -20,7 +20,7 @@ export default class Zoom {
 
 
     /**
-     * Canvas constructor
+     * Zoom constructor
      * @param {HTMLElement} canvas
      */
     constructor(canvas) {

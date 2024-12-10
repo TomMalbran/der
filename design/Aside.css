@@ -10,7 +10,7 @@
     bottom: 12px;
     border: 1px solid var(--border-color);
     border-radius: var(--dialog-radius);
-    background-color: white;
+    background-color: var(--card-color);
     box-shadow: var(--box-shadow);
     z-index: var(--z-aside);
 }
@@ -56,10 +56,10 @@ h1 {
     --arrow-height: 1px;
 
     position: absolute;
-    top: 24px;
+    top: 32px;
     right: 1px;
     padding: 7px;
-    background-color: white;
+    background-color: var(--white-color);
     border-radius: 50%;
     border: 1px solid var(--border-color);
     transform: translate(50%) rotate(180deg);
@@ -67,8 +67,7 @@ h1 {
     z-index: var(--z-arrow);
 }
 .aside-arrow:hover {
-    --arrow-color: white;
-    border-color: var(--main-color);
+    --arrow-color: var(--white-color);
     background-color: var(--main-color);
 }
 .aside-dragging .aside-arrow {
@@ -110,6 +109,7 @@ h1 {
     min-width: 0;
     padding: 6px 12px;
     border: none;
+    background-color: var(--card-color);
 }
 .schema-filter::before {
     content: "";
@@ -193,8 +193,8 @@ h1 {
     cursor: pointer;
 }
 .schema-item .arrow {
-    --arrow-color: var(--light-color);
-    --arrow-height: 2px;
+    --arrow-color: var(--main-color);
+    --arrow-height: 1px;
     --arrow-width: 8px;
     position: absolute;
     top: 50%;
@@ -215,7 +215,7 @@ h1 {
     font-size: 13px;
 }
 .schema-table > ol > li span:last-child {
-    color: var(--light-color);
+    color: var(--lighter-color);
     margin-left: 16px;
     font-size: 12px;
 }

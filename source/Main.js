@@ -1,25 +1,20 @@
 import Selection from "./Selection.js";
 import Storage   from "./Storage.js";
 import Canvas    from "./Canvas.js";
+import Mode      from "./Mode.js";
 import Grouper   from "./Grouper.js";
 import Group     from "./Group.js";
 import Schema    from "./Schema.js";
 import Utils     from "./Utils.js";
 
-// Variables
+
+// The Variables
 let timer     = null;
-
-/** @type {Selection} */
-let selection = null;
-
-/** @type {Storage} */
-let storage   = null;
-
-/** @type {Canvas} */
-let canvas    = null;
-
-/** @type {Grouper} */
-let grouper   = null;
+let selection = new Selection();
+let storage   = new Storage();
+let canvas    = new Canvas();
+let mode      = new Mode();
+let grouper   = new Grouper();
 
 /** @type {Schema} */
 let schema    = null;
@@ -34,6 +29,7 @@ async function main() {
     selection = new Selection();
     storage   = new Storage();
     canvas    = new Canvas();
+    mode      = new Mode();
     grouper   = new Grouper();
 
     if (storage.hasSchema) {
@@ -42,6 +38,7 @@ async function main() {
     } else {
         selection.open(storage.getSchemas());
     }
+    mode.restore(storage.getMode());
 }
 
 /**
@@ -252,6 +249,16 @@ document.addEventListener("click", (e) => {
     case "clear-filter":
         schema.clearFilter();
         storage.removeFilter();
+        break;
+
+    // Mode Actions
+    case "mode-light":
+        storage.setLightMode();
+        mode.setLight();
+        break;
+    case "mode-dark":
+        storage.setDarkMode();
+        mode.setDark();
         break;
 
     // Zoom Actions
