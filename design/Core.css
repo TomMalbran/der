@@ -234,10 +234,16 @@ input:focus {
     align-items: center;
     color: black;
     font-size: 14px;
+    overflow: hidden;
+}
+.checkbox-input div {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .checkbox-input input[type="checkbox"] {
     appearance: none;
     position: relative;
+    flex-shrink: 0;
     width: 16px;
     height: 16px;
     margin: 0 8px 0 0;
