@@ -1,4 +1,6 @@
+@import url("Properties.css");
 @import url("Core.css");
-@import url("Design.css");
-@import url("Aside.css");
+@import url("Dialogs.css");
 @import url("Canvas.css");
+@import url("Aside.css");
+@import url("Menu.css");

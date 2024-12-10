@@ -1,0 +1,78 @@
+/**
+ * Properties
+ */
+:root {
+    --disabled-color: rgb(94, 109, 120);
+    --input-color: rgb(189, 189, 189);
+
+    --selected-color1: rgb(54, 162, 235);
+    --selected-color2: rgb(255, 205, 86);
+    --selected-color3: rgb(255, 99, 132);
+    --selected-color4: rgb(75, 192, 192);
+    --selected-color5: rgb(255, 159, 64);
+    --selected-color6: rgb(100, 112, 255);
+    --selected-color7: rgb(153, 102, 255);
+    --selected-color8: rgb(75, 192, 192);
+
+    --main-font: Lato, "Helvetica Nueue", Helvetica, Arial, sans-serif;
+    --title-font: Means, Georgia, serif;
+
+    --aside-width: 300px;
+    --header-height: 70px;
+    --title-height: 46px;
+    --filter-height: 33px;
+
+    --border-radius: 12px;
+    --dialog-radius: 24px;
+    --input-radius: 4px;
+    --grid-size: 8px;
+
+    --z-group: 2;
+    --z-link-disabled: 3;
+    --z-link-normal: 4;
+    --z-table-disabled: 5;
+    --z-table-normal: 6;
+    --z-table-selected: 7;
+    --z-table-dragging: 8;
+
+    --z-aside: 1;
+    --z-resizer: 97;
+    --z-arrow: 98;
+    --z-menu: 99;
+    --z-dialog: 100;
+    --z-mode: 200;
+}
+
+body {
+    --box-shadow: 0 14px 28px var(--light-color);
+}
+.light-mode {
+    --black-color: black;
+    --white-color: white;
+    --main-color: rgb(14, 16, 18);
+    --background-color: rgb(246, 246, 249);
+    --backdrop-color: rgba(232, 232, 237, 0.8);
+    --card-color: white;
+    --hover-color: rgb(233, 234, 245);
+    --border-color: rgb(224, 224, 224);
+    --grid-color: rgb(236, 236, 236);
+
+    --dark-color: rgb(50, 50, 50);
+    --light-color: rgba(132, 139, 200, 0.18);
+    --lighter-color: rgb(118, 130, 139);
+}
+.dark-mode {
+    --black-color: white;
+    --white-color: black;
+    --main-color: rgb(237, 239, 253);
+    --card-color: rgb(32, 37, 40);
+    --background-color: rgb(24, 26, 30);
+    --backdrop-color: rgba(24, 26, 30, 0.8);
+    --hover-color: rgb(22, 26, 28);
+    --border-color: rgb(2, 2, 2);
+    --grid-color: rgb(22, 22, 22);
+
+    --dark-color: rgb(200, 200, 200);
+    --light-color: rgba(0, 0, 0, 0.3);
+    --lighter-color: rgb(118, 130, 139);
+}
