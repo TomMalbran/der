@@ -24,8 +24,8 @@ import Table  from "./Table.js";
      * Grouper constructor
      */
     constructor() {
-        this.group        = null;
-        this.groupDialog  = new Dialog("group");
+        this.group         = null;
+        this.groupDialog   = new Dialog("group");
 
         this.#empty        = this.groupDialog.getElement(".group-empty");
         this.#content      = this.groupDialog.getElement(".group-content");
@@ -49,7 +49,7 @@ import Table  from "./Table.js";
 
         this.groupDialog.setTitle(this.isEdit ? "Edit the Group" : "Create a Group");
         this.groupDialog.setButton(this.isEdit ? "Edit Group" : "Create Group");
-        this.groupDialog.setInput("name", this.isEdit ? group.name : "");
+        this.groupDialog.setInput("name", this.isEdit ? group.name : this.getGroupName(selectedTables));
 
         const showEmpty = !this.isEdit && !selectedTables.length;
         this.#empty.style.display   = showEmpty  ? "block" : "none";
@@ -71,6 +71,36 @@ import Table  from "./Table.js";
         }
 
         this.groupDialog.open();
+    }
+
+    /**
+     * Gets the Group Name
+     * @param {Table[]} selectedTables
+     * @returns {String}
+     */
+    getGroupName(selectedTables) {
+        const names = selectedTables.map((table) => table.name);
+        const first = names[0];
+
+        // Get the common prefix of all the names
+        // Check border cases size 1 array and empty first name
+        if (!first || names.length ==  1) {
+            return first || "";
+        }
+
+        // While all words have the same character at position i, increment i
+        let i = 0;
+        while (first[i] && names.every((name) => name[i] === first[i])) {
+            i += 1;
+        }
+
+        // Remove the las underscore if there is one
+        if (first[i - 1] === "_") {
+            i -= 1;
+        }
+
+        // Prefix is the substring from the beginning to the last successfully checked i
+        return first.slice(0, i);
     }
 
     /**
