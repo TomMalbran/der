@@ -8,19 +8,27 @@
     </head>
     <body class="light-mode">
         <aside class="aside">
-            <header>
-                <h1>DER</h1>
-                <button class="btn btn-fill open" data-action="open-select">Select</button>
-            </header>
-            <section class="schema-header"></section>
-            <section class="schema-filter">
-                <input type="text" name="filter" placeholder="Filter tables" />
-                <a href="#" class="close" data-action="clear-filter"></a>
-                <div class="schema-total"></div>
-            </section>
-            <section class="schema-list">
-                <ol></ol>
-            </section>
+            <div class="aside-content">
+                <header>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                        <path d="M480-520q150 0 255-47t105-113q0-66-105-113t-255-47q-150 0-255 47T120-680q0 66 105 113t255 47Zm0 100q41 0 102.5-8.5T701-456q57-19 98-49.5t41-74.5v100q0 44-41 74.5T701-356q-57 19-118.5 27.5T480-320q-41 0-102.5-8.5T259-356q-57-19-98-49.5T120-480v-100q0 44 41 74.5t98 49.5q57 19 118.5 27.5T480-420Zm0 200q41 0 102.5-8.5T701-256q57-19 98-49.5t41-74.5v100q0 44-41 74.5T701-156q-57 19-118.5 27.5T480-120q-41 0-102.5-8.5T259-156q-57-19-98-49.5T120-280v-100q0 44 41 74.5t98 49.5q57 19 118.5 27.5T480-220Z"/>
+                    </svg>
+                    <h1 data-action="open-select">DER</h1>
+                </header>
+
+                <section class="schema-filter">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" height="24px" width="24px">
+                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                    </svg>
+                    <input type="text" name="filter" placeholder="Filter tables" />
+                    <a href="#" class="close" data-action="clear-filter"></a>
+                    <div class="schema-total"></div>
+                </section>
+
+                <section class="schema-list">
+                    <ol></ol>
+                </section>
+            </div>
             <div class="aside-resizer" data-action="resize-aside"></div>
             <div class="aside-arrow arrow" data-action="toggle-aside"></div>
         </aside>

@@ -301,6 +301,7 @@ input[role="switch"]:disabled {
     --arrow-width: 10px;
     --arrow-height: 1px;
     --arrow-space: 0;
+
     position: relative;
     width: var(--arrow-size);
     height: var(--arrow-size);
@@ -311,7 +312,7 @@ input[role="switch"]:disabled {
     content: "";
     display: block;
     position: absolute;
-    top: 50%;
+    top: calc(50% - var(--arrow-height) / 2);
     left: var(--arrow-space);
     width: var(--arrow-width);
     height: var(--arrow-height);

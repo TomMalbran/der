@@ -12,10 +12,6 @@ export default class Schema {
 
     /** @type {HTMLElement} */
     #aside;
-    /** @type {HTMLElement} */
-    #header;
-    /** @type {HTMLElement} */
-    #filter;
     /** @type {HTMLInputElement} */
     #input;
     /** @type {HTMLElement} */
@@ -45,15 +41,13 @@ export default class Schema {
         this.groups   = {};
 
         this.#aside    = document.querySelector("aside");
-        this.#header   = document.querySelector(".schema-header");
-        this.#filter   = document.querySelector(".schema-filter");
         this.#input    = document.querySelector(".schema-filter input");
         this.#clear    = document.querySelector(".schema-filter .close");
         this.#total    = document.querySelector(".schema-total");
         this.#list     = document.querySelector(".schema-list ol");
 
-        this.#header.innerHTML     = data.name;
-        this.#header.style.display = "block";
+        const title = document.querySelector("header h1");
+        title.innerHTML = data.name;
 
         this.createTables();
     }
@@ -237,7 +231,6 @@ export default class Schema {
      * @returns {Void}
      */
     setInitialFilter(value) {
-        this.#filter.style.display = "flex";
         if (value) {
             this.#input.value = value;
         }
