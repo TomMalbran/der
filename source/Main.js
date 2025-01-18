@@ -304,26 +304,27 @@ document.addEventListener("click", (e) => {
             table.toggleExpand();
             storage.setTable(table);
             break;
-        case "show-table":
-            canvas.showTable(table);
+        case "select-list-table":
+            canvas.selectTableFromList(table);
             break;
-        case "select-table":
+        case "select-canvas-table":
             Utils.unselect();
-            canvas.selectTable(table, specialKey);
+            canvas.selectTableFromCanvas(table, specialKey);
             break;
         case "add-table":
             canvas.addTable(table);
-            canvas.selectTable(table);
+            canvas.selectTableFromList(table);
             storage.setTable(table);
             break;
         case "remove-table":
+            canvas.unselect();
             canvas.removeTable(table);
             storage.setTable(table);
             break;
         case "toggle-fields":
             table.toggleFields();
             canvas.reconnect(table);
-            canvas.selectTable(table, specialKey);
+            canvas.selectTableFromCanvas(table, specialKey);
             storage.setTable(table);
             break;
         default:

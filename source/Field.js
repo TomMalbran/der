@@ -27,22 +27,6 @@ export default class Field {
         this.hasLink   = false;
     }
 
-    /**
-     * Returns the Canvas Element
-     * @returns {HTMLElement}
-     */
-    get canvasElem() {
-        return this.#canvasElem;
-    }
-
-    /**
-     * Returns the List Element
-     * @returns {HTMLElement}
-     */
-    get listElem() {
-        return this.#listElem;
-    }
-
 
 
     /**
@@ -72,10 +56,11 @@ export default class Field {
 
     /**
      * Creates the Canvas Element
-     * @param {Boolean} isHidden
+     * @param {HTMLElement} container
+     * @param {Boolean}     isHidden
      * @returns {Void}
      */
-    createCanvasElem(isHidden) {
+    createCanvasElem(container, isHidden) {
         this.#canvasElem = document.createElement("li");
         const name = document.createElement(this.elementTag);
         const type = document.createElement("span");
@@ -90,6 +75,8 @@ export default class Field {
             this.#canvasElem.className = "schema-hide";
         }
         this.isHidden = isHidden;
+
+        container.appendChild(this.#canvasElem);
     }
 
     /**

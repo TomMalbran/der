@@ -34,7 +34,10 @@ export default class Canvas {
     #bounds;
 
     /** @type {HTMLElement} */
-    #selector
+    #selector;
+
+    /** @type {Object.<String, Table>} */
+    selection;
 
 
     /**
@@ -282,7 +285,7 @@ export default class Canvas {
 
     /**
      * Returns the Selected Tables
-     * @returns {Object[]}
+     * @returns {Table[]}
      */
     get selectedTables() {
         return Object.values(this.selection);
@@ -329,35 +332,51 @@ export default class Canvas {
             this.dontUnselect = false;
             return false;
         }
-        const closest = Utils.getClosest(event, "backdrop");
-        if (closest) {
+
+        const aside    = Utils.getClosest(event, "aside");
+        const backdrop = Utils.getClosest(event, "backdrop");
+        if (backdrop || aside) {
             return false;
         }
+
         const mouse = Utils.getMousePos(event);
         return Utils.inBounds(mouse, this.#bounds);
     }
 
     /**
-     * Shows the given Table
+     * Selects the given Table from the List
      * @param {Table} table
      * @returns {Void}
      */
-    showTable(table) {
-        table.scrollIntoView();
-        this.selectTable(table);
+    selectTableFromList(table) {
+        table.scrollCanvasIntoView();
+        this.#selectTable(table);
     }
 
     /**
-     * Selects the given Table
+     * Selects the given Table from the Canvas
      * @param {Table}    table
      * @param {Boolean=} addToSelection
      * @returns {Void}
      */
-    selectTable(table, addToSelection = false) {
-        this.stopUnselect();
-        if (this.selection[table.name]) {
-            return;
+    selectTableFromCanvas(table, addToSelection = false) {
+        table.scrollListIntoView();
+        this.#selectTable(table, addToSelection);
+
+        if (table.group && !table.group.isExpanded) {
+            this.selectedGroup = table.group.select();
+            table.group.scrollListIntoView();
         }
+    }
+
+    /**
+     * Selects the given Table internally
+     * @param {Table}    table
+     * @param {Boolean=} addToSelection
+     * @returns {Void}
+     */
+    #selectTable(table, addToSelection = false) {
+        this.stopUnselect();
         if (!addToSelection) {
             this.unselect();
         }
@@ -372,7 +391,7 @@ export default class Canvas {
      * @returns {Void}
      */
     showGroup(group) {
-        group.scrollIntoView();
+        group.scrollCanvasIntoView();
         this.selectGroup(group);
     }
 
@@ -452,7 +471,7 @@ export default class Canvas {
         }
 
         // Select the Table
-        for (const selectedTable of Object.values(this.selection)) {
+        for (const selectedTable of this.selectedTables) {
             selectedTable.select();
         }
     }
@@ -575,7 +594,8 @@ export default class Canvas {
             return;
         }
         if (!this.selection[table.name]) {
-            this.selectTable(table, addToSelection);
+            table.scrollListIntoView();
+            this.#selectTable(table, addToSelection);
         }
         this.startDrag(event);
     }
@@ -591,6 +611,7 @@ export default class Canvas {
             return;
         }
         group.pick();
+        group.scrollListIntoView();
         this.selectGroup(group);
         this.startDrag(event);
     }

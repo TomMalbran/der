@@ -8,8 +8,27 @@ import Utils from "./Utils.js";
  */
 export default class Group {
 
+    /** @type {Boolean} */
+    #onList;
+
+    /** @type {HTMLElement} */
+    #listElem;
+    /** @type {HTMLElement} */
+    #listInner;
+    /** @type {HTMLAnchorElement} */
+    #listArrow;
+    /** @type {HTMLElement} */
+    #listText;
+    /** @type {HTMLElement} */
+    #listButton;
+    /** @type {HTMLElement} */
+    #listTables;
+
     /** @type {HTMLElement} */
     #canvasElem;
+    /** @type {HTMLElement} */
+    #canvasHeader;
+
 
 
     /**
@@ -25,7 +44,7 @@ export default class Group {
         this.tables     = tables;
         this.padding    = 20;
 
-        this.onList     = false;
+        this.#onList    = false;
         this.isExpanded = isExpanded;
         this.onCanvas   = false;
 
@@ -46,7 +65,7 @@ export default class Group {
 
         this.setGroup(this);
         if (!this.isEmptyInCanvas) {
-            this.header.innerText = this.name;
+            this.#canvasHeader.innerText = this.name;
             this.position();
         }
     }
@@ -132,18 +151,18 @@ export default class Group {
      * @returns {Void}
      */
     addToList(container) {
-        if (this.onList) {
+        if (this.#onList) {
             return;
         }
-        this.onList = true;
-        if (!this.listElem) {
+        this.#onList = true;
+        if (!this.#listElem) {
             this.createListElem();
         }
-        container.appendChild(this.listElem);
+        container.appendChild(this.#listElem);
         for (const table of this.tables) {
-            table.addToList(this.listTables);
+            table.addToList(this.#listTables);
         }
-        this.listElem.classList.toggle("expanded", this.isExpanded);
+        this.#listElem.classList.toggle("expanded", this.isExpanded);
     }
 
     /**
@@ -151,15 +170,15 @@ export default class Group {
      * @returns {Void}
      */
     removeFromList() {
-        if (!this.onList) {
+        if (!this.#onList) {
             return;
         }
         for (const table of this.tables) {
             table.removeFromList();
         }
-        Utils.removeElement(this.listElem);
-        this.onList   = false;
-        this.listElem = null;
+        Utils.removeElement(this.#listElem);
+        this.#onList   = false;
+        this.#listElem = null;
     }
 
     /**
@@ -167,40 +186,40 @@ export default class Group {
      * @returns {Void}
      */
     createListElem() {
-        this.listElem   = document.createElement("li");
-        this.listInner  = document.createElement("div");
-        this.listArrow  = document.createElement("a");
-        this.listText   = document.createElement("span");
-        this.listButton = document.createElement("button");
-        this.listTables = document.createElement("ol");
+        this.#listElem   = document.createElement("li");
+        this.#listInner  = document.createElement("div");
+        this.#listArrow  = document.createElement("a");
+        this.#listText   = document.createElement("span");
+        this.#listButton = document.createElement("button");
+        this.#listTables = document.createElement("ol");
 
-        this.listElem.className        = "schema-group";
-        this.listInner.className       = "schema-item";
+        this.#listElem.className        = "schema-group";
+        this.#listInner.className       = "schema-item";
+        this.#listInner.dataset.group   = String(this.id);
 
-        this.listArrow.href            = "#";
-        this.listArrow.className       = "arrow";
-        this.listArrow.dataset.action  = "expand-group";
-        this.listArrow.dataset.group   = String(this.id);
+        this.#listArrow.href            = "#";
+        this.#listArrow.className       = "arrow";
+        this.#listArrow.dataset.action  = "expand-group";
+        this.#listArrow.dataset.group   = String(this.id);
 
-        this.listText.innerHTML        = this.name;
-        this.listText.dataset.group    = String(this.id);
+        this.#listText.innerHTML        = this.name;
 
-        this.listButton.innerHTML      = "Edit";
-        this.listButton.className      = "btn btn-small";
-        this.listButton.dataset.action = "edit-group";
-        this.listButton.dataset.group  = String(this.id);
+        this.#listButton.innerHTML      = "Edit";
+        this.#listButton.className      = "btn btn-small";
+        this.#listButton.dataset.action = "edit-group";
+        this.#listButton.dataset.group  = String(this.id);
 
         if (this.onCanvas) {
-            this.listText.classList.add("selectable");
-            this.listText.dataset.action = "show-group";
+            this.#listInner.classList.add("selectable");
+            this.#listInner.dataset.action = "show-group";
         }
 
-        this.listElem.appendChild(this.listInner);
-        this.listElem.appendChild(this.listTables);
+        this.#listElem.appendChild(this.#listInner);
+        this.#listElem.appendChild(this.#listTables);
 
-        this.listInner.appendChild(this.listArrow);
-        this.listInner.appendChild(this.listText);
-        this.listInner.appendChild(this.listButton);
+        this.#listInner.appendChild(this.#listArrow);
+        this.#listInner.appendChild(this.#listText);
+        this.#listInner.appendChild(this.#listButton);
     }
 
     /**
@@ -209,7 +228,7 @@ export default class Group {
      */
     toggleExpand() {
         this.isExpanded = !this.isExpanded;
-        this.listElem.classList.toggle("expanded", this.isExpanded);
+        this.#listElem.classList.toggle("expanded", this.isExpanded);
     }
 
     /**
@@ -217,8 +236,8 @@ export default class Group {
      * @returns {Void}
      */
     setListVisibility() {
-        const tables = this.tables.filter((elem) => elem.showOnList);
-        this.listElem.style.display = !tables.length ? "none" : "block";
+        const tables = this.tables.filter((table) => table.showOnList);
+        this.#listElem.style.display = !tables.length ? "none" : "block";
     }
 
 
@@ -230,8 +249,8 @@ export default class Group {
      */
     addToCanvas(container) {
         this.onCanvas = true;
-        this.listText.classList.add("selectable");
-        this.listText.dataset.action = "show-group";
+        this.#listInner.classList.add("selectable");
+        this.#listInner.dataset.action = "show-group";
 
         if (!this.#canvasElem) {
             this.createCanvasElem();
@@ -249,8 +268,8 @@ export default class Group {
             return;
         }
         this.onCanvas = false;
-        this.listText.classList.remove("selectable");
-        this.listText.dataset.action = "";
+        this.#listInner.classList.remove("selectable");
+        this.#listInner.dataset.action = "";
 
         Utils.removeElement(this.#canvasElem);
         this.#canvasElem = null;
@@ -264,11 +283,11 @@ export default class Group {
         this.#canvasElem = document.createElement("div");
         this.#canvasElem.className = "group";
 
-        this.header = document.createElement("header");
-        this.header.innerHTML      = this.name;
-        this.header.dataset.action = "drag-group";
-        this.header.dataset.group  = String(this.id);
-        this.#canvasElem.appendChild(this.header);
+        this.#canvasHeader = document.createElement("header");
+        this.#canvasHeader.innerHTML      = this.name;
+        this.#canvasHeader.dataset.action = "drag-group";
+        this.#canvasHeader.dataset.group  = String(this.id);
+        this.#canvasElem.appendChild(this.#canvasHeader);
 
         const remove = document.createElement("a");
         remove.href           = "#";
@@ -318,10 +337,22 @@ export default class Group {
 
 
     /**
-     * Scrolls the Table into view
+     * Scrolls the List into view
      * @returns {Void}
      */
-    scrollIntoView() {
+    scrollListIntoView() {
+        this.#listElem.scrollIntoView({
+            behavior : "smooth",
+            block    : "center",
+            inline   : "center",
+        });
+    }
+
+    /**
+     * Scrolls the Canvas into view
+     * @returns {Void}
+     */
+    scrollCanvasIntoView() {
         this.#canvasElem.scrollIntoView({
             behavior : "smooth",
             block    : "center",
@@ -335,6 +366,7 @@ export default class Group {
      */
     select() {
         this.#canvasElem.classList.add("selected");
+        this.#listElem.classList.add("selected");
         return this;
     }
 
@@ -344,6 +376,7 @@ export default class Group {
      */
     unselect() {
         this.#canvasElem.classList.remove("selected");
+        this.#listElem.classList.remove("selected");
         return null;
     }
 
