@@ -44,10 +44,13 @@ export default class Table {
 
     /**
      * Schema Table constructor
+     * @param {String} name
      * @param {Object} data
      */
-    constructor(data) {
+    constructor(name, data) {
+        this.name       = name;
         this.data       = data;
+
         this.#onList    = false;
         this.showOnList = false;
         this.isExpanded = false;
@@ -108,8 +111,8 @@ export default class Table {
      * Returns the Table Name
      * @returns {String}
      */
-    get name() {
-        return this.data.table;
+    get tableName() {
+        return this.name.replace(/([A-Z])/g, '_$1').toLowerCase().replace(/^_/, '');
     }
 
     /**
@@ -236,6 +239,7 @@ export default class Table {
         if (this.#onList) {
             return;
         }
+
         this.#onList = true;
         if (!this.#listElem) {
             this.createListElem();
@@ -270,19 +274,19 @@ export default class Table {
 
         this.#listElem.className        = "schema-table";
         this.#listInner.className       = "schema-item";
-        this.#listInner.dataset.table   = this.data.table;
+        this.#listInner.dataset.table   = this.name;
 
         this.#listArrow.href            = "#";
         this.#listArrow.className       = "arrow";
         this.#listArrow.dataset.action  = "expand-table";
-        this.#listArrow.dataset.table   = this.data.table;
+        this.#listArrow.dataset.table   = this.name;
 
-        this.#listText.innerHTML        = this.data.table;
+        this.#listText.innerHTML        = this.tableName;
 
         this.#listButton.innerHTML      = "Add";
         this.#listButton.className      = "btn btn-small";
         this.#listButton.dataset.action = "add-table";
-        this.#listButton.dataset.table  = this.data.table;
+        this.#listButton.dataset.table  = this.name;
 
         if (this.onCanvas) {
             this.#listInner.classList.add("selectable");
@@ -422,7 +426,7 @@ export default class Table {
         this.#canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         const header = document.createElement("header");
-        header.innerHTML      = this.name;
+        header.innerHTML      = this.tableName;
         header.dataset.action = "drag-table";
         header.dataset.table  = this.name;
 

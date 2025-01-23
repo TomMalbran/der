@@ -60,13 +60,13 @@ import Table  from "./Table.js";
         this.#checks.innerHTML = "";
         if (this.isEdit) {
             for (const table of group.tables) {
-                this.createCheckbox(table.name, true);
+                this.createCheckbox(table, true);
                 tables[table.name] = true;
             }
         }
         for (const table of selectedTables) {
             if (!tables[table.name]) {
-                this.createCheckbox(table.name, !this.isEdit);
+                this.createCheckbox(table, !this.isEdit);
             }
         }
 
@@ -79,7 +79,7 @@ import Table  from "./Table.js";
      * @returns {String}
      */
     getGroupName(selectedTables) {
-        const names = selectedTables.map((table) => table.name);
+        const names = selectedTables.map((table) => table.tableName);
         const first = names[0];
 
         // Get the common prefix of all the names
@@ -105,24 +105,24 @@ import Table  from "./Table.js";
 
     /**
      * Creates a Checkbox Input
-     * @param {String}  name
+     * @param {Table}   table
      * @param {Boolean} isChecked
      * @returns {Void}
      */
-    createCheckbox(name, isChecked) {
+    createCheckbox(table, isChecked) {
         const check = document.createElement("label");
         check.className = "checkbox-input";
 
         const input = document.createElement("input");
         input.type    = "checkbox";
-        input.name    = name;
-        input.value   = name;
+        input.name    = table.name;
+        input.value   = table.name;
         input.checked = isChecked;
         check.appendChild(input);
         this.inputs.push(input);
 
         const div = document.createElement("div");
-        div.innerText = name;
+        div.innerText = table.tableName;
         check.appendChild(div);
         this.#checks.appendChild(check);
     }

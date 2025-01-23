@@ -198,29 +198,25 @@ export default class Storage {
             this.setNumber("nextID", this.#nextID);
         }
 
-        if (data.schemas) {
+        if (data.schemas && isEdit) {
             // Fetch the Schemas
             const newSchema = await this.fetchSchemas(data);
+            const oldSchema = this.getSchema(data.schemaID, false);
 
             // Remove the deleted Tables
-            if (isEdit) {
-                const oldSchema = this.getSchema(data.schemaID, false);
-                for (const oldElem of Object.values(oldSchema)) {
-                    if (oldElem.table) {
-                        let found = false;
-                        for (const newElem of Object.values(newSchema)) {
-                            if (newElem.table === oldElem.table) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            this.removeItem(data.schemaID, "table", oldElem.table);
-                        }
+            for (const oldKey of Object.keys(oldSchema)) {
+                let found = false;
+                for (const newKey of Object.keys(newSchema)) {
+                    if (newKey === oldKey) {
+                        found = true;
+                        break;
                     }
                 }
+                if (!found) {
+                    this.removeItem(data.schemaID, "table", oldKey);
+                }
             }
-        } else {
+        } else if (!data.schemas) {
             const schemaData = this.getSchemaData(data.schemaID);
             data.schemas = schemaData;
         }
@@ -264,26 +260,20 @@ export default class Storage {
      * @returns {Object}
      */
     mergeSchemas(data) {
-        const result = Utils.clone(data.schemas[0]);
+        const appSchemas = Utils.clone(data.schemas[0]);
         if (data.schemas.length === 1) {
-            return result;
+            return appSchemas;
         }
 
-        let hasEmpty = false;
-        for (const [ key, table ] of Object.entries(result)) {
-            if (!table.table) {
-                hasEmpty = true;
-            }
-            if (!table.table && data.schemas[1][key]) {
-                result[key] = Utils.extend(result[key], data.schemas[1][key]);
-            }
-        }
-        if (!hasEmpty) {
-            for (const key of Object.keys(data.schemas[1])) {
-                result[key] = Utils.clone(data.schemas[1][key]);
+        const frameSchemas = data.schemas[1];
+        for (const [ key, table ] of Object.entries(frameSchemas)) {
+            if (appSchemas[key]) {
+                appSchemas[key] = Utils.extend(table, appSchemas[key]);
+            } else {
+                appSchemas[key] = Utils.clone(table);
             }
         }
-        return result;
+        return appSchemas;
     }
 
     /**

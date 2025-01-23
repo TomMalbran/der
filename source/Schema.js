@@ -57,11 +57,8 @@ export default class Schema {
      * @returns {Void}
      */
     createTables() {
-        for (const elem of Object.values(this.data)) {
-            if (elem.table) {
-                const table = new Table(elem);
-                this.tables[elem.table] = table;
-            }
+        for (const [ name, data ] of Object.entries(this.data)) {
+            this.tables[name] = new Table(name, data);
         }
     }
 

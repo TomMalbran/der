@@ -19,7 +19,7 @@ export default class Link {
     constructor(tableName, keyName, data) {
         this.fromTableName = tableName;
         this.fromFieldName = data.rightKey || keyName;
-        this.toTableName   = data.table;
+        this.toTableName   = data.schema;
         this.toFieldName   = data.leftKey || keyName;
     }
 
