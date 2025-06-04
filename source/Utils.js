@@ -38,6 +38,16 @@ function dist(pos, other) {
 
 
 /**
+ * Returns true if the element has any of the classes
+ * @param {HTMLElement} element
+ * @param  {...String}  className
+ * @returns {Boolean}
+ */
+function hasClass(element, ...className) {
+    return className.some(name => element.classList.contains(name));
+}
+
+/**
  * Returns an element from the Target with an action
  * @param {MouseEvent} event
  * @returns {HTMLElement}
@@ -55,17 +65,17 @@ function getTarget(event) {
 /**
  * Returns an element from the Target with an action
  * @param {MouseEvent} event
- * @param {String}     className
+ * @param {...String}  className
  * @returns {HTMLElement?}
  */
-function getClosest(event, className) {
+function getClosest(event, ...className) {
     /** @type {HTMLElement} */
     // @ts-ignore
     let element = event.target;
-    while (element.parentElement && !element.classList.contains(className)) {
+    while (element.parentElement && !hasClass(element, ...className)) {
         element = element.parentElement;
     }
-    if (element.classList.contains(className)) {
+    if (hasClass(element, ...className)) {
         return element;
     }
     return null;
@@ -196,6 +206,7 @@ export default {
     extend,
     dist,
 
+    hasClass,
     getTarget,
     getClosest,
     removeElement,

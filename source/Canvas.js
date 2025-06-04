@@ -12,6 +12,9 @@ import Utils   from "./Utils.js";
  */
 export default class Canvas {
 
+    /** @type {Zoom} */
+    zoom;
+
     /** @type {Object.<String, Table>} */
     #tables = {};
 
@@ -21,14 +24,12 @@ export default class Canvas {
     /** @type {Object.<Number, Group>} */
     #groups = {};
 
-    /** @type {Zoom} */
-    zoom;
-
     /** @type {HTMLElement} */
     #canvas;
-
     /** @type {HTMLElement} */
     #container;
+    /** @type {HTMLElement} */
+    #center;
 
     /** @type {DOMRect} */
     #bounds;
@@ -62,7 +63,10 @@ export default class Canvas {
         this.isDragging    = false;
         this.isMoving      = false;
 
-        this.center();
+        // Center
+        this.#center = document.createElement("div");
+        this.#center.className = "center";
+        this.#canvas.appendChild(this.#center);
     }
 
     /**
@@ -213,11 +217,13 @@ export default class Canvas {
      * @returns {Void}
      */
     setInitialScroll(scroll) {
-        if (scroll) {
-            this.#container.scrollTo(scroll.left, scroll.top);
-        } else {
-            this.center();
-        }
+        // if (scroll) {
+        //     this.#container.scrollTo(scroll.left, scroll.top);
+        // } else {
+        //     this.center();
+        // }
+        console.log(scroll);
+        this.center();
     }
 
     /**
@@ -225,11 +231,36 @@ export default class Canvas {
      * @returns {Void}
      */
     center() {
-        const bounds = this.#canvas.getBoundingClientRect();
-        const top    = (bounds.height - this.#bounds.height) / 2;
-        const left   = (bounds.width  - this.#bounds.width)  / 2;
-        this.#container.scrollTo(left, top);
+        // this.#center.style.translate = "500vw 500vh";
+        this.#center.style.transform = "translate(500vw, 500vh)";
+        this.#center.scrollIntoView({ block : "center", inline : "center" });
     }
+
+    reCenter() {
+        this.#center.scrollIntoView({ block : "center", inline : "center" });
+    }
+
+    setCenter() {
+        const scrollTop  = this.#container.scrollTop  + this.#bounds.height / 2;
+        const scrollLeft = this.#container.scrollLeft + this.#bounds.width  / 2;
+
+        const percentTop  = scrollTop  / this.#canvas.clientHeight;
+        const percentLeft = scrollLeft / this.#canvas.clientWidth;
+
+        console.log(this.#canvas.clientWidth, scrollLeft, percentLeft);
+        // this.#center.style.translate = `calc(1000vw * ${percentLeft}) calc(1000vh * ${percentTop})`;
+        this.#center.style.transform = `scale(1) translate(calc(1000vw * ${percentLeft}), calc(1000vh * ${percentTop}))`;
+
+        // console.log(this.#bounds);
+        // console.log(this.#container.scrollTop / this.zoom.scale);
+        // const scale = 1;//this.zoom.scale;
+        // const elem = this.#canvas.querySelector(".group.selected");
+        // if (elem) {
+        //     elem.scrollIntoView({ block : "center", inline : "center" });
+        // }
+    }
+
+
 
     /**
      * Picks the Scroll
@@ -333,9 +364,8 @@ export default class Canvas {
             return false;
         }
 
-        const aside    = Utils.getClosest(event, "aside");
-        const backdrop = Utils.getClosest(event, "backdrop");
-        if (backdrop || aside) {
+        const target = Utils.getClosest(event, "aside", "backdrop", "zoom");
+        if (target) {
             return false;
         }
 
@@ -641,8 +671,10 @@ export default class Canvas {
         if (!this.isDragging) {
             return false;
         }
+
         const scale     = this.zoom.scale;
         const currMouse = Utils.getMousePos(event);
+
         for (const selectedTable of this.selectedTables) {
             const startPos = this.startPos[selectedTable.name];
             selectedTable.translate({

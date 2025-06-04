@@ -26,12 +26,6 @@ let schema    = null;
  * @returns {Promise}
  */
 async function main() {
-    selection = new Selection();
-    storage   = new Storage();
-    canvas    = new Canvas();
-    mode      = new Mode();
-    grouper   = new Grouper();
-
     if (storage.hasSchema) {
         const data = await storage.getSchema();
         setSchema(data);
@@ -81,6 +75,7 @@ async function selectSchema(schemaID) {
     if (!data) {
         return false;
     }
+
     if (schema) {
         schema.destroy();
         canvas.destroy();
@@ -264,16 +259,19 @@ document.addEventListener("click", (e) => {
     // Zoom Actions
     case "zoom-in":
         const zoomIn = canvas.zoom.increase();
+        canvas.reCenter();
         storage.setZoom(zoomIn);
         Utils.unselect();
         break;
     case "zoom-out":
         const zoomOut = canvas.zoom.decrease();
+        canvas.reCenter();
         storage.setZoom(zoomOut);
         Utils.unselect();
         break;
     case "reset-zoom":
         canvas.zoom.reset();
+        canvas.reCenter();
         storage.removeZoom();
         Utils.unselect();
         break;
@@ -376,6 +374,7 @@ document.querySelector("main").addEventListener("scroll", () => {
     timer = window.setTimeout(() => {
         storage.setScroll(canvas.scroll);
     }, 500);
+    canvas.setCenter();
 });
 
 /**
@@ -468,6 +467,28 @@ document.addEventListener("mouseup", (e) => {
     }
 });
 
+/**
+ * Keep the Center of the Canvas when resizing
+ */
+const element   = document.querySelector("main");
+let   oldWidth  = 0;
+let   oldHeight = 0;
+window.addEventListener("load", () => {
+    oldWidth  = element.clientWidth;
+    oldHeight = element.clientHeight;
+});
+window.addEventListener("resize", () => {
+    const newWidth   = element.clientWidth;
+    const newHeight  = element.clientHeight;
+    const diffWidth  = newWidth  - oldWidth;
+    const diffHeight = newHeight - oldHeight;
+    const newScrollX = element.scrollLeft - diffWidth  / 2;
+    const newScrollY = element.scrollTop  - diffHeight / 2;
+    element.scrollTo(newScrollX, newScrollY);
+
+    oldWidth  = newWidth;
+    oldHeight = newHeight;
+});
 
 
 

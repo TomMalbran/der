@@ -14,8 +14,19 @@ main {
         linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
 }
 .canvas {
-    width: 800vw;
-    height: 800vh;
+    width: 1000vw;
+    height: 1000vh;
+    transform-origin: center center;
+}
+.center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    /* translate: 500vw 500vh; */
+    z-index: 10000;
 }
 
 
