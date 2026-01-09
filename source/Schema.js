@@ -40,11 +40,11 @@ export default class Schema {
         this.tables   = {};
         this.groups   = {};
 
-        this.#aside    = document.querySelector("aside");
-        this.#input    = document.querySelector(".schema-filter input");
-        this.#clear    = document.querySelector(".schema-filter .close");
-        this.#total    = document.querySelector(".schema-total");
-        this.#list     = document.querySelector(".schema-list ol");
+        this.#aside   = document.querySelector("aside");
+        this.#input   = document.querySelector(".schema-filter input");
+        this.#clear   = document.querySelector(".schema-filter .close");
+        this.#total   = document.querySelector(".schema-total");
+        this.#list    = document.querySelector(".schema-list ol");
 
         const title = document.querySelector("header h1");
         title.innerHTML = data.name;

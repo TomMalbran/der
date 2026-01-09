@@ -16,10 +16,10 @@ export default class Selection {
 
     /** @type {Dialog} */
     #schemaDialog;
-    /** @type {NodeListOf<HTMLElement>} */
-    #fileFields;
-    /** @type {NodeListOf<HTMLElement>} */
-    #urlFields;
+    /** @type {HTMLElement} */
+    #fileField;
+    /** @type {HTMLElement} */
+    #urlField;
 
     /** @type {Dialog} */
     #deleteDialog;
@@ -36,8 +36,8 @@ export default class Selection {
 
         // Add/Edit
         this.#schemaDialog = new Dialog("schema");
-        this.#fileFields   = document.querySelectorAll(".schema-file");
-        this.#urlFields    = document.querySelectorAll(".schema-url");
+        this.#fileField    = document.querySelector(".schema-file");
+        this.#urlField     = document.querySelector(".schema-url");
 
         // Delete
         this.#deleteDialog = new Dialog("delete");
@@ -104,23 +104,21 @@ export default class Selection {
      */
     openEdit(data) {
         const isEdit  = Boolean(data.schemaID);
-        const useUrls = Boolean(data.useUrls);
+        const useUrl  = Boolean(data.useUrl);
         this.schemaID = data.schemaID || 0;
         this.data     = data;
-        this.files    = [];
+        this.file     = null;
 
-        this.toggleUrls(useUrls);
+        this.toggleUrls(useUrl);
 
         this.#schemaDialog.open();
         this.#schemaDialog.setTitle(isEdit ? "Edit the Schema" : "Add a Schema");
         this.#schemaDialog.setButton(isEdit ? "Edit" : "Add");
 
-        this.#schemaDialog.setInput("urls",     useUrls);
+        this.#schemaDialog.setInput("url",      useUrl);
         this.#schemaDialog.setInput("name",     isEdit ? data.name : "");
-        this.#schemaDialog.setInput("file0",    isEdit && !useUrls ? data.file0 || "" : "");
-        this.#schemaDialog.setInput("file1",    isEdit && !useUrls ? data.file1 || "" : "");
-        this.#schemaDialog.setInput("url0",     isEdit && useUrls  ? data.url0  || "" : "");
-        this.#schemaDialog.setInput("url1",     isEdit && useUrls  ? data.url1  || "" : "");
+        this.#schemaDialog.setInput("file",     isEdit && !useUrl ? data.file || "" : "");
+        this.#schemaDialog.setInput("url",      isEdit && useUrl  ? data.url  || "" : "");
         this.#schemaDialog.setInput("position", isEdit ? data.position : "");
     }
 
@@ -134,33 +132,24 @@ export default class Selection {
 
     /**
      * Selects a File in the Add/Edit Dialog
-     * @param {Number} index
      * @returns {Void}
      */
-    selectFile(index) {
-        const name = `file${index}`;
-        this.#schemaDialog.selectFile(name, (file) => {
-            this.files[index] = file;
-            this.data[name]   = file.name;
+    selectFile() {
+        this.#schemaDialog.selectFile("file", (file) => {
+            this.file      = file;
+            this.data.file = file.name;
         });
     }
 
     /**
      * Removes a File in the Add/Edit Dialog
-     * @param {Number} index
      * @returns {Void}
      */
-    removeFile(index) {
-        const name = `file${index}`;
-        this.files[index] = null;
-        this.data[name]   = "";
-        this.#schemaDialog.setInput(name, "");
-
-        if (index === 1) {
-            this.data.schemas.pop();
-        } else {
-            this.data.schemas[index] = null;
-        }
+    removeFile() {
+        this.file        = null;
+        this.data.file   = "";
+        this.data.schema = null;
+        this.#schemaDialog.setInput("file", "");
     }
 
     /**
@@ -168,11 +157,9 @@ export default class Selection {
      * @returns {Void}
      */
     toggleUrls(isChecked) {
-        this.useUrls = isChecked;
-        this.#fileFields[0].style.display = !this.useUrls ? "flex" : "none";
-        this.#fileFields[1].style.display = !this.useUrls ? "flex" : "none";
-        this.#urlFields[0].style.display  = this.useUrls  ? "flex" : "none";
-        this.#urlFields[1].style.display  = this.useUrls  ? "flex" : "none";
+        this.useUrl = isChecked;
+        this.#fileField.style.display = !this.useUrl ? "flex" : "none";
+        this.#urlField.style.display  = this.useUrl  ? "flex" : "none";
     }
 
     /**
@@ -182,10 +169,9 @@ export default class Selection {
     editSchema() {
         return new Promise((resolve) => {
             const isEdit = Boolean(this.schemaID);
-            this.data.useUrls  = this.#schemaDialog.getInput("urls");
+            this.data.useUrl  = this.#schemaDialog.getInput("url");
             this.data.name     = this.#schemaDialog.getInput("name");
-            this.data.url0     = this.#schemaDialog.getInput("url0");
-            this.data.url1     = this.#schemaDialog.getInput("url1");
+            this.data.url      = this.#schemaDialog.getInput("url");
             this.data.position = this.#schemaDialog.getInput("position");
 
             if (!this.data.schemas) {
@@ -196,10 +182,10 @@ export default class Selection {
             if (!this.data.name) {
                 this.#schemaDialog.showError("name");
             }
-            if (!isEdit && !this.data.useUrls && !this.files[0]) {
+            if (!isEdit && !this.data.useUrl && !this.file) {
                 this.#schemaDialog.showError("file");
             }
-            if (this.data.useUrls && !this.data.url0) {
+            if (this.data.useUrl && !this.data.url) {
                 this.#schemaDialog.showError("url");
             }
             if (this.#schemaDialog.hasError) {
@@ -207,31 +193,22 @@ export default class Selection {
                 return null;
             }
 
-            if (!this.data.useUrls && (this.files[0] || this.files[1])) {
-                let count = 0;
-                for (let i = 0; i < this.files.length; i++) {
-                    if (!this.files[i]) {
-                        count += 1;
-                        continue;
-                    }
-
-                    const reader = new FileReader();
-                    reader.readAsText(this.files[i]);
-                    reader.onload = () => {
-                        const text = String(reader.result);
-                        try {
-                            this.data.schemas[i] = JSON.parse(text);
-                            count += 1;
-                            if (!this.#schemaDialog.hasError && count === this.files.length) {
-                                resolve(this.data);
-                            }
-                        } catch {
-                            this.#schemaDialog.showError(`json${i}`);
+            if (!this.data.useUrl && this.file) {
+                const reader = new FileReader();
+                reader.readAsText(this.file);
+                reader.onload = () => {
+                    const text = String(reader.result);
+                    try {
+                        this.data.schema = JSON.parse(text);
+                        if (!this.#schemaDialog.hasError) {
+                            resolve(this.data);
                         }
-                    };
-                }
-            } else if (this.data.useUrls) {
-                fetch(this.data.url0).then(() => {
+                    } catch {
+                        this.#schemaDialog.showError("json");
+                    }
+                };
+            } else if (this.data.useUrl) {
+                fetch(this.data.url).then(() => {
                     resolve(this.data);
                 }, () => {
                     resolve();

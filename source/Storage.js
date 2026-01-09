@@ -163,10 +163,10 @@ export default class Storage {
         const result = { schemaID, position, name : data.name };
 
         if (fetchNew) {
-            result.schema = await this.fetchSchemas(data);
+            result.schema = await this.fetchSchema(data);
             this.setData(data.schemaID, "data", data);
         } else {
-            result.schema = this.mergeSchemas(data);
+            result.schema = Utils.clone(data.schema);
         }
         return result;
     }
@@ -200,7 +200,7 @@ export default class Storage {
 
         if (data.schemas && isEdit) {
             // Fetch the Schemas
-            const newSchema = await this.fetchSchemas(data);
+            const newSchema = await this.fetchSchema(data);
             const oldSchema = this.getSchema(data.schemaID, false);
 
             // Remove the deleted Tables
@@ -234,46 +234,19 @@ export default class Storage {
     }
 
     /**
-     * Fetches and Merges the Schemas
+     * Fetches the Schema
      * @const {Object} data
      * @returns {Promise}
      */
-    async fetchSchemas(data) {
+    async fetchSchema(data) {
         if (!data.useUrls) {
-            return this.mergeSchemas(data);
+            return Utils.clone(data.schema);
         }
 
-        await fetch(data.url0).then((response) => response.json()).then((response) => {
-            data.schemas[0] = response;
+        await fetch(data.url).then((response) => response.json()).then((response) => {
+            data.schema = response;
         });
-        if (data.url1) {
-            await fetch(data.url1).then((response) => response.json()).then((response) => {
-                data.schemas[1] = response;
-            });
-        }
-        return this.mergeSchemas(data);
-    }
-
-    /**
-     * Merges the Schemas
-     * @const {Object} data
-     * @returns {Object}
-     */
-    mergeSchemas(data) {
-        const appSchemas = Utils.clone(data.schemas[0]);
-        if (data.schemas.length === 1) {
-            return appSchemas;
-        }
-
-        const frameSchemas = data.schemas[1];
-        for (const [ key, table ] of Object.entries(frameSchemas)) {
-            if (appSchemas[key]) {
-                appSchemas[key] = Utils.extend(table, appSchemas[key]);
-            } else {
-                appSchemas[key] = Utils.clone(table);
-            }
-        }
-        return appSchemas;
+        return Utils.clone(data.schema);
     }
 
     /**

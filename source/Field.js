@@ -13,17 +13,20 @@ export default class Field {
 
     /**
      * Table Field constructor
-     * @param {Number} index
-     * @param {String} name
-     * @param {Object} data
+     * @param {Number}   index
+     * @param {String}   name
+     * @param {String}   type
+     * @param {Number=}  length
+     * @param {Boolean=} isPrimary
+     * @param {Boolean=} isKey
      */
-    constructor(index, name, data) {
+    constructor(index, name, type, length = 0, isPrimary = false, isKey = false) {
         this.index     = index;
         this.name      = name;
-        this.type      = data.type;
-        this.length    = data.length || 0;
-        this.isPrimary = data.type === "id" || data.isPrimary;
-        this.isKey     = data.isKey
+        this.type      = type;
+        this.length    = length;
+        this.isPrimary = isPrimary;
+        this.isKey     = isKey
         this.hasLink   = false;
     }
 

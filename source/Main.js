@@ -170,19 +170,13 @@ document.addEventListener("click", (e) => {
     case "close-schema":
         selection.closeEdit();
         break;
-    case "upload-main-file":
-        selection.selectFile(0);
+    case "upload-file":
+        selection.selectFile();
         break;
-    case "upload-sec-file":
-        selection.selectFile(1);
+    case "remove-file":
+        selection.removeFile();
         break;
-    case "remove-main-file":
-        selection.removeFile(0);
-        break;
-    case "remove-sec-file":
-        selection.removeFile(1);
-        break;
-    case "schema-urls":
+    case "schema-url":
         // @ts-ignore
         selection.toggleUrls(target.checked);
         dontStop = true;

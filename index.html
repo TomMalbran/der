@@ -83,52 +83,35 @@
             <div class="schema-dialog backdrop" data-dialog="schema">
                 <dialog open>
                     <h2>Schema</h2>
-                    <p>Name the Schema and select the json files or urls.</p>
+                    <p>Name the Schema and select a json file or a schema url.</p>
                     <form>
-                        <label class="toggle-input" data-field="urls">
-                            <input type="checkbox" role="switch" name="useUrls" value="1" data-action="schema-urls"></input>
-                            <div>Use urls</div>
+                        <label class="toggle-input" data-field="url">
+                            <input type="checkbox" role="switch" name="useUrl" value="1" data-action="schema-url"></input>
+                            <div>Use url</div>
                         </label>
                         <div class="field" data-field="name">
                             <label>Name</label>
                             <input type="text" name="name" />
                             <div class="error" data-error="name">You must complete the schema name.</div>
                         </div>
-                        <div class="field file-input schema-file" data-field="file0">
+                        <div class="field file-input schema-file" data-field="file">
                             <section>
                                 <div>
-                                    <label>Main File</label>
+                                    <label>File</label>
                                     <div class="file-name"></div>
                                 </div>
                                 <div>
-                                    <a href="#" class="close" data-action="remove-main-file"></a>
-                                    <a href="#" class="btn" data-action="upload-main-file">Upload File</a>
+                                    <a href="#" class="close" data-action="remove-file"></a>
+                                    <a href="#" class="btn" data-action="upload-file">Upload File</a>
                                 </div>
                             </section>
                             <div class="error" data-error="file">You must complete the schema main file.</div>
-                            <div class="error" data-error="json0">The file must be a valid JSON file.</div>
+                            <div class="error" data-error="json">The file must be a valid JSON file.</div>
                         </div>
-                        <div class="field file-input schema-file" data-field="file1">
-                            <section>
-                                <div>
-                                    <label>Secondary File</label>
-                                    <div class="file-name"></div>
-                                </div>
-                                <div>
-                                    <a href="#" class="close" data-action="remove-sec-file"></a>
-                                    <a href="#" class="btn" data-action="upload-sec-file">Upload File</a>
-                                </div>
-                            </section>
-                            <div class="error" data-error="json1">The file must be a valid JSON file.</div>
-                        </div>
-                        <div class="field schema-url" data-field="url0">
-                            <label>Main Url</label>
+                        <div class="field schema-url" data-field="url">
+                            <label>Url</label>
                             <input type="text" name="mainUrl" />
                             <div class="error" data-error="url">You must complete de main url.</div>
-                        </div>
-                        <div class="field schema-url" data-field="url1">
-                            <label>Secondary Url</label>
-                            <input type="text" name="secUrl" />
                         </div>
                         <div class="field schema-position" data-field="position">
                             <label>Position</label>

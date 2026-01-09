@@ -222,7 +222,7 @@ export default class Canvas {
         // } else {
         //     this.center();
         // }
-        console.log(scroll);
+        // console.log(scroll);
         this.center();
     }
 
@@ -247,7 +247,7 @@ export default class Canvas {
         const percentTop  = scrollTop  / this.#canvas.clientHeight;
         const percentLeft = scrollLeft / this.#canvas.clientWidth;
 
-        console.log(this.#canvas.clientWidth, scrollLeft, percentLeft);
+        // console.log(this.#canvas.clientWidth, scrollLeft, percentLeft);
         // this.#center.style.translate = `calc(1000vw * ${percentLeft}) calc(1000vh * ${percentTop})`;
         this.#center.style.transform = `scale(1) translate(calc(1000vw * ${percentLeft}), calc(1000vh * ${percentTop}))`;
 

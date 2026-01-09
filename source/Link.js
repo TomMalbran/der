@@ -12,15 +12,16 @@ export default class Link {
 
     /**
      * Link constructor
-     * @param {String} tableName
-     * @param {String} keyName
-     * @param {Object} data
+     * @param {String} fromTableName
+     * @param {String} fromFieldName
+     * @param {String} toTableName
+     * @param {String} toFieldName
      */
-    constructor(tableName, keyName, data) {
-        this.fromTableName = tableName;
-        this.fromFieldName = data.rightKey || keyName;
-        this.toTableName   = data.schema;
-        this.toFieldName   = data.leftKey || keyName;
+    constructor(fromTableName, fromFieldName, toTableName, toFieldName) {
+        this.fromTableName = fromTableName;
+        this.fromFieldName = fromFieldName;
+        this.toTableName   = toTableName;
+        this.toFieldName   = toFieldName;
     }
 
     /**

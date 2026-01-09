@@ -48,8 +48,9 @@ export default class Table {
      * @param {Object} data
      */
     constructor(name, data) {
-        this.name       = name;
         this.data       = data;
+        this.name       = name;
+        this.tableName  = data.tableName;
 
         this.#onList    = false;
         this.showOnList = false;
@@ -108,14 +109,6 @@ export default class Table {
 
 
     /**
-     * Returns the Table Name
-     * @returns {String}
-     */
-    get tableName() {
-        return this.name.replace(/([A-Z])/g, '_$1').toLowerCase().replace(/^_/, '');
-    }
-
-    /**
      * Returns the Table Position
      * @returns {{top: Number, left: Number}}
      */
@@ -162,32 +155,36 @@ export default class Table {
         }
 
         let index = 0;
-        for (const [ name, data ] of Object.entries(this.data.fields)) {
-            this.#fields.push(new Field(index, name, data));
+        for (const { name, type, length, isPrimary, isKey } of this.data.fields) {
+            this.#fields.push(new Field(index, name, type, length, isPrimary, isKey));
+            index++;
+        }
+        if (this.data.hasStatus) {
+            this.#fields.push(new Field(index, "status", "string"));
             index++;
         }
         if (this.data.hasPositions) {
-            this.#fields.push(new Field(index, "position", { type : "number" }));
+            this.#fields.push(new Field(index, "position", "number"));
             index++;
         }
         if (this.data.canCreate && this.data.hasTimestamps) {
-            this.#fields.push(new Field(index, "createdTime", { type : "date" }));
+            this.#fields.push(new Field(index, "createdTime", "date"));
             index++;
         }
         if (this.data.canCreate && this.data.hasUsers) {
-            this.#fields.push(new Field(index, "createdUser", { type : "number" }));
+            this.#fields.push(new Field(index, "createdUser", "number"));
             index++;
         }
         if (this.data.canEdit && this.data.hasTimestamps) {
-            this.#fields.push(new Field(index, "modifiedTime", { type : "date" }));
+            this.#fields.push(new Field(index, "modifiedTime", "date"));
             index++;
         }
         if (this.data.canEdit && this.data.hasUsers) {
-            this.#fields.push(new Field(index, "modifiedUser", { type : "number" }));
+            this.#fields.push(new Field(index, "modifiedUser", "number"));
             index++;
         }
         if (this.data.canDelete) {
-            this.#fields.push(new Field(index, "isDeleted", { type : "boolean" }));
+            this.#fields.push(new Field(index, "isDeleted", "boolean"));
             index++;
         }
     }
@@ -197,25 +194,19 @@ export default class Table {
      * @returns {Void}
      */
     setLinks() {
-        if (this.data.joins) {
-            for (const [ key, data ] of Object.entries(this.data.joins)) {
-                if (!data.onTable) {
-                    this.links.push(new Link(this.name, key, data));
-                }
-            }
+        for (const { fromField, toTable, toField } of this.data.joins) {
+            this.links.push(new Link(this.name, fromField, toTable, toField));
         }
-        if (this.data.foreigns) {
-            for (const [ key, data ] of Object.entries(this.data.foreigns)) {
-                this.links.push(new Link(this.name, key, data));
-            }
+        for (const { fromField, toTable, toField } of this.data.foreigns) {
+            this.links.push(new Link(this.name, fromField, toTable, toField));
         }
+
         if (this.data.hasUsers) {
-            const data = { table : "credentials", leftKey : "CREDENTIAL_ID" };
             if (this.data.canCreate && (!this.data.joins || !this.data.joins.createdUser)) {
-                this.links.push(new Link(this.name, "createdUser", data));
+                this.links.push(new Link(this.name, "createdUser", "credential", "CREDENTIAL_ID"));
             }
             if (this.data.canEdit && (!this.data.joins || !this.data.joins.modifiedUser)) {
-                this.links.push(new Link(this.name, "modifiedUser", data));
+                this.links.push(new Link(this.name, "modifiedUser", "credential", "CREDENTIAL_ID"));
             }
         }
 
