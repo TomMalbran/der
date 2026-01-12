@@ -48,9 +48,8 @@ export default class Table {
      * @param {Object} data
      */
     constructor(name, data) {
-        this.data       = data;
         this.name       = name;
-        this.tableName  = data.tableName;
+        this.data       = data;
 
         this.#onList    = false;
         this.showOnList = false;
@@ -272,7 +271,7 @@ export default class Table {
         this.#listArrow.dataset.action  = "expand-table";
         this.#listArrow.dataset.table   = this.name;
 
-        this.#listText.innerHTML        = this.tableName;
+        this.#listText.innerHTML        = this.name;
 
         this.#listButton.innerHTML      = "Add";
         this.#listButton.className      = "btn btn-small";
@@ -417,7 +416,7 @@ export default class Table {
         this.#canvasElem.style.transform = `translate(${this.left}px, ${this.top}px)`;
 
         const header = document.createElement("header");
-        header.innerHTML      = this.tableName;
+        header.innerHTML      = this.name;
         header.dataset.action = "drag-table";
         header.dataset.table  = this.name;
 

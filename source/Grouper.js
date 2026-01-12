@@ -79,7 +79,7 @@ import Table  from "./Table.js";
      * @returns {String}
      */
     getGroupName(selectedTables) {
-        const names = selectedTables.map((table) => table.tableName);
+        const names = selectedTables.map((table) => table.name);
         const first = names[0];
 
         // Get the common prefix of all the names
@@ -122,7 +122,7 @@ import Table  from "./Table.js";
         this.inputs.push(input);
 
         const div = document.createElement("div");
-        div.innerText = table.tableName;
+        div.innerText = table.name;
         check.appendChild(div);
         this.#checks.appendChild(check);
     }
